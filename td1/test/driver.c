@@ -14,12 +14,23 @@ void test_affiche(){
   printf("test_affiche 1 ...");
   affiche(m, n, a, lda, fd);
   printf("ok\n");
-  // test fonctionnelle 
-  /* double *a = alloue_matrice(); */
-  /* print("test_affiche 2 ..."); */
-  /* affiche(m, n, a, lda, fd); */
-  /* print("ok\n"); */
-
+ 
+  m = 1; n = 4;
+  printf("test_affiche 2 ...");
+  affiche(m, n, a, lda, fd);
+  printf("ok\n");
+ 
+  
+  //
+  double *b   = {1,2,3,4,5,6,7,8,9,10,12};
+  m = 3; n = 4;
+  int ldb = m+1;
+  fd = 1; // stdout
+  
+  printf("test_affiche 3 ...");
+  affiche(m, n, b, ldb, fd);
+  printf("ok\n");
+ 
 }
 
 /* void init_matrice(double* a, int m, int n, int lda, double value)*/
@@ -32,6 +43,7 @@ void test_init_matrice(){
   printf("test_init_matrice ...");
   int cmp = 0;
   int current_double = 0;
+
   while(cmp < n*m){
     cmp++;
     if(cmp % n == 0){
@@ -39,7 +51,7 @@ void test_init_matrice(){
     }
     else
       current_double += 1;
-    assert(a[current_double] != value);
+    assert(a[current_double] == value);
 
   }
   printf("ok\n");

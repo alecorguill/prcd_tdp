@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "driver.h"
 #include "util.h"
@@ -53,6 +54,7 @@ void test_init_matrice(){
     j=0;
     ++i;
   }
+  free(a);
   printf("ok\n");
 }
 

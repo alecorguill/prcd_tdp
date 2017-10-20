@@ -4,7 +4,7 @@ LDFLAGS =
 
 TEST = driver.c
 TEST_OBJS = $(TEST:.c=.o)
-SRC = $(TEST) + util.c ddot.c
+SRC = $(TEST) util.c ddot.c
 OBJS = $(SRC:.c=.o)
 HEADER_DIR = header
 HEADER_FILES = $(foreach d, $(HEADER_DIRS), $d/*)

@@ -12,6 +12,7 @@
 
   Retour : Un pointeur sur A.
  */
+
 double * alloue_matrice(int m, int n){
   return (double * ) malloc(sizeof(double) *n*m);
 }
@@ -25,20 +26,6 @@ double * alloue_matrice(int m, int n){
  */
 double * alloue_vecteur(int m){
   return (double * ) malloc(sizeof(double)*m);
-}
-
-/*
-  Initialise un vecteur avec la valeur value.
-  Parametres :
-    a : adresse du vecteur
-    m : dimension du vecteur
-    value : valeur d'initialisation
-
-  Retour : void
- */
-void init_vecteur(double* a, int m, double value){
-  for(int i=0; i<m; ++i)
-      a[i] = value;
 }
 
 /*
@@ -80,11 +67,11 @@ void affiche(int m, int n, double* a, int lda, int fd){
   int cmp = 0;
   int current_double = 0;
   while(cmp < n*m){
-    dprintf(fd, "%f ", a[current_double])
+    dprintf(fd, "%f ", a[current_double]);
     cmp++;
     if(cmp % n == 0){
       current_double += lda;
-      dprintf(fd, "\n")
+      dprintf(fd, "\n");
     }
     else
       current_double += 1;

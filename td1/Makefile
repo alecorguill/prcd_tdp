@@ -7,8 +7,7 @@ TEST_OBJS = $(TEST:.c=.o)
 SRC = util.c ddot.c
 OBJS = $(SRC:.c=.o)
 HEADER_DIR = header
-HEADER_FILES = $(foreach d, $(HEADER_DIRS), $d/*)
-HEADER_FLAGS = $(foreach d, $(HEADER_DIRS), -I$d)
+EXEC_NAME = exec
 
 vpath %c src test
 vpath %h $(HEADER_DIR)
@@ -16,10 +15,10 @@ vpath %h $(HEADER_DIR)
 all : $(OBJS)
 
 %.o : %.c %.h
-	$(CC) -Iheader $(CFLAGS) -o $@ -c $<
+	$(CC) -I$(HEADER_DIR) $(CFLAGS) -o $@ -c $<
 
-exec : util.o $(TEST_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^
+test : util.o $(TEST_OBJS)
+	$(CC) $(LDFLAGS) -o $(EXEC_NAME) $^
 
 clean :
-	@rm -f *.o
+	@rm -f *.o $(EXEC_NAME)

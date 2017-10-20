@@ -1,4 +1,9 @@
+#include <stdio.h>
+
 #include "driver.h"
+#include "util.h"
+#include "ddot.h"
+#include "assert.h"
 
 /* Tests des fonctions du fichier util.c*/
 
@@ -20,17 +25,14 @@ void test_affiche(){
   affiche(m, n, a, lda, fd);
   printf("ok\n");
  
-  
-  /*
-  double *b   = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0};
-  m = 3; n = 4;
-  int ldb = m+1;
+  double b[]   = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0};
+  m = 2; n = 3;
+  int ldb = 3;
   fd = 1; // stdout
   
   printf("test_affiche 3 ...");
   affiche(m, n, b, ldb, fd);
   printf("ok\n");
-  */
 }
 
 /* void init_matrice(double* a, int m, int n, int lda, double value)*/
@@ -54,9 +56,20 @@ void test_init_matrice(){
   printf("ok\n");
 }
 
+/*double ddot(const int m, const double *dx, const int incx, const double *dy, const int incy) */
+void test_ddot(){
+  printf("test_ddot ...");
+  double b[]   = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0};
+  int m, n; m = 3; n = 4;
+  int lda; lda = m;
+  assert(ddot(3, b, 1, b+3, 3) == 48.0);
+  assert(ddot(2, b+4, 1, b+8, 3) == 117.0);
+  printf("ok\n");  
+}
 
 int main(){
   test_affiche();
   test_init_matrice();
+  test_ddot();
   return 0;
 }

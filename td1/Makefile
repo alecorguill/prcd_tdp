@@ -17,7 +17,7 @@ all : $(OBJS)
 %.o : %.c %.h
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) -o $@ -c $<
 
-test : util.o $(TEST_OBJS)
+test : util.o ddot.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -o $(EXEC_NAME) $^
 
 clean :

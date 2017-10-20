@@ -16,6 +16,6 @@ double ddot(const int m, const double *dx, const int incx,
     resultat += *(dx+incx*i) * *(dy+incy*i);
     i++;
   }
-
+  return resultat;
 
 }

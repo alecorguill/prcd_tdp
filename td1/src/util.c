@@ -40,15 +40,15 @@ double * alloue_vecteur(int m){
   Retour : void
  */
 void init_matrice(double* a, int m, int n, int lda, double value){
-  int cmp = 0;
-  int current_double = 0;
-  while(cmp < n*m){
-    a[current_double] = value;
-    cmp++;
-    if(cmp % n == 0)
-      current_double += lda;
-    else
-      current_double += 1;
+  int i = 0;
+  int j = 0;
+  while(i < m){
+    while(j < n){
+      a[j*lda+i] = value;
+      ++j;
+    }
+    j=0;
+    ++i;
   }
 }
 
@@ -64,16 +64,15 @@ void init_matrice(double* a, int m, int n, int lda, double value){
   Retour : void
  */
 void affiche(int m, int n, double* a, int lda, int fd){
-  int cmp = 0;
-  int current_double = 0;
-  while(cmp < n*m){
-    dprintf(fd, "%f ", a[current_double]);
-    cmp++;
-    if(cmp % n == 0){
-      current_double += lda;
-      dprintf(fd, "\n");
+  int i = 0;
+  int j = 0;
+  while(i < m){
+    while(j < n){
+      dprintf(fd, "%f ", a[j*lda+i]);
+      ++j;
     }
-    else
-      current_double += 1;
+    j=0;
+    ++i;
+    dprintf(fd, "\n");
   }
 }

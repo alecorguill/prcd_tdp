@@ -15,14 +15,14 @@ void test_affiche(){
   affiche(m, n, a, lda, fd);
   printf("ok\n");
  
-  m = 1; n = 4;
+  m = 1; n = 4, lda=m;
   printf("test_affiche 2 ...");
   affiche(m, n, a, lda, fd);
   printf("ok\n");
  
   
-  //
-  double *b   = {1,2,3,4,5,6,7,8,9,10,12};
+  /*
+  double *b   = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0};
   m = 3; n = 4;
   int ldb = m+1;
   fd = 1; // stdout
@@ -30,7 +30,7 @@ void test_affiche(){
   printf("test_affiche 3 ...");
   affiche(m, n, b, ldb, fd);
   printf("ok\n");
- 
+  */
 }
 
 /* void init_matrice(double* a, int m, int n, int lda, double value)*/
@@ -41,18 +41,15 @@ void test_init_matrice(){
   double *a = alloue_matrice(m, n);
   init_matrice(a,m,n,lda,value);
   printf("test_init_matrice ...");
-  int cmp = 0;
-  int current_double = 0;
-
-  while(cmp < n*m){
-    cmp++;
-    if(cmp % n == 0){
-      current_double += lda;
+  int i = 0;
+  int j = 0;
+  while(i < m){
+    while(j < n){
+      assert(a[j*lda+i] == value);
+      ++j;
     }
-    else
-      current_double += 1;
-    assert(a[current_double] == value);
-
+    j=0;
+    ++i;
   }
   printf("ok\n");
 }

@@ -3,12 +3,12 @@
 #include <stdio.h>
 #include "ddot.h"
 
-void 
+void
 perf(perf_t * p) {
-  gettimeofday(p, NULL);  
+  gettimeofday(p, NULL);
 }
 
-void 
+void
 perf_diff(const perf_t * begin, perf_t * end) {
   end->tv_sec = end->tv_sec - begin->tv_sec;
   end->tv_usec = end->tv_usec - begin->tv_usec;
@@ -45,13 +45,14 @@ int main() {
   perf_t start;
   perf_t stop;
   double mflops;
+  int m,n,flop; m=100, n=2;
   int lda, MAX; lda = m;MAX=1000000;
-  double b[MAX*2];
-  for(int i=0; i<
-  int m,n,flop;m=50, n=2;
+  double *b = malloc(sizeof(double) * MAX*2);
   FILE * fp;
-  fp = fopen ("flop.csv", "w+");  
+  fp = fopen ("test/flop.csv", "w+");
+  fprintf(fp,"size,flop\n");
   while(m <= MAX){
+    flop = 2*m-1;
     perf(&start);
     ddot(m, b, 1, b+m, 1);
     perf(&stop);
@@ -59,8 +60,10 @@ int main() {
     perf_printh(&stop);
     perf_printmicro(&stop);
     mflops = perf_mflops(&stop, flop);
-    fprintf(fp, "%d %.4f\n", m, mflops);
-    m *= 2;
+    fprintf(fp, "%d, %.4f\n", m, mflops);
+    m += m/4;
   }
   fclose(fp);
+  free(b);
+  return 0;
 }

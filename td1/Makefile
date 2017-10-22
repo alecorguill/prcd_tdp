@@ -2,12 +2,12 @@ CC = gcc
 CFLAGS = -W -Wall -g -O2
 LDFLAGS =
 
-TEST = driver.c
+TEST = perf.c driver.c
 TEST_OBJS = $(TEST:.c=.o)
 SRC = util.c ddot.c
 OBJS = $(SRC:.c=.o)
 HEADER_DIR = header
-EXEC_NAME = exec
+EXEC_NAMES = perf driver
 
 vpath %c src test
 vpath %h $(HEADER_DIR)
@@ -17,8 +17,10 @@ all : $(OBJS)
 %.o : %.c %.h
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) -o $@ -c $<
 
-test : util.o ddot.o $(TEST_OBJS)
-	$(CC) $(LDFLAGS) -o $(EXEC_NAME) $^
+test : $(OBJS) $(TEST_OBJS) $(EXEC_NAMES)
 
-clean :
-	@rm -f *.o $(EXEC_NAME)
+%: %.o 
+	$(CC) -I$(HEADER_DIR) $(CFLAGS) $(OBJS) $^ -o test_$@	
+
+clean:
+	@rm -f *.o test_*

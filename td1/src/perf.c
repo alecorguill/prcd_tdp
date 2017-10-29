@@ -1,7 +1,6 @@
 #include "perf.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "ddot.h"
 
 void
 perf(perf_t * p) {
@@ -41,29 +40,3 @@ perf_mflops(const perf_t * p, const long nb_op) {
 }
 
 
-int main() {
-  perf_t start;
-  perf_t stop;
-  double mflops;
-  int m,n,flop; m=100, n=2;
-  int lda, MAX; lda = m;MAX=1000000;
-  double *b = malloc(sizeof(double) * MAX*2);
-  FILE * fp;
-  fp = fopen ("test/flop.csv", "w+");
-  fprintf(fp,"size,flop\n");
-  while(m <= MAX){
-    flop = 2*m-1;
-    perf(&start);
-    ddot(m, b, 1, b+m, 1);
-    perf(&stop);
-    perf_diff(&start,&stop);
-    perf_printh(&stop);
-    perf_printmicro(&stop);
-    mflops = perf_mflops(&stop, flop);
-    fprintf(fp, "%d, %.4f\n", m, mflops);
-    m += m/4;
-  }
-  fclose(fp);
-  free(b);
-  return 0;
-}

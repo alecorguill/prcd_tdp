@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "driver.h"
 #include "util.h"
 #include "ddot.h"
 #include "assert.h"
+#include "dgemm.h"
+
 
 /* Tests des fonctions du fichier util.c*/
 
@@ -15,7 +16,7 @@ void test_affiche(){
   double a[] = {1,2,3,4};
   int m, n; m = 2; n = 2;
   int lda; lda = m;
-  int fd = 1; // stdout
+  int fd =  1; // stdout
   
   printf("test_affiche 1 ...");
   affiche(m, n, a, lda, fd);
@@ -29,7 +30,6 @@ void test_affiche(){
   double b[]   = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0};
   m = 2; n = 3;
   int ldb = 3;
-  fd = 1; // stdout
   
   printf("test_affiche 3 ...");
   affiche(m, n, b, ldb, fd);
@@ -62,16 +62,44 @@ void test_init_matrice(){
 void test_ddot(){
   printf("test_ddot ...");
   double b[]   = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0};
-  int m, n; m = 3; n = 4;
-  int lda; lda = m;
   assert(ddot(3, b, 1, b+3, 3) == 48.0);
   assert(ddot(2, b+4, 1, b+8, 3) == 117.0);
   printf("ok\n");  
 }
 
+
+/* void cblas_dgemm_scalaire(const int m, const double *A,const int lda, 
+			  const double *B, const int ldb,
+			  double *C, const int ldc){
+*/
+void test_dgemm_scalaire(){
+  printf("test_dgemm ...");
+  double b[]   = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0};
+  double c[]   = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+  printf("\ntest_ijk ...\n");
+  fflush(stdout);
+ 
+  cblas_dgemm_scalaire(3,b,3,b,3,c,3);
+  affiche(3,3,c,3,1);
+  printf("test_kij ...\n");
+  fflush(stdout);
+  
+  cblas_dgemm_scalaire_kij(3,b,3,b,3,c,3);
+  affiche(3,3,c,3,1);
+  
+  printf("test_jik ...\n");
+  fflush(stdout);
+  cblas_dgemm_scalaire_jik(3,b,3,b,3,c,3);
+  affiche(3,3,c,3,1);
+   
+  printf("ok\n");  
+}
+
+
 int main(){
   test_affiche();
   test_init_matrice();
   test_ddot();
+  test_dgemm_scalaire();
   return 0;
 }

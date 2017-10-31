@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 #include "driver.h"
 #include "util.h"
 #include "perf.h"
-#include "ddot.h"
 #include "assert.h"
-#include "dgemm.h"
+#include "cblas.h"
+#include "blas.h"
 
 int main() {
   perf_t start;
@@ -14,13 +16,14 @@ int main() {
   int m,flop; m=100;
   int MAX;MAX=1000000;
   double *b = malloc(sizeof(double) * MAX*2);
+  memset(b, 1.5, MAX*2);
   FILE * fp;
   fp = fopen ("test/flop_vecteur.csv", "w+");
   fprintf(fp,"size,flop\n");
   while(m <= MAX){
     flop = 2*m-1;
     perf(&start);
-    ddot(m, b, 1, b+m, 1);
+    cblas_ddot(m, b, 1, b+m, 1);
     perf(&stop);
     perf_diff(&start,&stop);
     perf_printh(&stop);

@@ -3,7 +3,8 @@
 #include "perf.h"
 #include "util.h"
 #include "assert.h"
-#include "dgemm.h"
+#include "cblas.h"
+#include "blas.h"
 
 
 int main(){

@@ -1,15 +1,20 @@
 CC = gcc
-CFLAGS = -std=c99 -W -Wall -g -O2
+CFLAGS = -std=c99 -O2 -Wno-unused-parameter
 LDFLAGS =
-
+DEBUG_FLAGS = -W -Wall -g
 TEST = driver.c perf_vecteur.c perf_matrice.c
-SRC = util.c ddot.c dgemm.c perf.c
+SRC = util.c cblas.c blas.c perf.c
 OBJS = $(SRC:.c=.o)
 
 HEADER_DIR = header
 
 vpath %.c src test
 vpath %.h $(HEADER_DIR)
+
+debug : CFLAGS += $(DEBUG_FLAGS)
+debug : clean
+debug : $(OBJS)
+
 
 all : $(OBJS)
 

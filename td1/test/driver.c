@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "cblas.h"
+#include "blas.h"
 #include "driver.h"
 #include "util.h"
-#include "ddot.h"
 #include "assert.h"
-#include "dgemm.h"
+
 
 
 /* Tests des fonctions du fichier util.c*/
@@ -62,8 +64,8 @@ void test_init_matrice(){
 void test_ddot(){
   printf("test_ddot ...");
   double b[]   = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0};
-  assert(ddot(3, b, 1, b+3, 3) == 48.0);
-  assert(ddot(2, b+4, 1, b+8, 3) == 117.0);
+  assert(cblas_ddot(3, b, 1, b+3, 3) == 48.0);
+  assert(cblas_ddot(2, b+4, 1, b+8, 3) == 117.0);
   printf("ok\n");  
 }
 

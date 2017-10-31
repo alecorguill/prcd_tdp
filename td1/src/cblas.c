@@ -1,6 +1,8 @@
 #include "cblas.h"
-#include "blas.h"
 #include "util.h"
+
+
+
 
 /* y := alpha*x + y */
 void cblas_daxpy(const int N, const double alpha, const double *X,
@@ -71,16 +73,3 @@ double cblas_ddot(const int m, const double *dx, const int incx,
 
 }
 
-
-
-
-/* Produit matriciel par bloc 
-void cblas_dgemm(const int m, const double *A,const int lda,
-		 const double *B, const int ldb,
-		 const double *C, const int ldc){
-  
-  init_matrice(C,m,m,ldc,0.0);
-  int m1,m2;
-  
-}
-*/

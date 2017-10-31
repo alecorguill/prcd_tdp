@@ -1,12 +1,12 @@
 import matplotlib.pyplot as plt
 sizes, flops = [], []
-with open('flop.csv') as fp:
+with open('flop_matrice.csv') as fp:
     for line in fp:
         tmp = line.split(',')
         if tmp[0] == 'size':
             continue
         sizes += [int(tmp[0])]
-        flops += [float(tmp[1])]
+        flops += [float(tmp[2])]
 
 # Plotting 
 fig, ax = plt.subplots()

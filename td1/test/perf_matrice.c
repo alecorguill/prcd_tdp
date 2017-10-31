@@ -15,6 +15,8 @@ int main(){
   int m, MAX; m = 100; MAX = 1000;
   double *b = alloue_matrice(MAX, MAX);
   double *c = alloue_matrice(MAX, MAX);
+  init_matrice(b, MAX, MAX, MAX, 0);
+  init_matrice(c, MAX, MAX, MAX, 0);
   int flop;
   double performance_ijk, performance_kij,performance_jik;  
   while (m < MAX){

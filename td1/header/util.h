@@ -7,5 +7,7 @@ double * alloue_vecteur(int m);
 void init_matrice(double* a, int m, int n, int lda, double value);
 void somme_matrice(const int m, const int n,const double *A,const int lda, 
 		   const double *B, const int ldb, double *C, const int ldc);
+int equal_matrice(const int m, const int n, const double *A,const int lda, 
+		   const double *B, const int ldb);
 
 #endif

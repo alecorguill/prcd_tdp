@@ -20,12 +20,12 @@ void test_affiche(){
   int lda; lda = m;
   int fd =  1; // stdout
   
-  printf("test_affiche 1 ...");
+  printf("test_affiche 1 ...\n");
   affiche(m, n, a, lda, fd);
   printf("ok\n");
  
   m = 1; n = 4, lda=m;
-  printf("test_affiche 2 ...");
+  printf("test_affiche 2 ...\n");
   affiche(m, n, a, lda, fd);
   printf("ok\n");
  
@@ -33,7 +33,7 @@ void test_affiche(){
   m = 2; n = 3;
   int ldb = 3;
   
-  printf("test_affiche 3 ...");
+  printf("test_affiche 3 ...\n");
   affiche(m, n, b, ldb, fd);
   printf("ok\n");
 }
@@ -70,56 +70,75 @@ void test_ddot(){
 }
 
 
+void test_equal_matrice(){
+  printf("test_equal_matrice ...");
+  double a[]   = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0};
+  double b[]   = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0};
+  double c[]   = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.1,9.0,10.0,11.0,12.0};
+  assert(equal_matrice(3, 4, a, 3, b, 3));
+  assert(equal_matrice(3, 4, a, 3, c, 3) == 0);
+  printf("ok\n");  
+}
+
+
 /* void cblas_dgemm_scalaire(const int m, const double *A,const int lda, 
 			  const double *B, const int ldb,
 			  double *C, const int ldc){
 */
 void test_dgemm_scalaire(){
   printf("test_dgemm ...\n");
-  double b[]   = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0};
-  double c[]   = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-  printf("\ntest_ijk ...\n");
+  double a[]   = {7.0,4.0,3.0,4.0};
+  double b[]   = {1.0,2.0,3.0,4.0};
+  double c[]   = {0.0,0.0,0.0,0.0};
+  double res[] = {15.0,11.0,37.0,25};
+  printf("\ntest_ijk ...");
   fflush(stdout);
  
-  cblas_dgemm_scalaire(3,b,3,b,3,c,3);
-  affiche(3,3,c,3,1);
-  printf("test_kij ...\n");
+  cblas_dgemm_scalaire(2,a,2,b,2,c,2);
+  assert(equal_matrice(2,2,c,2,res,2));
+  printf("ok\n");
+
+  printf("test_kij ...");
   fflush(stdout);
+  cblas_dgemm_scalaire_kij(2,a,2,b,2,c,2);
+  assert(equal_matrice(2,2,c,2,res,2));
+  printf("ok\n");
   
-  cblas_dgemm_scalaire_kij(3,b,3,b,3,c,3);
-  affiche(3,3,c,3,1);
-  
-  printf("test_jik ...\n");
+  printf("test_jik ...");
   fflush(stdout);
-  cblas_dgemm_scalaire_jik(3,b,3,b,3,c,3);
-  affiche(3,3,c,3,1);
-   
-  printf("ok\n");  
+  cblas_dgemm_scalaire_jik(2,a,2,b,2,c,2);
+  assert(equal_matrice(2,2,c,2,res,2));
+  printf("ok\n");
+
 }
 
 void test_daxpy(){
-  printf("test_daxpy ...\n");
-  int N = 12; 
-  int alpha = 1;
-  double b[]   = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0};
-  cblas_daxpy(N,alpha,b,0,b,0);
-  affiche(N,1,b,N,1);
+  printf("test_daxpy ...");
+  int N = 5; 
+  int alpha = 2;
+  double x[]   = {1.0,2.0,3.0,4.0,5.0};
+  double y[]   = {0.0,1.2,0.0,3.4,2.0};
+  double res[] = {2.0,5.2,6.0,11.4,12.0};
+  cblas_daxpy(N,alpha,x,0,y,0);
+  assert(equal_matrice(2,1,y,1,res,1));
   printf("ok\n");  
 }
 
 void test_dgemv(){
   // matrice et vecteurs remplis de 1, y -> vecteur rempli de 11
-  printf("test_dgemv ...\n");
+  printf("test_dgemv ...");
   int n = 10;
   double *A = alloue_matrice(n, n);
   double *x = alloue_matrice(n, 1);
   double *y = alloue_matrice(n, 1);
+  double *res = alloue_matrice(n, 1);
   init_matrice(A,n,n,n,1);
   init_matrice(y,n,1,n,1);
   init_matrice(x,n,1,n,1);
+  init_matrice(res,n,1,n,11.0);
   cblas_dgemv(0,0,n,n,1,A,n,x,0,1,y,0);
-  affiche(n,1,y,n,1);
-  free(A); free(x); free(y);
+  assert(equal_matrice(n,1,y,1,res,1));
+  free(A); free(x); free(y); free(res);
   printf("ok\n");
 }
 
@@ -158,6 +177,7 @@ int main(){
   srand(time(NULL)); // random generation
   test_affiche();
   test_init_matrice();
+  test_equal_matrice();
   test_ddot();
   test_dgemm_scalaire();
   test_daxpy();

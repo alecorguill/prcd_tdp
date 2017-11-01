@@ -102,3 +102,16 @@ void somme_matrice(const int m, const int n,const double *A,const int lda,
     }
   } 
 }
+
+int equal_matrice(const int m, const int n, const double *A,const int lda, 
+		   const double *B, const int ldb){
+  
+  for (int i = 0; i < m; i++){
+    for (int j = 0; j < n; j++){
+      if(*(A+j*lda+i) !=  *(B+j*ldb+i))
+	return 0;
+    }
+  }
+  return 1;
+}
+

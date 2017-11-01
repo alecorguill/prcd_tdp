@@ -19,8 +19,10 @@ def plot_csv(filename, save=False):
         
         ax.plot(sizes, flops)
         ax.set(xlabel='Size of the matrix (N)', ylabel='Flop per second (flops)',
-               title= name + feature)
+               title= name + ' ' + feature)
         if save:
             fig.savefig(name + '_' + ''.join(feature.split()));
 
-plot_csv('flop_matrice.csv', True)
+plot_csv('flop_vecteur.csv')
+plot_csv('flop_vecteur_a.csv')
+plt.show()

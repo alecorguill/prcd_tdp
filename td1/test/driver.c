@@ -160,16 +160,16 @@ void test_dger(){
 }
 
 
-void test_init_aleatoire(){
-  printf("test_aleatoire ...\n");
-  int n = 10;
-  double *A = alloue_matrice(n, n);
-  init_matrice_aleatoire(A,n,n,n);
-  affiche(n,n,A,n,1);
-  free(A);
-  printf("ok\n");
+/* void test_init_aleatoire(){ */
+/*   printf("test_aleatoire ...\n"); */
+/*   int n = 10; */
+/*   double *A = alloue_matrice(n, n); */
+/*   init_matrice_aleatoire(A,n,n,n); */
+/*   affiche(n,n,A,n,1); */
+/*   free(A); */
+/*   printf("ok\n"); */
   
-}
+/* } */
 
 
 int main(){

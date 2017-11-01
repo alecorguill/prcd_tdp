@@ -16,8 +16,11 @@ int main() {
   int m,flop; m=100;
   int MAX;MAX=1000000;
   double *b = malloc(sizeof(double) * MAX*2);
-  memset(b, 1.5, MAX*2);
+  //memset(b, 1.5, MAX*2);
+  init_matrice(b,MAX,1,MAX,0);
+  /* init_matrice_aleatoire(b,MAX,1,MAX); */
   FILE * fp;
+  /* fp = fopen ("test/flop_vecteur_a.csv", "w+"); */
   fp = fopen ("test/flop_vecteur.csv", "w+");
   fprintf(fp,"size,flop\n");
   while(m <= MAX){

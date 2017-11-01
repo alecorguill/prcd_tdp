@@ -10,4 +10,6 @@ void somme_matrice(const int m, const int n,const double *A,const int lda,
 int equal_matrice(const int m, const int n, const double *A,const int lda, 
 		   const double *B, const int ldb);
 
+void init_matrice_aleatoire(double* a, int m, int n, int lda);
+
 #endif

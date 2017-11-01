@@ -10,6 +10,10 @@ void dgemm(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA,
                  const double beta, double *C, const int ldc);
 
 
+void cblas_dgemm_scalaire_gen(const int m, const int n, const int K, 
+			      const double *A,const int lda, const double *B,
+			      const int ldb, double *C, const int ldc);
+
 void cblas_dgemm_scalaire(const int m, const double *A,const int lda, 
 			  const double *B, const int ldb,
 			  double *C, const int ldc);

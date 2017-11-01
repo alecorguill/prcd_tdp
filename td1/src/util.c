@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <time.h>
 #include "util.h"
 
 
@@ -45,6 +45,20 @@ void init_matrice(double* a, int m, int n, int lda, double value){
   while(i < m){
     while(j < n){
       a[j*lda+i] = value;
+      ++j;
+    }
+    j=0;
+    ++i;
+  }
+}
+/* Generation aleatoire*/ 
+
+void init_matrice_aleatoire(double* a, int m, int n, int lda){
+  int i = 0;
+  int j = 0;
+  while(i < m){
+    while(j < n){
+      a[j*lda+i] = (double) rand();
       ++j;
     }
     j=0;

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <time.h>
 #include "cblas.h"
 #include "blas.h"
 #include "driver.h"
@@ -75,7 +75,7 @@ void test_ddot(){
 			  double *C, const int ldc){
 */
 void test_dgemm_scalaire(){
-  printf("test_dgemm ...");
+  printf("test_dgemm ...\n");
   double b[]   = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0};
   double c[]   = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
   printf("\ntest_ijk ...\n");
@@ -97,11 +97,71 @@ void test_dgemm_scalaire(){
   printf("ok\n");  
 }
 
+void test_daxpy(){
+  printf("test_daxpy ...\n");
+  int N = 12; 
+  int alpha = 1;
+  double b[]   = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0};
+  cblas_daxpy(N,alpha,b,0,b,0);
+  affiche(N,1,b,N,1);
+  printf("ok\n");  
+}
+
+void test_dgemv(){
+  // matrice et vecteurs remplis de 1, y -> vecteur rempli de 11
+  printf("test_dgemv ...\n");
+  int n = 10;
+  double *A = alloue_matrice(n, n);
+  double *x = alloue_matrice(n, 1);
+  double *y = alloue_matrice(n, 1);
+  init_matrice(A,n,n,n,1);
+  init_matrice(y,n,1,n,1);
+  init_matrice(x,n,1,n,1);
+  cblas_dgemv(0,0,n,n,1,A,n,x,0,1,y,0);
+  affiche(n,1,y,n,1);
+  free(A); free(x); free(y);
+  printf("ok\n");
+}
+
+
+void test_dger(){
+  // matrice et vecteurs remplis de 1, y -> vecteur rempli de 11
+  printf("test_dger ...\n");
+  int n = 10;
+  double *A = alloue_matrice(n, n);
+  double *x = alloue_matrice(n, 1);
+  double *y = alloue_matrice(n, 1);
+  init_matrice(A,n,n,n,0);
+  init_matrice(y,1,n,n,1);
+  init_matrice(x,n,1,n,1);
+  cblas_dger(0,n,n,1,x,0,y,0,A,n);
+  affiche(n,n,A,n,1);
+  free(A); free(x); free(y);
+  printf("ok\n");
+}
+
+
+void test_init_aleatoire(){
+  printf("test_aleatoire ...\n");
+  int n = 10;
+  double *A = alloue_matrice(n, n);
+  init_matrice_aleatoire(A,n,n,n);
+  affiche(n,n,A,n,1);
+  free(A);
+  printf("ok\n");
+  
+}
+
 
 int main(){
+  setbuf(stdout, NULL); // disable buffering
+  srand(time(NULL)); // random generation
   test_affiche();
   test_init_matrice();
   test_ddot();
   test_dgemm_scalaire();
+  test_daxpy();
+  test_dgemv();
+  test_dger();
   return 0;
 }

@@ -86,7 +86,7 @@ void test_equal_matrice(){
 			  double *C, const int ldc){
 */
 void test_dgemm_scalaire(){
-  printf("test_dgemm ...\n");
+  printf("test_dgemm ...");
   double a[]   = {7.0,4.0,3.0,4.0};
   double b[]   = {1.0,2.0,3.0,4.0};
   double c[]   = {0.0,0.0,0.0,0.0};
@@ -108,6 +108,7 @@ void test_dgemm_scalaire(){
   fflush(stdout);
   cblas_dgemm_scalaire_jik(2,a,2,b,2,c,2);
   assert(equal_matrice(2,2,c,2,res,2));
+  printf("ok\n");
   printf("ok\n");
 
 }
@@ -145,16 +146,18 @@ void test_dgemv(){
 
 void test_dger(){
   // matrice et vecteurs remplis de 1, y -> vecteur rempli de 11
-  printf("test_dger ...\n");
+  printf("test_dger ...");
   int n = 10;
   double *A = alloue_matrice(n, n);
   double *x = alloue_matrice(n, 1);
   double *y = alloue_matrice(n, 1);
+  double *res = alloue_matrice(n, n);
   init_matrice(A,n,n,n,0);
-  init_matrice(y,1,n,n,1);
+  init_matrice(y,n,1,n,1);
   init_matrice(x,n,1,n,1);
+  init_matrice(res,n,n,n,1.0);
   cblas_dger(0,n,n,1,x,0,y,0,A,n);
-  affiche(n,n,A,n,1);
+  assert(equal_matrice(n,n,A,n,res,n));
   free(A); free(x); free(y);
   printf("ok\n");
 }

@@ -46,7 +46,7 @@ void cblas_dger(const enum CBLAS_ORDER order, const int M, const int N, const do
 	  const int incX,const double *Y, const int incY, double *A, const int lda){
   for (int i = 0; i < M; i++){
     for (int j = 0; j < N; j++){
-      *(A+lda*i+j) = *(A+lda*i+j) + alpha * *(X+incX*i) * *(Y+incY+j);
+      *(A+lda*i+j) = *(A+lda*i+j) + alpha * *(X+incX+i) * *(Y+incY+j);
     }
   }
 

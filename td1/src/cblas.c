@@ -23,7 +23,7 @@ void cblas_dgemv(const enum CBLAS_ORDER order, const enum CBLAS_TRANSPOSE TransA
 
   int i = 0;
   while (i < N){
-    *(Y+incY+i) = alpha * cblas_ddot(M,A,lda,X,incX) + beta * *(Y+incY+i);
+    *(Y+incY+i) = alpha * cblas_ddot(M,A+i*lda,1,X,incX) + beta * *(Y+incY+i);
     i++;
   }
   

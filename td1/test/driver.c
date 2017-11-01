@@ -162,7 +162,36 @@ void test_dger(){
   printf("ok\n");
 }
 
+void test_dgemm(){
+  // matrice et vecteurs remplis de 1, y -> vecteur rempli de 11
+  printf("test_dgemm ...\n");
+  int n = 10;
+  double *A = alloue_matrice(n, n);
+  double *B = alloue_matrice(n, n);
+  double *C = alloue_matrice(n, n);
+  init_matrice(A,n,n,n,1);
+  init_matrice(B,n,n,n,1);
+  dgemm(0,CblasTrans,CblasNoTrans,n,n,n,1,A,n,B,n,1,C,n);
+  affiche(n,n,C,n,1);
+  free(A); free(B); free(C);
+  printf("ok\n");
+}
 
+void test_somme_matrice(){
+  // matrice et vecteurs remplis de 1, y -> vecteur rempli de 11
+  printf("test_somme_matrice ...\n");
+  int n = 10;
+  double *A = alloue_matrice(n, n);
+  double *B = alloue_matrice(n, n);
+  double *C = alloue_matrice(n, n);
+  init_matrice(A,n,n,n,1);
+  init_matrice(B,n,n,n,1);
+  init_matrice(C,n,n,n,0);
+  somme_matrice(n,n,A,n,B,n,C,n);
+  affiche(n,n,C,n,1);
+  free(A); free(B); free(C);
+  printf("ok\n");
+}
 /* void test_init_aleatoire(){ */
 /*   printf("test_aleatoire ...\n"); */
 /*   int n = 10; */
@@ -186,5 +215,7 @@ int main(){
   test_daxpy();
   test_dgemv();
   test_dger();
+  //test_somme_matrice();
+  test_dgemm();
   return 0;
 }

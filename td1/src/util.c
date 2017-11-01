@@ -95,10 +95,9 @@ void affiche(int m, int n, double* a, int lda, int fd){
 void somme_matrice(const int m, const int n,const double *A,const int lda, 
 		   const double *B, const int ldb, double *C, const int ldc)
 {
-  init_matrice(C,m,m,ldc,0.0);
   for (int i = 0; i < m; i++){
     for (int j = 0; j < n; j++){
-	C[j*ldc +i] += *(A+i*lda+j) * *(B+j*ldb+i);
+      *(C+j*ldc +i) = *(A+j*lda+i) + *(B+j*ldb+i);
     }
   } 
 }

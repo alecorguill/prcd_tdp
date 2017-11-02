@@ -25,7 +25,7 @@ int main() {
   while(m <= MAX){
     flop = 2*m-1;
     perf(&start);
-    ddot(m, b, 1, b+m, 1);
+    cblas_ddot(m, b, 1, b+m, 1);
     perf(&stop);
     perf_diff(&start,&stop);
     perf_printh(&stop);

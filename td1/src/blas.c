@@ -38,7 +38,6 @@ void dgemm_parallel(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Tra
   }
 }
   
-}
 
 /* void dgemm_parallel_quelconque(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA,
 	   const enum CBLAS_TRANSPOSE TransB, const int M, const int N, 

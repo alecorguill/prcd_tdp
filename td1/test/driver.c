@@ -8,7 +8,6 @@
 #include "assert.h"
 
 
-
 /* Tests des fonctions du fichier util.c*/
 
 /* void affiche(int m, int n, double* a, int lda, int fd); */
@@ -172,7 +171,7 @@ void test_dgemm(){
   init_matrice(A,n,n,n,1);
   init_matrice(B,n,n,n,1);
   dgemm(0,CblasTrans,CblasNoTrans,n,n,n,1,A,n,B,n,1,C,n);
-  affiche(n,n,C,n,1);
+  //affiche(n,n,C,n,1);
   free(A); free(B); free(C);
   printf("ok\n");
 }
@@ -192,6 +191,22 @@ void test_somme_matrice(){
   free(A); free(B); free(C);
   printf("ok\n");
 }
+
+void test_dgemm_parallel(){
+  printf("test_dgemm_parallel ...\n");
+  int n = 21;
+  double *A = alloue_matrice(n, n);
+  double *B = alloue_matrice(n, n);
+  double *C = alloue_matrice(n, n);
+  init_matrice(A,n,n,n,1);
+  init_matrice(B,n,n,n,1);
+  init_matrice(C,n,n,n,0);
+  dgemm_parallel(0,CblasTrans,CblasNoTrans,n,n,n,1,A,n,B,n,1,C,n);
+  affiche(n,n,C,n,1);
+  free(A); free(B); free(C);
+  printf("ok\n");
+}
+
 /* void test_init_aleatoire(){ */
 /*   printf("test_aleatoire ...\n"); */
 /*   int n = 10; */
@@ -207,15 +222,16 @@ void test_somme_matrice(){
 int main(){
   setbuf(stdout, NULL); // disable buffering
   srand(time(NULL)); // random generation
-  test_affiche();
-  test_init_matrice();
-  test_equal_matrice();
-  test_ddot();
-  test_dgemm_scalaire();
-  test_daxpy();
-  test_dgemv();
-  test_dger();
+  //test_affiche();
+  //test_init_matrice();
+  //test_equal_matrice();
+  //test_ddot();
+  //test_dgemm_scalaire();
+  //test_daxpy();
+  //test_dgemv();
+  //test_dger();
   //test_somme_matrice();
   test_dgemm();
+  test_dgemm_parallel();
   return 0;
 }

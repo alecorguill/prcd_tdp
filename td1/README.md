@@ -5,7 +5,7 @@ Pour compiler les source en objects :
 
 Pour compiler les tests :
      make test
-Ceci va produire des éxecutable qui correspondent à chaque test :
+Ceci va produire des éxecutables qui correspondent à chaque test :
      
      test_driver : Ensemble de tests unitaires pour toutes les fonctions
      test_perf_vecteur : Test du produit scalaire entre deux vecteurs. L'execution

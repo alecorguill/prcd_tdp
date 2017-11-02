@@ -23,8 +23,8 @@ def plot_csv(filename, save=False):
                title= name + ' ' + feature)
         axes = plt.gca()
         axes.set_xlim([3000,sizes[-1]])
-        if save:
-            fig.savefig(name + '_' + ''.join(feature.split()));
+    if save:
+        fig.savefig(name + '_' + ''.join(feature.split()));
 
 if __name__ == '__main__':
     args = sys.argv

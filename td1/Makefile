@@ -33,4 +33,4 @@ test_perf_matrice : perf_matrice.o $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
 
 clean:
-	@rm -f *.o test_*
+	@rm -f *.o test_* test/*.csv

@@ -1,3 +1,4 @@
+import os, sys
 import csv
 import matplotlib.pyplot as plt
 
@@ -20,9 +21,13 @@ def plot_csv(filename, save=False):
         ax.plot(sizes, flops)
         ax.set(xlabel='Size of the matrix (N)', ylabel='Flop per second (flops)',
                title= name + ' ' + feature)
+        axes = plt.gca()
+        axes.set_xlim([3000,sizes[-1]])
         if save:
             fig.savefig(name + '_' + ''.join(feature.split()));
 
-plot_csv('flop_vecteur.csv')
-plot_csv('flop_vecteur_a.csv')
-plt.show()
+if __name__ == '__main__':
+    args = sys.argv
+    for i in range(1, len(args)):
+        plot_csv(args[i])
+    plt.show()

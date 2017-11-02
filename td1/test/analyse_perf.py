@@ -29,5 +29,5 @@ def plot_csv(filename, save=False):
 if __name__ == '__main__':
     args = sys.argv
     for i in range(1, len(args)):
-        plot_csv(args[i])
-    plt.show()
+        plot_csv(args[i], save=True)
+    #plt.show()

@@ -6,8 +6,7 @@
 #include "util.h"
 #include "perf.h"
 #include "assert.h"
-#include "cblas.h"
-#include "blas.h"
+#include "mkl.h"
 
 int main() {
   perf_t start;
@@ -26,7 +25,7 @@ int main() {
   while(m <= MAX){
     flop = 2*m-1;
     perf(&start);
-    cblas_ddot(m, b, 1, b+m, 1);
+    ddot(m, b, 1, b+m, 1);
     perf(&stop);
     perf_diff(&start,&stop);
     perf_printh(&stop);

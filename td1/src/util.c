@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <time.h>
 #include "util.h"
 
 
@@ -51,6 +51,20 @@ void init_matrice(double* a, int m, int n, int lda, double value){
     ++i;
   }
 }
+/* Generation aleatoire*/ 
+
+void init_matrice_aleatoire(double* a, int m, int n, int lda){
+  int i = 0;
+  int j = 0;
+  while(i < m){
+    while(j < n){
+      a[j*lda+i] = (double) rand();
+      ++j;
+    }
+    j=0;
+    ++i;
+  }
+}
 
 /*
   Affiche une matrice.
@@ -76,3 +90,27 @@ void affiche(int m, int n, double* a, int lda, int fd){
     dprintf(fd, "\n");
   }
 }
+
+
+void somme_matrice(const int m, const int n,const double *A,const int lda, 
+		   const double *B, const int ldb, double *C, const int ldc)
+{
+  for (int i = 0; i < m; i++){
+    for (int j = 0; j < n; j++){
+      *(C+j*ldc +i) = *(A+j*lda+i) + *(B+j*ldb+i);
+    }
+  } 
+}
+
+int equal_matrice(const int m, const int n, const double *A,const int lda, 
+		   const double *B, const int ldb){
+  
+  for (int i = 0; i < m; i++){
+    for (int j = 0; j < n; j++){
+      if(*(A+j*lda+i) !=  *(B+j*ldb+i))
+	return 0;
+    }
+  }
+  return 1;
+}
+

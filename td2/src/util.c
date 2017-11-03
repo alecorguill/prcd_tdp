@@ -25,30 +25,34 @@ void parse_particules(char *filename, particule *ps){
   char ligne[TAILLE_LIGNE];
   f=fopen(filename, "r");
   fclose(f);
-  int nb_ligne=0;
-  fgets(ligne, TAILLE_LIGNE, fichier);
-  int nb_particule = ligne
   while ( fgets(ligne, TAILLE_LIGNE, fichier) != NULL ){
-    nb_ligne
+    ps->m = next_int(f);
+    ps->p.x = next_int(f);
+    ps->p.y = next_int(f);
+    ps->v.x = next_int(f);
+    ps->v.y = next_int(f);
+    ++ps;
   }
-    printf("%s", ligne ) ;
 }
 
-double solution_equ(particule p){
+/* 
+ * renvoie le prochain entier sur une ligne ou des entiers sont séparés
+ * par des espaces.
+ */
+int next_int(FILE * f){
+  int res = fgetc(f);
+  fgetc(f);
+  return res;
+}
+
+int double solution_equ(particule p){
   double a = norme(p.a) / 2;
   double b = norme(p.v) / 2;
   double c = 0.1 * p.proche_d;
-  double eps = 0.001;
   double delta = b*b - 4*a*c;
   double x;
-  
-  if (abs(delta) < eps){
-    x = -b / 2 * (a);
-    return x;
-  }   
-  else {
-    x = (-b + sqrt(abs(delta))) / 2 * a;
-    return x;
-  }
+
+  x = (-b + sqrt(abs(delta))) / 2 * a;
+  return x;
 }
 

@@ -2,8 +2,8 @@ CC = gcc
 CFLAGS = -std=c99 -O2
 LDFLAGS =
 DEBUG_FLAGS = -W -Wall -g
-TEST = 
-SRC = simulation_seq.c	
+TEST = test_unitaire.c
+SRC = simulation_seq.c particule.c simulation.c util.c
 OBJS = $(SRC:.c=.o)
 
 HEADER_DIR = header
@@ -20,6 +20,11 @@ all : $(OBJS)
 
 %.o : %.c %.h
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) -c $<
+
+test : test_unitaire
+
+test_unitaire : $(OBJS) test_unitaire.o 
+	$(CC) $(LDFLAGS) -o $@ $^
 
 
 clean:

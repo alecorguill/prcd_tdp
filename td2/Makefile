@@ -3,7 +3,7 @@ CFLAGS = -std=c99 -O2
 LDFLAGS =
 DEBUG_FLAGS = -W -Wall -g
 TEST = 
-SRC = 
+SRC = simulation_seq.c	
 OBJS = $(SRC:.c=.o)
 
 HEADER_DIR = header

@@ -13,7 +13,7 @@ int main(int argc, char** argv){
   //
   int i = 0; int n = 0; int p = 0;
   double T = 5.0;
-  double dt = T / NB_ITERATIONS; // dt fixe
+  double dt = 0.0; // dt fixe
   particule univers[m];
   vecteur force_tmp;
   while (i < NB_ITERATIONS){

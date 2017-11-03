@@ -1,0 +1,7 @@
+gregoire.pichon@inria.fr
+Rendu le 16 Novembre minuit
+
+m particules distribuées entre p processus
+Chaque precessus gère m/p particules
+En terme de mémoire, un processus ne peut pas contenir l'ensemble des parti-
+cule

@@ -1,7 +1,40 @@
 gregoire.pichon@inria.fr
 Rendu le 16 Novembre minuit
 
-m particules distribuées entre p processus
-Chaque precessus gère m/p particules
-En terme de mémoire, un processus ne peut pas contenir l'ensemble des parti-
-cule
+Implémentation séquentielle.
+Version MPI double buffering
+==> Communications asynchrones
+==> Communications persistantes
+
+Utiliser les types MPI pour faire un type particule, ensemble de particule
+
+Rendu :
+===> README
+===> Makefile
+===> Commentaires dans le code
+===> Sortie graphique python
+
+Entrée du programme :
+===> Nombre d'iteration en temps
+
+Fichier
+n
+masse px py vx vy
+masse px py vx vy
+masse px py vx vy
+masse px py vx vy
+masse px py vx vy
+..
+..
+n lignes
+..
+masse px py vx vy
+
+!! Code de test qui compare le sequentiel en parallèle.
+
+Performances :
+Scalabilité : on fixe n, et on augmente le nombre de processus.
+	      utiliser n assez grand (n>5000)
+	      clair dans les conditions expérimentales. (nombre de noeuds,
+	      nombre de processus par noeud)
+	      on peut imposer des conditions d'entrée (n multiple de p)

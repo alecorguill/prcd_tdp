@@ -12,13 +12,14 @@ typedef struct position vecteur;
   
 struct particule{
   const int m; //masse
-  position p; //position
+  vecteur p; //position
   vecteur v; //vitesse
   vecteur a; //acceleration
   vecteur f_ext; //force exercées sur la particul à l'instant t
   double proche_d; //la distance correspondant à la particule la plus proche
 };
 
+typedef struct particule particule;
 
 
 double norme(vecteur *v);

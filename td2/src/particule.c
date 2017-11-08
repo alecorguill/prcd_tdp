@@ -21,24 +21,24 @@ void diff(vecteur *v1, vecteur *v2, vecteur *res){
 
 /* res = alpha*v */
 void scal_prod(vecteur *v,double alpha, vecteur *res){
-  res->x *= alpha;
-  res->y *= alpha;
+  res->x *= alpha*v->x;
+  res->y *= alpha*v->y;
   return;
 }
 
 /* retourne la distance entre 2 particules */
 double distance(particule *p1, particule *p2){
   vecteur v;
-  diff(p2->p, p1->p, &v);
+  diff(&p2->p, &p1->p, &v);
   return norme(&v);
 }
 
 /* calcul la force de i sur j */
 void force_grav(particule *p1, particule *p2, vecteur *force){
-  double distance = distance(p1,p2);
-  double coef = G*(p1->m+p2->m)/(distance*distance)
-  force.x = coef*(1/distance)*(p2.x-p1.x);
-  force.y = coef*(1/distance)*(p2.y-p1.y);
+  double dst = distance(p1,p2);
+  double coef = G*(p1->m+p2->m)/(dst*dst);
+  force->x = coef*(1/dst)*(p2->p.x-p1->p.x);
+  force->y = coef*(1/dst)*(p2->p.y-p1->p.y);
   return;
 }
 
@@ -55,7 +55,10 @@ void update_acceleration(particule *p){
  * Met à jour la vitesse de la particule en fonction de l'acceleration
  */
 void update_vitesse(particule *p, double dt){
-  somme(p->v, scal_prod(p->a,dt), p->v);
+  vecteur v;
+  scal_prod(&p->a,dt, &v);
+  somme(&p->v, &v, &p->v);
+  return;
 }
 
 /*
@@ -63,7 +66,8 @@ void update_vitesse(particule *p, double dt){
  */
 void update_position(particule *p, double dt){
   vecteur v;
-  scal_prod(p->a,dt*dt/2, &v);
-  somme(&v, scal_prod(p->v,dt));
-  somme(p->v, v);
+  scal_prod(&p->a,dt*dt/2, &v);
+  scal_prod(&p->v,dt, &v);
+  somme(&v, &p->v, &p->v);
+  return;
 }

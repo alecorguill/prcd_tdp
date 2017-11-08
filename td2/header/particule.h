@@ -11,7 +11,7 @@ struct position{
 typedef struct position vecteur;
   
 struct particule{
-  const int m; //masse
+  int m; //masse
   vecteur p; //position
   vecteur v; //vitesse
   vecteur a; //acceleration
@@ -25,7 +25,7 @@ typedef struct particule particule;
 double norme(vecteur *v);
 void somme(vecteur *v1, vecteur *v2, vecteur *res);
 void diff(vecteur *v1, vecteur *v2, vecteur *res);
-void scal_prod(vecteur *v1, vecteur *v2, vecteur *res);
+void scal_prod(vecteur *v1, double alpha, vecteur *res);
 double distance(particule *p1, particule *p2);
 void force_grav(particule *p1, particule *p2, vecteur *force);
 void update_acceleration(particule *p);

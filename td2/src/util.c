@@ -1,6 +1,9 @@
 #include <util.h>
 #include <particule.h>
 #include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #define TAILLE_LIGNE 81
 
@@ -18,36 +21,35 @@ double nouveau_dt(particule* univers, int m){
 }
 
 
-double solution_equ(particule);
-
 void parse_particules(char *filename, particule *ps){
   FILE *f = NULL;
   char ligne[TAILLE_LIGNE];
   f=fopen(filename, "r");
-  fclose(f);
-  while ( fgets(ligne, TAILLE_LIGNE, fichier) != NULL ){
-    ps->m = next_int(f);
-    ps->p.x = next_int(f);
-    ps->p.y = next_int(f);
-    ps->v.x = next_int(f);
-    ps->v.y = next_int(f);
+  if(f == NULL)
+    perror("FOPEN");
+  fgets(ligne, TAILLE_LIGNE, f);
+  while ( fgets(ligne, TAILLE_LIGNE, f) != NULL ){
+    char *token;
+    char delim[] = " ";
+    token = strtok(ligne, delim);
+    ps->m = atoi(token);
+    token = strtok(NULL, delim);
+    ps->p.x = atof(token);
+    token = strtok(NULL, delim);
+    ps->p.y = atof(token);
+    token = strtok(NULL, delim);
+    ps->v.x = atof(token);
+    token = strtok(NULL, delim);
+    ps->v.y = atof(token);
     ++ps;
   }
+  fclose(f);
 }
 
-/* 
- * renvoie le prochain entier sur une ligne ou des entiers sont séparés
- * par des espaces.
- */
-int next_int(FILE * f){
-  int res = fgetc(f);
-  fgetc(f);
-  return res;
-}
 
-int double solution_equ(particule p){
-  double a = norme(p.a) / 2;
-  double b = norme(p.v) / 2;
+double solution_equ(particule p){
+  double a = norme(&p.a) / 2;
+  double b = norme(&p.v) / 2;
   double c = 0.1 * p.proche_d;
   double delta = b*b - 4*a*c;
   double x;

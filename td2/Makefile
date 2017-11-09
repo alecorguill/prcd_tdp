@@ -4,11 +4,12 @@ LDFLAGS = -lm
 DEBUG_FLAGS = -W -Wall -g
 TEST = test_unitaire.c
 SRC = simulation_seq.c particule.c util.c
+EXEC = simul_seq
 OBJS = $(SRC:.c=.o)
 DEBUG = 
 TEST_DIRECTORY = test
 HEADER_DIR = header
-EXECS = $(basename $(TEST))
+EXECS_TEST = $(basename $(TEST))
 
 vpath %.c src test
 vpath %.h $(HEADER_DIR)
@@ -19,6 +20,7 @@ ifeq ($(DEBUG),1)
 endif
 
 all : $(OBJS)
+	$(CC) -o $(EXEC) $^ $(LDFLAGS)
 
 %.o : %.c %.h
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) -c $<
@@ -33,4 +35,4 @@ test_unitaire : particule.o util.o test_unitaire.o
 
 
 clean:
-	@rm -f *.o $(EXECS)
+	@rm -f *.o $(EXECS_TEST)

@@ -31,4 +31,6 @@ void force_grav(particule *p1, particule *p2, vecteur *force);
 void update_acceleration(particule *p);
 void update_vitesse(particule *p, double dt);
 void update_position(particule *p, double dt);
+void print_particule(particule *p);
+
 #endif

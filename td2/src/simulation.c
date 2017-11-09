@@ -69,18 +69,18 @@ int main(int argc, char** argv){
   MPI_Status status;
   MPI_Request request, request2;
   particule* buf, buf_tmp, buf_bis;
-int i = 0;
-int j = 0;
-while(i < NB_ITERATIONS) {
-while (j < size){
-MPI_Irecv(&nb, 1, MPI_INT,rank+1, tag, MPI_COMM_WORLD, &request);
-MPI_Isend(&nb, 1, MPI_INT,rank+1, tag, MPI_COMM_WORLD, &request2);
-j++;
-}
-j = 0;
-i++;
-}
-MPI_Finalize();
-//
+  int i = 0;
+  int j = 0;
+  while(i < NB_ITERATIONS) {
+    while (j < size){
+      MPI_Irecv(&nb, 1, MPI_INT,rank+1, tag, MPI_COMM_WORLD, &request);
+      MPI_Isend(&nb, 1, MPI_INT,rank+1, tag, MPI_COMM_WORLD, &request2);
+      j++;
+    }
+    j = 0;
+    i++;
+  }
+  MPI_Finalize();
+  //
   return 0;
 }

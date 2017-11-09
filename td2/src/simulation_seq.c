@@ -5,7 +5,7 @@
 #include <particule.h>
 #include <util.h>
 
-#define NB_ITERATIONS 10
+#define NB_ITERATIONS 1e6
 #define MAX 10 //taile decimale du nombre de particule
 
 int main(int argc, char** argv){
@@ -82,5 +82,6 @@ int main(int argc, char** argv){
     i++; 
     //puts("############ FIN ###############");
   }
+  fclose(output);
   return 0;
 }

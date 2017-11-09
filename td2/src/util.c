@@ -44,8 +44,8 @@ void parse_particules(char *filename, particule *ps){
     ps->v.x = atof(token);
     token = strtok(NULL, delim);
     ps->v.y = atof(token);
-    ps->a.x = 10.0;
-    ps->a.y = 10.0;
+    ps->a.x = 0.0;
+    ps->a.y = 0.0;
     ++ps;
   }
   fclose(f);

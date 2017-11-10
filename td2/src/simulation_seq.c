@@ -68,14 +68,8 @@ int main(int argc, char** argv){
     t += dt;
     fprintf(output, "%lf\n", t);
     // mise à jour des particules
-    k=0;
-    while (k < m){	
-      update_acceleration(&univers[k]);
-      update_position(&univers[k], dt);	    
-      update_vitesse(&univers[k], dt);
-      fprintf(output, "%lf,%lf\n", univers[k].p.x, univers[k].p.y);
-      k++;
-    }
+    update_particules(univers, m, dt);
+    log_particules(univers, m, output);
     i++; 
     //puts("############ FIN ###############");
   }

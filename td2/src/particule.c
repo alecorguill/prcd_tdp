@@ -77,6 +77,25 @@ void update_position(particule *p, double dt){
   return;
 }
 
+void update_particules(particule *univers,int nb_particule, double dt){
+  int k=0;
+  while (k < nb_particule){	
+    update_acceleration(&univers[k]);
+    update_position(&univers[k], dt);	    
+    update_vitesse(&univers[k], dt);
+    k++;
+  }
+}
+
+void log_particules(particule *univers,int nb_particule, FILE *output){
+  int k=0;
+  while (k < nb_particule){	
+    fprintf(output, "%lf,%lf\n", univers[k].p.x, univers[k].p.y);
+    k++;
+  }
+}
+
+
 /* affiche une particule */
 void print_particule(particule *p){
     printf("masse : %d\n", p->m);

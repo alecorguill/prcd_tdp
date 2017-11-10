@@ -5,7 +5,7 @@
 #include <particule.h>
 #include <util.h>
 
-#define NB_ITERATIONS 1e6
+#define NB_ITERATIONS 2000
 #define MAX 10 //taile decimale du nombre de particule
 
 int main(int argc, char** argv){
@@ -30,6 +30,7 @@ int main(int argc, char** argv){
   m = atoi(ligne);
   fclose(fd);
   fflush(stdout);
+  int k;
   int i = 0; int n = 0; int p = 0;
   double dt = 0.0, t = 0.0; 
   particule univers[m];
@@ -42,15 +43,14 @@ int main(int argc, char** argv){
   while (i < NB_ITERATIONS){
     // calcul des forces exterieures
     while (n < m){
-      univers[n].proche_d = 0.0;
       while (p < m){
 	if (n == p){
 	  p++;
 	  continue;
-	}
-
+	}	
 	// calcul de la distance de la particule la plus proche
 	double dist = distance(&univers[p], &univers[n]);
+	//printf("distance : %lf\n", dist);
 	if (univers[n].proche_d == 0.0 || 
 	    dist < univers[n].proche_d){
 	  univers[n].proche_d = dist; 
@@ -62,22 +62,19 @@ int main(int argc, char** argv){
       p=0;
       n++;
     }
-    /*
-    puts("############ DEBUT ###############");
-    print_particule(univers);
-    print_particule(univers+1);
-    */
+    //puts("############ DEBUT ###############");
     n = 0;
     dt = nouveau_dt(univers, m);
     t += dt;
     fprintf(output, "%lf\n", t);
     // mise à jour des particules
-    while (n < m){	
-      update_acceleration(&univers[n]);
-      update_position(&univers[n], dt);	    
-      update_vitesse(&univers[n], dt);
-      fprintf(output, "%lf,%lf\n", univers[n].p.x, univers[n].p.y);
-      n++;
+    k=0;
+    while (k < m){	
+      update_acceleration(&univers[k]);
+      update_position(&univers[k], dt);	    
+      update_vitesse(&univers[k], dt);
+      fprintf(output, "%lf,%lf\n", univers[k].p.x, univers[k].p.y);
+      k++;
     }
     i++; 
     //puts("############ FIN ###############");

@@ -29,7 +29,7 @@ with open(filename) as fp:
 
 # Last measure
 array.append(values)
-print array
+#print array
 # Plotting 2D animation
 def plot():
     fig = plt.figure()
@@ -57,6 +57,6 @@ def plot():
     ani = animation.FuncAnimation(fig, animate, np.arange(0, len(array)),
                                   interval=250, blit=False, init_func=init)
     plt.show()
-#plot()
+plot()
 if __name__ == '__main__':
     pass

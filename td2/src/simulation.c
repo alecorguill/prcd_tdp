@@ -60,17 +60,20 @@ int main(int argc, char** argv){
   int root = 0;
   particule *univers;
   int m = 0;
-  // Configuration de l'univers
-  /* parse_particule_par(argv[1], rank, &(univers), &m); */
+  // Configuration de l'univers, free à la fin
+  parse_particule_par(argv[1], rank, &(univers), &m);
  
   int nb = 100;
   int nb_rcv; 
   int tag; 
   MPI_Status status;
   MPI_Request request, request2;
-  particule* buf, buf_tmp, buf_bis;
+  particule* buf;
+  particule **com;
+  int ind_send=0;
   int i = 0;
   int j = 0;
+  
   while(i < NB_ITERATIONS) {
     while (j < size){
       MPI_Irecv(&nb, 1, MPI_INT,rank+1, tag, MPI_COMM_WORLD, &request);
@@ -80,7 +83,7 @@ int main(int argc, char** argv){
     j = 0;
     i++;
   }
+  
   MPI_Finalize();
-  //
   return 0;
 }

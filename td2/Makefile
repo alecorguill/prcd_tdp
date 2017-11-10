@@ -3,7 +3,7 @@ CFLAGS = -std=c99
 LDFLAGS = -lm
 DEBUG_FLAGS = -W -Wall -g
 TEST = test_unitaire.c
-SRC = simulation_seq.c particule.c util.c
+SRC = particule.c util.c
 EXEC = simul_seq
 OBJS = $(SRC:.c=.o)
 DEBUG = 
@@ -19,8 +19,12 @@ ifeq ($(DEBUG),1)
 	CFLAGS +=  $(DEBUG_FLAGS)
 endif
 
-all : $(OBJS)
-	$(CC) -o $(EXEC) $^ $(LDFLAGS)
+parallel : CC = mpicc
+parallel : simulation.o $(OBJS)
+	$(CC) -o $@ $^ $(LDFLAGS)	
+
+sequentiel : simulation_seq.o $(OBJS)
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 %.o : %.c %.h
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) -c $<

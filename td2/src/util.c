@@ -46,6 +46,7 @@ void parse_particules(char *filename, particule *ps){
     ps->v.y = atof(token);
     ps->a.x = 0.0;
     ps->a.y = 0.0;
+    ps->proche_d = 0.0;
     ++ps;
   }
   fclose(f);
@@ -58,10 +59,10 @@ double solution_equ(particule p){
   double c = - 0.1 * p.proche_d;
   double delta = b*b - 4*a*c;
   double x;
-  x = (-b + sqrt(delta)) / (2 * a);
-  //printf("%lf %lf %lf DELTA %lf  SOL %lf \n", a,b,c, delta, x);
   if(equal_double(a,0.0))
     return -c/b;
+  x = (-b + sqrt(delta)) / (2 * a);
+  //printf("%lf %lf %lf DELTA %lf  SOL %lf \n", a,b,c, delta, x);
   return x;
 }
 

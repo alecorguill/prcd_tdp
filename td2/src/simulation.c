@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include <util.h>
 #include <stdlib.h>
 #include <mpi.h>
 #include <string.h>
@@ -61,25 +61,53 @@ int main(int argc, char** argv){
   particule *univers;
   int m = 0;
   // Configuration de l'univers, free à la fin
-  parse_particule_par(argv[1], rank, &(univers), &m);
+  /* parse_particule_par(argv[1], rank, &(univers), &m); */
  
   int nb = 100;
   int nb_rcv; 
   int tag; 
   MPI_Status status;
   MPI_Request request, request2;
-  particule* buf;
-  particule **com;
-  int ind_send=0;
+
+  // array composed of send data and received data
+  // com[0] send, com[1] recv
+  particule **com = malloc(2*sizeof(m*sizeof(particule))); // malloc com
+  particule *tmp;
+  double dt = 0.0;
   int i = 0;
   int j = 0;
+  int k = 0;
   
   while(i < NB_ITERATIONS) {
     while (j < size){
-      MPI_Irecv(&nb, 1, MPI_INT,rank+1, tag, MPI_COMM_WORLD, &request);
-      MPI_Isend(&nb, 1, MPI_INT,rank+1, tag, MPI_COMM_WORLD, &request2);
+      // com[1]
+      printf("%d - %d, %d %d\n", i,size-j-1, j+1, j);
+      fflush(stdout);
+      MPI_Irecv(&nb, 1, MPI_INT,(size-j-1),tag,MPI_COMM_WORLD,&request);
+      // com[0]
+      MPI_Isend(&nb, 1, MPI_INT,(j+1) % size, tag, MPI_COMM_WORLD,&request2);
+      MPI_Wait(&request, &status);
+      MPI_Wait(&request2, &status);     
+      MPI_Barrier(NULL);
+      /* // update particule  */
+      /* k=0; */
+      /* while (k < m){	 */
+      /* 	update_acceleration(&univers[k]); */
+      /* 	update_position(&univers[k], dt);	     */
+      /* 	update_vitesse(&univers[k], dt); */
+      /* 	fprintf(output, "%lf,%lf\n", univers[k].p.x, univers[k].p.y); */
+      /* 	k++; */
+      /* } */
+  
+      
+      /* // swap  */
+      /* tmp = com[1]; */
+      /* com[1] = com[0]; */
+      /* com[0] = tmp; */
       j++;
     }
+    
+    //dt = nouveau_dt(univers,dt);
     j = 0;
     i++;
   }

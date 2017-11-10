@@ -6,7 +6,6 @@
 #include <util.h>
 
 #define NB_ITERATIONS 2000
-#define MAX 10 //taile decimale du nombre de particule
 
 int main(int argc, char** argv){
   int m; char ligne[MAX];

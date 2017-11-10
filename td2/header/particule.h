@@ -3,6 +3,8 @@
 
 #define G 5
 
+#include <stdio.h>
+
 struct position{
   double x;
   double y;
@@ -31,6 +33,8 @@ void force_grav(particule *p1, particule *p2, vecteur *force);
 void update_acceleration(particule *p);
 void update_vitesse(particule *p, double dt);
 void update_position(particule *p, double dt);
+void update_particules(particule *univers,int nb_particule, double dt);
+void log_particules(particule *univers,int nb_particule, FILE *output);
 void print_particule(particule *p);
 
 #endif

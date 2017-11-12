@@ -98,7 +98,7 @@ int main(int argc, char** argv){
       }      
 
       // send
-      MPI_Send(&send,alpha,Particule_d,(rank-j + size ) % size,tag,MPI_COMM_WORLD,&request);
+      MPI_Isend(&send,alpha,Particule_d,(rank-j + size ) % size,tag,MPI_COMM_WORLD,&request);
       MPI_Irecv(&recv,alpha,Particule_d,(rank+j) % size, tag, MPI_COMM_WORLD,&request2);
 
       // les commandes MPI ne sont peut-être pas enclenchées

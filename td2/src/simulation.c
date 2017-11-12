@@ -55,9 +55,11 @@ int main(int argc, char** argv){
   // array composed of send data and received data
   // com[0] send, com[1] recv
   particule send[alpha], recv[alpha];
-  
-  init_buffers(alpha,send,univers);
-  particule *tmp;
+  memcpy(&send, &univers, sizeof(send));
+  memcpy(&recv, &univers, sizeof(send));
+
+  /* init_buffers(alpha,send,univers); */
+  particule tmp[alpha];
   double dt = 0.0;
   int i, j, k,n,p;
   vecteur force_tmp;
@@ -85,57 +87,60 @@ int main(int argc, char** argv){
   MPI_Type_commit(&Particule_d);
   
 
-  /* i = 0; j = 0; k = 0; n = 0; p = 0; */
-  /* while(i < NB_ITERATIONS) { */
-  /*   j = 0; */
-  /*   while (j < size){ */
-  /*     // recv */
-  /*     if (rank == ((rank-j + size ) % size) || rank == ((rank+j) % size)){ */
-  /* 	j++; */
-  /* 	continue; */
-  /*     } */
-      
-  /*     // send */
-  /*     MPI_Isend(&recv,m,Particule_d,(rank-j + size ) % size,tag,MPI_COMM_WORLD,&request); */
-  /*     MPI_Irecv(&send,m,Particule_d,(rank+j) % size, tag, MPI_COMM_WORLD,&request2); */
-  /*     // les commandes MPI ne sont peut-être pas enclenchées */
-  /*     // get the nearest particule in the whole universe */
-  /*     while (n < m){ */
-  /* 	while (p < m){ */
-  /* 	  if (n == p && j == 0){ */
-  /* 	    p++; */
-  /* 	  continue; */
-  /* 	  } */
-  /* 	  // calcul de la distance de la particule la plus proche */
-  /* 	  double dist = distance(&send[p], &univers[n]); */
-  /* 	  //printf("distance : %lf\n", dist); */
-  /* 	  if (univers[n].proche_d == 0.0 || */
-  /* 	      dist < univers[n].proche_d){ */
-  /* 	    univers[n].proche_d = dist; */
-  /* 	  } */
-  /* 	  force_grav(&send[p], &univers[n], &force_tmp); */
-  /* 	  somme(&(univers[n].f_ext),&(force_tmp),&(univers[n].f_ext)); */
-  /* 	  p++; */
-  /* 	} */
-  /* 	p=0; */
-  /* 	n++; */
-  /*     } */
-  /*     n = 0; */
+  i = 0; j = 0; k = 0; n = 0; p = 0;
+  while(i < NB_ITERATIONS) {
+    j = 0;
+    while (j < size){
+      // recv
+      if (rank == ((rank-j + size ) % size) || rank == ((rank+j) % size)){
+    	j++;
+    	continue;
+      }      
 
-      // swap
-      /* tmp = recv; */
-      /* recv = send; */
-      /* send = tmp; */
-  /*     j++; */
-  /*   } */
+      // send
+      MPI_Send(&send,alpha,Particule_d,(rank-j + size ) % size,tag,MPI_COMM_WORLD,&request);
+      MPI_Irecv(&recv,alpha,Particule_d,(rank+j) % size, tag, MPI_COMM_WORLD,&request2);
 
-  /*   dt = nouveau_dt(univers,dt); */
-  /*   MPI_Allreduce(&dt,&dt,1,MPI_DOUBLE,MPI_MIN,MPI_COMM_WORLD); */
-  /*   update_particules(univers, m, dt); */
-  /*   log_particules(univers, m, output); */
+      // les commandes MPI ne sont peut-être pas enclenchées
+      // get the nearest particule in the whole universe
+      /* while (n < m){ */
+      /* 	while (p < m){ */
+      /* 	  if (n == p && j == 0){ */
+      /* 	    p++; */
+      /* 	  continue; */
+      /* 	  } */
+      /* 	  // calcul de la distance de la particule la plus proche */
+      /* 	  double dist = distance(&send[p], &univers[n]); */
+      /* 	  //printf("distance : %lf\n", dist); */
+      /* 	  if (univers[n].proche_d == 0.0 || */
+      /* 	      dist < univers[n].proche_d){ */
+      /* 	    univers[n].proche_d = dist; */
+      /* 	  } */
+      /* 	  force_grav(&send[p], &univers[n], &force_tmp); */
+      /* 	  somme(&(univers[n].f_ext),&(force_tmp),&(univers[n].f_ext)); */
+      /* 	  p++; */
+      /* 	} */
+      /* 	p=0; */
+      /* 	n++; */
+      /* } */
+      /* n = 0; */
+      MPI_Wait(&request2,&status);
+      MPI_Wait(&request,&status);
+   
+      //swap
+      /* memcpy(&tmp, &recv, sizeof(recv)); */
+      /* memcpy(&recv, &send, sizeof(send)); */
+      /* memcpy(&send, &recv, sizeof(send)); */
+      j++;
+    }
+
+    /* dt = nouveau_dt(univers,dt); */
+    /* MPI_Allreduce(&dt,&dt,1,MPI_DOUBLE,MPI_MIN,MPI_COMM_WORLD); */
+    /* update_particules(univers, m, dt); */
+    /* log_particules(univers, m, output); */
     
-  /*   i++; */
-  /* } */
+    i++;
+  }
   
   MPI_Finalize();
   fclose(output);

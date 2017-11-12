@@ -21,24 +21,42 @@ int main(int argc, char** argv){
     perror("fopen : fichier output\n");
     return EXIT_FAILURE;
   } 
+
+  FILE* fd = fopen(argv[1], "r");
+  if (!fd){
+    perror("Erreur ouverture fichier\n");
+    exit(EXIT_FAILURE);
+  }
   
   MPI_Init(NULL,NULL);
-  int rank, size;
+  int rank, size, tag;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+  char ligne[MAX];
+  fgets(ligne, MAX, fd);
+  int m = atoi(ligne);
+  int alpha = m/size;
+  particule  univers[alpha];
   int root = 0;
-  particule *univers;
-  int m,tag;
-  // Configuration de l'univers, free à la fin
-  parse_particule_par(argv[1], rank, &(univers), &m);
   
+  if ( m % size != 0){
+    printf("Nombre de processeurs doit diviser le nombre de particules initial\n");
+    MPI_Finalize();
+    return EXIT_FAILURE;
+  }
+  
+  // Configuration de l'univers
+  parse_particule_par(argv[1], rank, univers);
+ 
   MPI_Status status;
   MPI_Request request, request2;
-
+  
   // array composed of send data and received data
   // com[0] send, com[1] recv
-  particule **com = malloc(2*sizeof(m*sizeof(particule))); // malloc com
-  init_buffers(m,com, univers);
+  particule send[alpha], recv[alpha];
+  
+  init_buffers(alpha,send,univers);
   particule *tmp;
   double dt = 0.0;
   int i, j, k,n,p;
@@ -67,60 +85,59 @@ int main(int argc, char** argv){
   MPI_Type_commit(&Particule_d);
   
 
-  i = 0; j = 0; k = 0; n = 0; p = 0;
-  while(i < NB_ITERATIONS) {
-    j = 0;
-    while (j < size){
-      // com[1]
-      if (rank == ((rank-j + size ) % size) || rank == ((rank+j) % size)){
-  	j++;
-  	continue;
-      }
+  /* i = 0; j = 0; k = 0; n = 0; p = 0; */
+  /* while(i < NB_ITERATIONS) { */
+  /*   j = 0; */
+  /*   while (j < size){ */
+  /*     // recv */
+  /*     if (rank == ((rank-j + size ) % size) || rank == ((rank+j) % size)){ */
+  /* 	j++; */
+  /* 	continue; */
+  /*     } */
       
-      // com[0]
-      MPI_Irecv(&com[1],m,Particule_d,(rank-j + size ) % size,tag,MPI_COMM_WORLD,&request);
-      MPI_Isend(&com[0],m,Particule_d,(rank+j) % size, tag, MPI_COMM_WORLD,&request2);
-      // les commandes MPI ne sont peut-être pas enclenchées
-      // get the nearest particule in the whole universe
-      while (n < m){
-  	while (p < m){
-  	  if (n == p && j == 0){
-  	    p++;
-  	  continue;
-  	  }
-  	  // calcul de la distance de la particule la plus proche
-  	  double dist = distance(&com[0][p], &univers[n]);
-  	  //printf("distance : %lf\n", dist);
-  	  if (univers[n].proche_d == 0.0 ||
-  	      dist < univers[n].proche_d){
-  	    univers[n].proche_d = dist;
-  	  }
-  	  force_grav(&com[0][p], &univers[n], &force_tmp);
-  	  somme(&(univers[n].f_ext),&(force_tmp),&(univers[n].f_ext));
-  	  p++;
-  	}
-  	p=0;
-  	n++;
-      }
-      n = 0;
+  /*     // send */
+  /*     MPI_Isend(&recv,m,Particule_d,(rank-j + size ) % size,tag,MPI_COMM_WORLD,&request); */
+  /*     MPI_Irecv(&send,m,Particule_d,(rank+j) % size, tag, MPI_COMM_WORLD,&request2); */
+  /*     // les commandes MPI ne sont peut-être pas enclenchées */
+  /*     // get the nearest particule in the whole universe */
+  /*     while (n < m){ */
+  /* 	while (p < m){ */
+  /* 	  if (n == p && j == 0){ */
+  /* 	    p++; */
+  /* 	  continue; */
+  /* 	  } */
+  /* 	  // calcul de la distance de la particule la plus proche */
+  /* 	  double dist = distance(&send[p], &univers[n]); */
+  /* 	  //printf("distance : %lf\n", dist); */
+  /* 	  if (univers[n].proche_d == 0.0 || */
+  /* 	      dist < univers[n].proche_d){ */
+  /* 	    univers[n].proche_d = dist; */
+  /* 	  } */
+  /* 	  force_grav(&send[p], &univers[n], &force_tmp); */
+  /* 	  somme(&(univers[n].f_ext),&(force_tmp),&(univers[n].f_ext)); */
+  /* 	  p++; */
+  /* 	} */
+  /* 	p=0; */
+  /* 	n++; */
+  /*     } */
+  /*     n = 0; */
 
       // swap
-      tmp = com[1];
-      com[1] = com[0];
-      com[0] = tmp;
-      j++;
-    }
+      /* tmp = recv; */
+      /* recv = send; */
+      /* send = tmp; */
+  /*     j++; */
+  /*   } */
 
-    dt = nouveau_dt(univers,dt);
-    MPI_Allreduce(&dt,&dt,1,MPI_DOUBLE,MPI_MIN,MPI_COMM_WORLD);
-    update_particules(univers, m, dt);
-    log_particules(univers, m, output);
+  /*   dt = nouveau_dt(univers,dt); */
+  /*   MPI_Allreduce(&dt,&dt,1,MPI_DOUBLE,MPI_MIN,MPI_COMM_WORLD); */
+  /*   update_particules(univers, m, dt); */
+  /*   log_particules(univers, m, output); */
     
-    i++;
-  }
+  /*   i++; */
+  /* } */
   
   MPI_Finalize();
   fclose(output);
-  free(com);
   return 0;
 }

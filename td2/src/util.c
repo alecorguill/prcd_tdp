@@ -68,10 +68,10 @@ double solution_equ(particule p){
 }
 
 //////////////////////////////////////////////////
-void parse_particule_par(char * filename, int rank, particule** univers, int* m){
+
+void parse_particule_par(char* filename, int rank, particule* univers){
   
-  int nb; char ligne[MAX];
-  
+  int nb; char ligne[MAX];  
   FILE* fd = fopen(filename, "r");
   if (!fd){
     perror("Erreur ouverture fichier\n");
@@ -79,37 +79,33 @@ void parse_particule_par(char * filename, int rank, particule** univers, int* m)
   }
   fgets(ligne, MAX, fd);
   nb = atoi(ligne);
-  *m = nb;
-
+ 
   int size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   printf("size , nb, rank : %d %d %d\n", size,nb,rank);
-  int alpha = nb/size;
-  particule *univers_tmp = malloc(sizeof(particule)*alpha);
-  
-  // Lit le fichier initial 
+
+  // Lit le fichier initial
   // Récupere les valeurs liées à son rang
   int i = 0;
   int j = 0;
+  int alpha = nb/size;
   while (i < nb){
     fgets(ligne,MAX,fd);
     if (i % size == rank){
-      j = i / (rank+1);
-      sscanf(ligne, "%d %lf %lf %lf %lf", &((univers_tmp+i)->m),&((univers_tmp+i)->p.x),
-	     &((univers_tmp+i)->p.y), &((univers_tmp+i)->v.x),&((univers_tmp+i)->v.y));
+      j = i / alpha;
+      sscanf(ligne, "%d %lf %lf %lf %lf", &((univers+j)->m),&((univers+j)->p.x),
+      	     &((univers+j)->p.y), &((univers+j)->v.x),&((univers+j)->v.y));
   }
     i++;
   }
   fclose(fd);
-  *univers = univers_tmp;
-  free(univers_tmp);
 }
 
 // Arthur dit que ça marche
-void init_buffers(int m, particule** com, particule* univers){
+void init_buffers(int alpha, particule* com, particule* univers){
   
-  for (int i=0; i<m; i++){
-    com[0][i] = univers[i];
+  for (int i=0; i<alpha; i++){
+    com[i] = univers[i];
   }
 }
 

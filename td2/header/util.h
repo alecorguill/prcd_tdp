@@ -11,6 +11,6 @@ int equal_double(double a, double b);
 double solution_equ(particule p);
 void parse_particules(char *filename, particule *ps);
 double nouveau_dt(particule* univers, int m);
-void parse_particule_par(char * filename, int rank, particule** univers, int* m);
-void init_buffers(int m, particule** com, particule* univers);
+void parse_particule_par(char * filename, int rank, particule* univers);
+void init_buffers(int, particule*, particule*);
 #endif

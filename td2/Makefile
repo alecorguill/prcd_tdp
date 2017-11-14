@@ -39,4 +39,4 @@ test_unitaire : particule.o util.o test_unitaire.o
 
 
 clean:
-	@rm -f *.o $(EXECS_TEST)
+	@rm -f *.o $(EXECS_TEST) parallel sequentiel

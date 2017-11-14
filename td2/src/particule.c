@@ -40,6 +40,7 @@ double distance(particule *p1, particule *p2){
 void force_grav(particule *p1, particule *p2, vecteur *force){
   double dst = distance(p1,p2);
   double coef = G*(p1->m+p2->m)/(dst*dst);
+  //printf("MASSE 1 : %d  MASSE  : %d\n", p1->m, p2->m);
   force->x = coef*(1/dst)*(p1->p.x-p2->p.x);
   force->y = coef*(1/dst)*(p1->p.y-p2->p.y);
   return;

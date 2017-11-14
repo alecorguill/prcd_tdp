@@ -88,14 +88,13 @@ void parse_particule_par(char* filename, int rank, particule* univers){
   // Récupere les valeurs liées à son rang
   int i = 0;
   int j = 0;
-  int alpha = nb/size;
   while (i < nb){
     fgets(ligne,MAX,fd);
     if (i % size == rank){
-      j = i / alpha;
       sscanf(ligne, "%d %lf %lf %lf %lf", &((univers+j)->m),&((univers+j)->p.x),
       	     &((univers+j)->p.y), &((univers+j)->v.x),&((univers+j)->v.y));
-  }
+      j++;
+ }
     i++;
   }
   fclose(fd);

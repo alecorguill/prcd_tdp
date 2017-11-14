@@ -38,3 +38,14 @@ Scalabilité : on fixe n, et on augmente le nombre de processus.
 	      clair dans les conditions expérimentales. (nombre de noeuds,
 	      nombre de processus par noeud)
 	      on peut imposer des conditions d'entrée (n multiple de p)
+generer un fichier aléatoire de particule.
+
+Courbe :
+Speed up
+Temps du parallel (n croit)
+Temps du sequentiel (n croit)
+Differente courbe en fonction du MPI_Datatype
+
+Amélioration :
+Pas de memcpy
+Changer le MPI_Datatype

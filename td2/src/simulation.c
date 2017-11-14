@@ -99,7 +99,9 @@ int main(int argc, char** argv){
   while(i < NB_ITERATIONS) {
     j = 0;
     while (j < size){
+
       if(rank == 0){
+	printf("########### j = %d ###############\n", j);
 	puts("################ DATA ##############");
 	for(int cmp=0; cmp<alpha; ++cmp)
 	  print_particule(univers+cmp);
@@ -110,27 +112,30 @@ int main(int argc, char** argv){
 	fflush(stdout);
       }
 
-      // recv
-      /* if (rank == ((rank-j + size ) % size) || rank == ((rank+j) % size)){ */
-      /* 	j++; */
-      /* 	continue; */
-      /* }       */
+
+      if (rank == ((rank-j + size ) % size) || rank == ((rank+j) % size)){
+      	j++;
+      	continue;
+      }
 
       MPI_Isend(&send,alpha,Particule_d,(rank-j + size ) % size,tag,MPI_COMM_WORLD,&request);
-      MPI_Irecv(&recv,alpha,Particule_d,(rank+j) % size, tag, MPI_COMM_WORLD,&request2); 	  
+      MPI_Irecv(&recv,alpha,Particule_d,(rank+j) % size, tag, MPI_COMM_WORLD,&request2);
       // les commandes MPI ne sont peut-être pas enclenchées
       // get the nearest particule in the whole universe
  
       while (n < alpha){
-      	while (p < alpha){
+      	while (p < alpha){	
       	  if (n == p && j == 0){
       	    p++;
 	    continue;
       	  }
+	  if(rank == 0){
+	    printf("N : %d  P : %d\n", n,p);
+	  }
       	  // calcul de la distance de la particule la plus proche
       	  double dist = distance(&send[p], &univers[n]);
       	  //printf("distance : %lf\n", dist);
-      	  if (univers[n].proche_d == 0.0 ||
+      	  if (equal_double(univers[n].proche_d,0.0) ||
       	      dist < univers[n].proche_d){
       	    univers[n].proche_d = dist;
       	  }
@@ -142,10 +147,15 @@ int main(int argc, char** argv){
       	n++;
       }
       n = 0;
-      if(rank == 0)
-	printf("N : %d  P : %d\n", n,p);
       MPI_Wait(&request2,&status);
       MPI_Wait(&request,&status);     	  
+      MPI_Barrier(MPI_COMM_WORLD);
+      /* if(rank == 0){ */
+      /* 	puts("################ RECEIVED ##############"); */
+      /* 	for(int cmp=0; cmp<alpha; ++cmp) */
+      /* 	  print_particule(recv+cmp); */
+      /* 	fflush(stdout); */
+      /* } */
       //swap
       memcpy(&tmp, &recv, sizeof(recv));
       memcpy(&recv, &send, sizeof(send));

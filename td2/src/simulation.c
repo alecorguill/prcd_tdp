@@ -55,7 +55,7 @@ int main(int argc, char** argv){
   // array composed of send data and received data
   // com[0] send, com[1] recv
   particule send[alpha], recv[alpha];
-  particule galaxy[m];
+  particule *galaxy = malloc(sizeof(particule)*m);
 
    /* init_buffers(alpha,send,univers); */
    particule tmp[alpha];
@@ -144,18 +144,24 @@ int main(int argc, char** argv){
      dt = nouveau_dt(univers,alpha);
      MPI_Allreduce(&dt,&dt,1,MPI_DOUBLE,MPI_MIN,MPI_COMM_WORLD);
      update_particules(univers, alpha, dt);
+     if (rank == root && i == 0)
+       for (int cmp = 0; cmp<alpha;cmp++){
+	 print_particule(univers+cmp);
+	 fflush(stdout);
+       }
+     printf("##### #####\n");
+     fflush(stdout);
+    
      t += dt;
-     
-     
-     // TODO log_particules en parallele
+      // TODO log_particules en parallele
      // ecriture parallel possible
-     /* MPI_Barrier(MPI_COMM_WORLD); */
-     /* MPI_Gather(univers,alpha,Particule_d,galaxy,m,Particule_d,root,MPI_COMM_WORLD); */
-     /* if (rank == root){ */
-     /*   fprintf(output, "%lf\n", t); */
-     /*   log_particules(galaxy, m, output); */
-     /* } */
-    i++;
+     MPI_Barrier(MPI_COMM_WORLD);
+     MPI_Gather(univers,alpha,Particule_d,galaxy,alpha,Particule_d,root,MPI_COMM_WORLD);
+     if (rank == root){
+       fprintf(output, "%lf\n", t);
+       log_particules(galaxy, m, output);
+     }
+     i++;
   }
   
   MPI_Finalize();

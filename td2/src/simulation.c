@@ -10,7 +10,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define NB_ITERATIONS 2
+#define NB_ITERATIONS 10
 
 int main(int argc, char** argv){
   
@@ -27,7 +27,7 @@ int main(int argc, char** argv){
   tag = 99;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  int output = open(argv[2], O_CREAT | O_WRONLY);
+  int output = open(argv[2], O_CREAT | O_WRONLY,0755);
   if (!output){
     perror("fopen : fichier output\n");
     MPI_Finalize();
@@ -157,7 +157,7 @@ int main(int argc, char** argv){
      
      // TODO log_particules en parallele
      // ecriture parallel possible
-     MPI_Barrier(MPI_COMM_WORLD);
+     //MPI_Barrier(MPI_COMM_WORLD);
      //MPI_Gather(univers,alpha,Particule_d,galaxy,alpha,Particule_d,root,MPI_COMM_WORLD);
      log_particules_par(univers,alpha,output,t,root,i);
      /* } */

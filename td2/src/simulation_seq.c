@@ -4,8 +4,12 @@
 #include <string.h>
 #include <particule.h>
 #include <util.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-#define NB_ITERATIONS 1000
+#define NB_ITERATIONS 10
 
 int main(int argc, char** argv){
   int m; char ligne[MAX];
@@ -20,9 +24,9 @@ int main(int argc, char** argv){
     perror("Erreur ouverture fichier\n");
     return EXIT_FAILURE;
   } 
-  FILE* output = fopen(argv[2], "w+");
-  if (output == NULL){
-    perror("fopen : fichier output\n");
+  int output = open(argv[2], O_CREAT | O_RDWR, 0755);
+  if (output == -1){
+    perror("open : fichier output\n");
     return EXIT_FAILURE;
   } 
   fgets(ligne, MAX, fd);
@@ -65,13 +69,13 @@ int main(int argc, char** argv){
     n = 0;
     dt = nouveau_dt(univers, m);
     t += dt;
-    fprintf(output, "%lf\n", t);
+    dprintf(output, "%lf\n", t);
     // mise à jour des particules
     update_particules(univers, m, dt);
     log_particules(univers, m, output);
     i++; 
     //puts("############ FIN ###############");
   }
-  fclose(output);
+  close(output);
   return 0;
 }

@@ -91,10 +91,10 @@ void update_particules(particule *univers,int nb_particule, double dt){
   }
 }
 
-void log_particules(particule *univers,int nb_particule, FILE *output){
+void log_particules(particule *univers,int nb_particule, int output){
   int k=0;
   while (k < nb_particule){	
-    fprintf(output, "%lf,%lf\n", univers[k].p.x, univers[k].p.y);
+    dprintf(output, "%lf,%lf\n", univers[k].p.x, univers[k].p.y);
     k++;
   }
 }

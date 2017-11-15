@@ -1,7 +1,10 @@
 #include <particule.h>
 #include <math.h>
-
 #include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#define LINESIZE 80
 
 /* Calcul la norme d'un vecteur */
 double norme(vecteur *v){
@@ -107,4 +110,23 @@ void print_particule(particule *p){
     printf("proche_d : %lf\n", p->proche_d);
     fflush(stdout);
 }
+//////////////////////////////////////////////////
+#ifdef MPIFLAG
+#include <mpi.h>
+void log_particules_par(particule *univers,int alpha, int output, 
+			double t, int root, int iteration){
+  int rank, size;
+  off_t offset;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  offset = LINESIZE * (iteration * (alpha+1+(size-1)*alpha) + (rank != root) * (alpha+1+(rank-1)*alpha));
 
+  printf("%d et rank %d\n", (iteration * (alpha+1+(size-1)*alpha) + (rank != root) * (alpha+1+(rank-1)*alpha)),rank);
+  fflush(stdout);
+  lseek(output,offset,SEEK_SET);
+  if (rank == root){
+      dprintf(output, "%lf\n", t);
+  }
+  log_particules(univers,alpha,output);
+}
+#endif 

@@ -36,5 +36,6 @@ void update_position(particule *p, double dt);
 void update_particules(particule *univers,int nb_particule, double dt);
 void log_particules(particule *univers,int nb_particule, FILE *output);
 void print_particule(particule *p);
+void log_particules_par(particule*,int,int,double,int,int);
 
 #endif

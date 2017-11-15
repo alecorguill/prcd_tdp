@@ -5,8 +5,12 @@
 #include <string.h>
 #include <particule.h>
 #include <stddef.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-#define NB_ITERATIONS 2000
+#define NB_ITERATIONS 2
 
 int main(int argc, char** argv){
   
@@ -19,17 +23,15 @@ int main(int argc, char** argv){
 
   MPI_Init(NULL,NULL);
   int rank, size, tag;
+  int root = 0;
   tag = 99;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  
-  if (rank == root){
-    FILE* output = fopen(argv[2], "w+");
-    if (output == NULL){
-      perror("fopen : fichier output\n");
-      MPI_Finalize();
-      return EXIT_FAILURE;
-    } 
+  int output = open(argv[2], O_CREAT | O_WRONLY);
+  if (!output){
+    perror("fopen : fichier output\n");
+    MPI_Finalize();
+    return EXIT_FAILURE;
   }
 
   FILE* fd = fopen(argv[1], "r");
@@ -45,7 +47,6 @@ int main(int argc, char** argv){
   int alpha = m/size;
   particule univers[alpha]; 
 
-  int root = 0;
   
   if ( m % size != 0){
     printf("Nombre de processeurs doit diviser le nombre de particules initial\n");
@@ -71,8 +72,7 @@ int main(int argc, char** argv){
    double t = 0.0;
    int i, j, k,n,p;
    vecteur force_tmp;
-   MPI_Datatype Particule_d;
-   MPI_Datatype Vecteur_d;
+   MPI_Datatype Particule_d, Vecteur_d, Transport_d;
    int blocklengths[2] = {1,1};
    MPI_Datatype types[2] = {MPI_DOUBLE, MPI_DOUBLE};
    MPI_Aint offsets[2];
@@ -81,17 +81,12 @@ int main(int argc, char** argv){
    MPI_Type_create_struct(2,blocklengths,offsets,types,&Vecteur_d);
    MPI_Type_commit(&Vecteur_d);
 
-   int blocklengths_p[6] = {1,1,1,1,1,1};
-   MPI_Datatype types_p[6] =  {MPI_INT, Vecteur_d, Vecteur_d, Vecteur_d,
-			     Vecteur_d, MPI_DOUBLE};
-   MPI_Aint offsets_p[6];
+   int blocklengths_p[2] = {1,1};
+   MPI_Datatype types_p[2] =  {MPI_INT, Vecteur_d};
+   MPI_Aint offsets_p[2];
    offsets_p[0] = offsetof(particule,m);
    offsets_p[1] = offsetof(particule,p);
-   offsets_p[2] = offsetof(particule,v);
-   offsets_p[3] = offsetof(particule,a);
-   offsets_p[4] = offsetof(particule,f_ext);
-   offsets_p[5] = offsetof(particule,proche_d);
-   MPI_Type_create_struct(6,blocklengths_p,offsets_p,types_p,&Particule_d);
+   MPI_Type_create_struct(2,blocklengths_p,offsets_p,types_p,&Particule_d);
    MPI_Type_commit(&Particule_d);
    /*
    MPI_Datatype resized_particule;
@@ -104,16 +99,15 @@ int main(int argc, char** argv){
   i = 0; j = 0; k = 0; n = 0; p = 0;
    while(i < NB_ITERATIONS) {
      j = 0;
-     memcpy(send, univers, sizeof(particule)*alpha); 
-     /* if (rank == 0) */
-     /*   for (int cmp = 0; cmp < alpha; cmp++){ */
-     /* 	 print_particule(send+cmp); */
-     /*   } */
-     /* fflush(stdout); */
-     
+     memcpy(send, univers, sizeof(particule)*alpha);      
      while (j < size){
 
-
+       /* if (rank == 1) */
+       /* 	 for (int cmp = 0; cmp < alpha; cmp++){ */
+       /* 	   print_particule(univers+cmp); */
+       /* 	 } */
+       /* fflush(stdout); */
+       
        if (rank != ((rank-j+1 + size ) % size) && rank != ((rank+j+1) % size)){
 	 MPI_Isend(send,alpha,Particule_d,(rank-j+1 + size ) % size,tag,MPI_COMM_WORLD,&request);
 	 MPI_Irecv(recv,alpha,Particule_d,(rank+j+1) % size, tag, MPI_COMM_WORLD,&request2);
@@ -164,17 +158,15 @@ int main(int argc, char** argv){
      // TODO log_particules en parallele
      // ecriture parallel possible
      MPI_Barrier(MPI_COMM_WORLD);
-     MPI_Gather(univers,alpha,Particule_d,galaxy,alpha,Particule_d,root,MPI_COMM_WORLD);
-     if (rank == root){
-       fprintf(output, "%lf\n", t);
-       log_particules(galaxy, m, output);
-     }
+     //MPI_Gather(univers,alpha,Particule_d,galaxy,alpha,Particule_d,root,MPI_COMM_WORLD);
+     log_particules_par(univers,alpha,output,t,root,i);
+     /* } */
      i++;
   }
   
   MPI_Finalize();
   free(galaxy); 
   free(send); free(recv);
-  fclose(output);
+  close(output);
   return 0;
 }

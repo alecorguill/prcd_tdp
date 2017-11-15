@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <mpi.h>
 
 #define TAILLE_LIGNE 81
 
@@ -68,7 +67,8 @@ double solution_equ(particule p){
 }
 
 //////////////////////////////////////////////////
-
+#ifdef MPIFLAG
+#include <mpi.h>
 void parse_particule_par(char* filename, int rank, particule* univers){
   
   int nb; char ligne[MAX];  
@@ -92,18 +92,25 @@ void parse_particule_par(char* filename, int rank, particule* univers){
     if (i % size == rank){
       sscanf(ligne, "%d %lf %lf %lf %lf", &((univers+j)->m),&((univers+j)->p.x),
       	     &((univers+j)->p.y), &((univers+j)->v.x),&((univers+j)->v.y));
+      (univers+j)->a.x = 0.0;
+      (univers+j)->a.y = 0.0;
+      (univers+j)->proche_d = 0.0;
+    
       j++;
- }
+    }
     i++;
   }
   fclose(fd);
 }
 
-// Arthur dit que ça marche
-void init_buffers(int alpha, particule* com, particule* univers){
+
+#endif 
+
+/* // Arthur dit que ça marche */
+/* void init_buffers(int alpha, particule* com, particule* univers){ */
   
-  for (int i=0; i<alpha; i++){
-    com[i] = univers[i];
-  }
-}
+/*   for (int i=0; i<alpha; i++){ */
+/*     com[i] = univers[i]; */
+/*   } */
+/* } */
 

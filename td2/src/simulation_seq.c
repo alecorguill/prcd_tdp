@@ -5,7 +5,7 @@
 #include <particule.h>
 #include <util.h>
 
-#define NB_ITERATIONS 2000
+#define NB_ITERATIONS 1000
 
 int main(int argc, char** argv){
   int m; char ligne[MAX];

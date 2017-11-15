@@ -6,7 +6,7 @@
 #include <particule.h>
 #include <stddef.h>
 
-#define NB_ITERATIONS 2
+#define NB_ITERATIONS 1000
 
 int main(int argc, char** argv){
   
@@ -93,11 +93,12 @@ int main(int argc, char** argv){
 			   &resized_particule);
    MPI_Type_commit(&Particule_d);  
    */
+     
    i = 0; j = 0; k = 0; n = 0; p = 0;
    while(i < NB_ITERATIONS) {
      j = 0;
-     memcpy(&send, &univers, sizeof(send));
-
+     memcpy(&send, &univers, sizeof(send)); 
+    
      while (j < size){
 
 
@@ -130,6 +131,7 @@ int main(int argc, char** argv){
 	 n++;
        }
        n = 0;
+  
        //swap
        if (rank != ((rank-j+1 + size ) % size) && rank != ((rank+j+1) % size)){	  
 	 MPI_Wait(&request,&status);
@@ -144,16 +146,10 @@ int main(int argc, char** argv){
      dt = nouveau_dt(univers,alpha);
      MPI_Allreduce(&dt,&dt,1,MPI_DOUBLE,MPI_MIN,MPI_COMM_WORLD);
      update_particules(univers, alpha, dt);
-     if (rank == root && i == 0)
-       for (int cmp = 0; cmp<alpha;cmp++){
-	 print_particule(univers+cmp);
-	 fflush(stdout);
-       }
-     printf("##### #####\n");
-     fflush(stdout);
-    
+      
      t += dt;
-      // TODO log_particules en parallele
+     
+     // TODO log_particules en parallele
      // ecriture parallel possible
      MPI_Barrier(MPI_COMM_WORLD);
      MPI_Gather(univers,alpha,Particule_d,galaxy,alpha,Particule_d,root,MPI_COMM_WORLD);

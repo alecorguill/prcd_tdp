@@ -20,6 +20,7 @@ ifeq ($(DEBUG),1)
 endif
 
 parallel : CC = mpicc
+parallel : CFLAGS += -DMPIFLAG
 parallel : simulation.o $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)	
 

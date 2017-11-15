@@ -6,21 +6,31 @@
 #include <particule.h>
 #include <stddef.h>
 
-#define NB_ITERATIONS 1000
+#define NB_ITERATIONS 2000
 
 int main(int argc, char** argv){
+  
   
   if (argc != 3) {
     printf("Erreur : Argument manquant\n");
     printf("Usage : ./exec particules_file output_file\n");
     return EXIT_FAILURE;
-  }
-
-  FILE* output = fopen(argv[2], "w+");
-  if (output == NULL){
-    perror("fopen : fichier output\n");
-    return EXIT_FAILURE;
   } 
+
+  MPI_Init(NULL,NULL);
+  int rank, size, tag;
+  tag = 99;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  
+  if (rank == root){
+    FILE* output = fopen(argv[2], "w+");
+    if (output == NULL){
+      perror("fopen : fichier output\n");
+      MPI_Finalize();
+      return EXIT_FAILURE;
+    } 
+  }
 
   FILE* fd = fopen(argv[1], "r");
   if (!fd){
@@ -28,17 +38,13 @@ int main(int argc, char** argv){
     exit(EXIT_FAILURE);
   }
   
-  MPI_Init(NULL,NULL);
-  int rank, size, tag;
-  tag = 99;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
 
   char ligne[MAX];
   fgets(ligne, MAX, fd);
   int m = atoi(ligne);
   int alpha = m/size;
-  particule  univers[alpha];
+  particule univers[alpha]; 
+
   int root = 0;
   
   if ( m % size != 0){
@@ -54,11 +60,13 @@ int main(int argc, char** argv){
   
   // array composed of send data and received data
   // com[0] send, com[1] recv
-  particule send[alpha], recv[alpha];
+  //particule send[alpha], recv[alpha];
+  particule *send = malloc(sizeof(particule)*alpha); 
+  particule *recv = malloc(sizeof(particule)*alpha);
   particule *galaxy = malloc(sizeof(particule)*m);
 
    /* init_buffers(alpha,send,univers); */
-   particule tmp[alpha];
+   particule *tmp;
    double dt = 0.0;
    double t = 0.0;
    int i, j, k,n,p;
@@ -93,22 +101,26 @@ int main(int argc, char** argv){
 			   &resized_particule);
    MPI_Type_commit(&Particule_d);  
    */
-     
-   i = 0; j = 0; k = 0; n = 0; p = 0;
+  i = 0; j = 0; k = 0; n = 0; p = 0;
    while(i < NB_ITERATIONS) {
      j = 0;
-     memcpy(&send, &univers, sizeof(send)); 
-    
+     memcpy(send, univers, sizeof(particule)*alpha); 
+     /* if (rank == 0) */
+     /*   for (int cmp = 0; cmp < alpha; cmp++){ */
+     /* 	 print_particule(send+cmp); */
+     /*   } */
+     /* fflush(stdout); */
+     
      while (j < size){
 
 
        if (rank != ((rank-j+1 + size ) % size) && rank != ((rank+j+1) % size)){
-	 MPI_Isend(&send,alpha,Particule_d,(rank-j+1 + size ) % size,tag,MPI_COMM_WORLD,&request);
-	 MPI_Irecv(&recv,alpha,Particule_d,(rank+j+1) % size, tag, MPI_COMM_WORLD,&request2);
+	 MPI_Isend(send,alpha,Particule_d,(rank-j+1 + size ) % size,tag,MPI_COMM_WORLD,&request);
+	 MPI_Irecv(recv,alpha,Particule_d,(rank+j+1) % size, tag, MPI_COMM_WORLD,&request2);
        }
        // les commandes MPI ne sont peut-être pas enclenchées
        // get the nearest particule in the whole universe
-
+     
        while (n < alpha){
 	 while (p < alpha){	
 	   if (n == p && j == 0){
@@ -136,9 +148,9 @@ int main(int argc, char** argv){
        if (rank != ((rank-j+1 + size ) % size) && rank != ((rank+j+1) % size)){	  
 	 MPI_Wait(&request,&status);
 	 MPI_Wait(&request2,&status); 
-	 memcpy(&tmp, &recv, sizeof(recv));
-	 memcpy(&recv, &send, sizeof(send));
-	 memcpy(&send, &tmp, sizeof(send));
+	 tmp = send;
+	 send = recv;
+	 recv = tmp;
 	 MPI_Barrier(MPI_COMM_WORLD);
        }
        j++;
@@ -161,6 +173,8 @@ int main(int argc, char** argv){
   }
   
   MPI_Finalize();
+  free(galaxy); 
+  free(send); free(recv);
   fclose(output);
   return 0;
 }

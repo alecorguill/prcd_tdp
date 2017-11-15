@@ -82,7 +82,6 @@ void parse_particule_par(char* filename, int rank, particule* univers){
  
   int size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  printf("size , nb, rank : %d %d %d\n", size,nb,rank);
 
   // Lit le fichier initial
   // Récupere les valeurs liées à son rang

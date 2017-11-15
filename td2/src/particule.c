@@ -107,3 +107,4 @@ void print_particule(particule *p){
     printf("proche_d : %lf\n", p->proche_d);
     fflush(stdout);
 }
+

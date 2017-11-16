@@ -5,7 +5,7 @@
 import os, sys
 import matplotlib.pyplot as plt
 import subprocess, time
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 #import pandas as pd
 import csv
 
@@ -62,8 +62,8 @@ def speed_par():
     os.system("make -C ../ sequentiel")
 
 
-    ##Speed up    
-    P = range(nb_proc_speedup)
+    ##Speed up
+    P = range(2,nb_part_default,2)
     os.system("python generate_particules.py {} {}".format(input,nb_part_default))
     for p in P:
         ##

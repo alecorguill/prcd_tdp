@@ -23,6 +23,7 @@ parallel : CC = mpicc
 parallel : CFLAGS += -DMPIFLAG
 parallel : simulation.o $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)	
+	@cp $@ test/
 
 sequentiel : simulation_seq.o $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)

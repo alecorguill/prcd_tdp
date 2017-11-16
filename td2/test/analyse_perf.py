@@ -12,7 +12,10 @@ def perf(input, output):
     speed_seq = []
     speed_par = []
     
-    # Perf sequentiel & parallele
+    os.system("make -C ../ clean")
+    os.system("make -C ../ sequentiel")
+    
+    # Perf sequentiel
     for n in range(n):
         ##
         os.system("python generate_particules.py filename {} {}".format(input,n))
@@ -20,13 +23,22 @@ def perf(input, output):
         os.system("../sequentiel {} {}".format(input,ouput))
         end = time.time()
         time_seq.append(end-start)
+        
+    os.system("make -C ../ clean")
+    os.system("make -C ../ parallel")
+   
+    # Perf parallel
+    for n in range(n):
+        ##
+        os.system("python generate_particules.py filename {} {}".format(input,n))
         start = time.time()
         os.system("mpirun -mca pml ob1 -np {} parallel {} {}".format(np,input,ouput))
         end = time.time()
         time_par.append(end-start)
+    
     #Speed up    
+
     os.system("python generate_particules.py filename {} {}".format(input,nb_part_default))
-     
     for p in range(nb_proc):
         ##
         start = time.time()

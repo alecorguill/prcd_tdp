@@ -4,7 +4,7 @@ import subprocess, time
 import matplotlib.pyplot as plt
 
 np_default = 5
-nb_part_default = 10
+nb_part_default = 200
 nb_proc = range(10)
 size = range(100)
 
@@ -35,7 +35,6 @@ def perf(input, output):
         ##
         os.system("python generate_particules.py {} {}".format(input,n))
         start = time.time()
-        print "mpirun -mca pml ob1 -np {} ./parallel {} {}".format(np_default,input,output)
         os.system("mpirun -mca pml ob1 -np {} ./parallel {} {}".format(np_default,input,output))
         end = time.time()
         time_par.append(end-start)

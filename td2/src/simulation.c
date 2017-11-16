@@ -89,26 +89,6 @@ int main(int argc, char** argv){
   MPI_Type_create_struct(2,blocklengths_p,offsets_p,types_p,&Particule_d);
   MPI_Type_commit(&Particule_d);
   MPI_Type_create_resized(Particule_d,offsets_p[0],sizeof(particule),&Transport_d);
-  /* if(rank == 1){ */
-  /*   for(int cmp=0; cmp<alpha; ++cmp) */
-  /*     print_particule(univers+cmp); */
-  /*   fflush(stdout); */
-  /* } */
-
-  /* if(rank == 1){ */
-  /*   MPI_Send(univers,alpha,Transport_d,0,tag,MPI_COMM_WORLD); */
-  /*   //MPI_Wait(&request,&status); */
-      
-  /* } */
-  /* if(rank == 0){ */
-  /*   MPI_Recv(recv,alpha,Transport_d,1,tag,MPI_COMM_WORLD,&status); */
-  /*   //MPI_Wait(&request2,&status); */
-  /* } */
-  /* if(rank == 0){ */
-  /*   for(int cmp=0; cmp<alpha; ++cmp) */
-  /*     print_particule(recv+cmp); */
-  /*   fflush(stdout); */
-  /* } */
 
   i = 0; j = 0; k = 0; n = 0; p = 0;
   while(i < NB_ITERATIONS) {
@@ -116,59 +96,50 @@ int main(int argc, char** argv){
     /* deplace nos particules dans le buffer d'envoi */
     memcpy(send, univers, sizeof(particule)*alpha);
     while (j < size){
-      /* pour ne pas s'envoyer à soit même */
-      /* printf("ROUND %d, I AM  %d, SENDING TO %d, RECEIVING FROM %d\n", j,rank,(rank-j-1+size) % size, (rank+j+1)%size); */
-      /* fflush(stdout); */
   	MPI_Isend(send,alpha,Transport_d,(rank-1+size)%size,tag,MPI_COMM_WORLD,&request);
   	MPI_Irecv(recv,alpha,Transport_d,(rank+1)%size, tag, MPI_COMM_WORLD,&request2);
       // les commandes MPI ne sont peut-être pas enclenchées
       // get the nearest particule in the whole universe
-	if(rank == 0){
-	  puts("###############\n");
-	  for(int cmp=0; cmp<alpha; ++cmp)
-	    print_particule(univers+cmp);
-	  fflush(stdout);
-	}
-	  while (n < alpha){
-  	while (p < alpha){
-  	  if (n == p && j == 0){
-  	    p++;
-  	    continue;
-  	  }
-
-  	  // calcul de la distance de la particule la plus proche
-  	  double dist = distance(&send[p], &univers[n]);
-  	  if (equal_double(univers[n].proche_d,0.0) ||
-  	      dist < univers[n].proche_d){
-  	    univers[n].proche_d = dist;
-  	  }
-  	  /* calcul des forces */
-  	  force_grav(&send[p], &univers[n], &force_tmp);
-  	  somme(&(univers[n].f_ext),&(force_tmp),&(univers[n].f_ext));
-  	  p++;
-
-  	}
+	while (n < alpha){
+	  while (p < alpha){
+	    if (n == p && j == 0){
+	      p++;
+	      continue;
+	    }
+	    
+	    // calcul de la distance de la particule la plus proche
+	    double dist = distance(&send[p], &univers[n]);
+	    if (equal_double(univers[n].proche_d,0.0) ||
+		dist < univers[n].proche_d){
+	      univers[n].proche_d = dist;
+	    }
+	    /* calcul des forces */
+	    force_grav(&send[p], &univers[n], &force_tmp);
+	    somme(&(univers[n].f_ext),&(force_tmp),&(univers[n].f_ext));
+	    p++;
+	    
+	  }
   	p=0;
   	n++;
-      }
-      n = 0;
-      //swap send et received buffers
-      MPI_Barrier(MPI_COMM_WORLD);
-      MPI_Wait(&request,&status);
-      MPI_Wait(&request2,&status);
-      
-      tmp = send;
-      send = recv;
-      recv = tmp;
-      MPI_Barrier(MPI_COMM_WORLD);
-      j++;
+	}
+	n = 0;
+	//swap send et received buffers
+	MPI_Barrier(MPI_COMM_WORLD);
+	MPI_Wait(&request,&status);
+	MPI_Wait(&request2,&status);
+	
+	tmp = send;
+	send = recv;
+	recv = tmp;
+	MPI_Barrier(MPI_COMM_WORLD);
+	j++;
     }
     dt = nouveau_dt(univers,alpha);
     MPI_Allreduce(&dt,&dt,1,MPI_DOUBLE,MPI_MIN,MPI_COMM_WORLD);
     update_particules(univers, alpha, dt);
-      
+    
     t += dt;
-     
+    
     //MPI_Barrier(MPI_COMM_WORLD);
     //MPI_Gather(univers,alpha,Particule_d,galaxy,alpha,Particule_d,root,MPI_COMM_WORLD);
     log_particules_par(univers,alpha,output,t,root,i);

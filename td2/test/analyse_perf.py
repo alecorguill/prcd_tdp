@@ -100,7 +100,7 @@ def perf(input, output):
     time_par = perf_par(input, output,True)
     speed_par = speed_par(input, output,True)
     speed_up = speed_up(speed_par,True)
-    return time_seq,time_par,speed_seq,speed_par,speed_up
+    return time_seq,time_par,speed_par,speed_up
 
 
 def plot(x,y,name,xlabel=None,ylabel=None,label=None):

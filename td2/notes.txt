@@ -44,7 +44,6 @@ Courbe :
 Speed up
 Temps du parallel (n croit)
 Temps du sequentiel (n croit)
-Differente courbe en fonction du MPI_Datatype
 
 Amélioration :
 Pas de memcpy

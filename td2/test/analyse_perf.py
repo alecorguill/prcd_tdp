@@ -88,7 +88,7 @@ def speed_up_f(speed_par, input, output, save_to_csv=False):
     t = end-start
     
     speed_up = [t/s for s in speed_par]
-    P = filter(lambda x: nb_part_default%x==0, range(nb_part_default))
+    P = filter(lambda x: nb_part_default%x==0, range(1,nb_part_default))
 
     if save_to_csv:
         save_csv('speed_up.csv',P,speed_up,'size','speed_up')

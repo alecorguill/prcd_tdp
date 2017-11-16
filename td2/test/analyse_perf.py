@@ -55,7 +55,7 @@ def perf_par(input, output, save_to_csv=False):
         save_csv('perf_par',N,time_par,'size','perf_par')
     return time_par
 
-def speed_par(input, output, save_to_csv=False):
+def speed_par_f(input, output, save_to_csv=False):
     speed_par = []
     os.system("make -C ../ clean")
     os.system("make -C ../ sequentiel")
@@ -75,7 +75,7 @@ def speed_par(input, output, save_to_csv=False):
   
     return speed_par
 
-def speed_up(speed_par, save_to_csv=False):
+def speed_up_f(speed_par, save_to_csv=False):
     os.system("make -C ../ clean")
     os.system("make -C ../ parallel")
     os.system("python generate_particules.py {} {}".format('particules_tmp.txt',nb_part_default))
@@ -97,8 +97,8 @@ def perf(input, output):
     time_seq, time_par, speed_seq, speed_par, speed_up = [],[],[],[],[] 
     time_seq = perf_seq(input, output,True)
     time_par = perf_par(input, output,True)
-    speed_par = speed_par(input, output,True)
-    speed_up = speed_up(speed_par,True)
+    speed_par = speed_par_f(input, output,True)
+    speed_up = speed_up_f(speed_par,True)
     return time_seq,time_par,speed_par,speed_up
 
 

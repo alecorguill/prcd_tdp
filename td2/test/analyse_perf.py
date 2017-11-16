@@ -9,7 +9,7 @@ import subprocess, time
 import csv
 
 np_default = 5
-nb_part_default = 2*50*2
+nb_part_default = 2*50
 nb_proc_step = 2
 
 def save_csv(filename,x,y,columnx,columny):

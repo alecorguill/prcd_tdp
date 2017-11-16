@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define NB_ITERATIONS 10
+#define NB_ITERATIONS 300
 
 int main(int argc, char** argv){
   int m; char ligne[MAX];

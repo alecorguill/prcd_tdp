@@ -3,7 +3,6 @@
 ## Ce fichier doit être appelé depuis le répertoire test
 
 import os, sys
-import matplotlib.pyplot as plt
 import subprocess, time
 #import matplotlib.pyplot as plt
 #import pandas as pd
@@ -132,6 +131,6 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python analyse_perf.py input output")
         exit(-1)
-    
-    #time_seq,time_par,speed_seq,speed_par,speed_up = perf(sys.argv[1],sys.argv[2])
+        
+    time_seq,time_par,speed_par,speed_up = perf(sys.argv[1],sys.argv[2])
     

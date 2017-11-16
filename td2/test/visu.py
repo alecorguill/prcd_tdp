@@ -12,13 +12,23 @@ except:
 array = []
 values = {}
 
+
+def to_float(x):
+    try:
+        return float(x)
+    except ValueError:
+        return None
+    
 # Parsing file into an array of dictionnaries
 with open(filename) as fp:
     for line in fp:
         l = line.split(',')
-        l = map(lambda x:float(x),l)
+        l = map(lambda x:to_float(x),l)
+        l = filter(lambda x: x != None,l)
         # time is the first line of each step
-        if len(l) < 2:
+        if len(l) == 0:
+            continue
+        elif len(l) < 2:
             if values!={}:
                 array.append(values)
             ##
@@ -33,7 +43,7 @@ array.append(values)
 # Plotting 2D animation
 def plot():
     fig = plt.figure()
-    ax = fig.add_subplot(111, autoscale_on=False, xlim=(-100, 100), ylim=(-100, 100))
+    ax = fig.add_subplot(111, autoscale_on=False, xlim=(-50, 50), ylim=(-50, 50))
     ax.grid()
     
     line, = ax.plot([], [], 'o', lw=2)
@@ -55,7 +65,7 @@ def plot():
         return line, time_text
 
     ani = animation.FuncAnimation(fig, animate, np.arange(0, len(array)),
-                                  interval=250, blit=False, init_func=init)
+                                  interval=500, blit=False, init_func=init)
     plt.show()
 plot()
 if __name__ == '__main__':

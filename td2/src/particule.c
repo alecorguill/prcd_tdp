@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
-#define LINESIZE 80
+#define LINESIZE 80 /* Taille max de nos lignes */
 
 /* Calcul la norme d'un vecteur */
 double norme(vecteur *v){
@@ -39,11 +39,10 @@ double distance(particule *p1, particule *p2){
   return norme(&v);
 }
 
-/* calcul la force de i sur j */
+/* calcul la force de p2 sur p1 */
 void force_grav(particule *p1, particule *p2, vecteur *force){
   double dst = distance(p1,p2);
   double coef = G*(p1->m+p2->m)/(dst*dst);
-  //printf("MASSE 1 : %d  MASSE  : %d\n", p1->m, p2->m);
   force->x = coef*(1/dst)*(p1->p.x-p2->p.x);
   force->y = coef*(1/dst)*(p1->p.y-p2->p.y);
   return;
@@ -81,6 +80,7 @@ void update_position(particule *p, double dt){
   return;
 }
 
+/* Encapsule les updates (position, vitesse, acceleration) */
 void update_particules(particule *univers,int nb_particule, double dt){
   int k=0;
   while (k < nb_particule){	
@@ -91,6 +91,7 @@ void update_particules(particule *univers,int nb_particule, double dt){
   }
 }
 
+/* Log les infos d'une particule dans un fichier */
 void log_particules(particule *univers,int nb_particule, int output){
   int k=0;
   while (k < nb_particule){	
@@ -113,6 +114,7 @@ void print_particule(particule *p){
 //////////////////////////////////////////////////
 #ifdef MPIFLAG
 #include <mpi.h>
+/* Même chose que log_particules mais en parallele */
 void log_particules_par(particule *univers,int alpha, int output, 
 			double t, int root, int iteration){
   int rank, size;

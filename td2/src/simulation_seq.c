@@ -24,6 +24,7 @@ int main(int argc, char** argv){
     perror("Erreur ouverture fichier\n");
     return EXIT_FAILURE;
   } 
+  /* Fichier d'output des résultats */
   int output = open(argv[2], O_CREAT | O_RDWR, 0755);
   if (output == -1){
     perror("open : fichier output\n");
@@ -37,11 +38,8 @@ int main(int argc, char** argv){
   int i = 0; int n = 0; int p = 0;
   double dt = 0.0, t = 0.0; 
   particule univers[m];
+  /* Recuperation des particules à partir du fichier */
   parse_particules(argv[1], univers);
-  /*
-  for(int j=0; j<m; ++j)
-    print_particule(univers+j);
-  */
   vecteur force_tmp;
   while (i < NB_ITERATIONS){
     // calcul des forces exterieures
@@ -51,9 +49,8 @@ int main(int argc, char** argv){
 	  p++;
 	  continue;
 	}	
-	// calcul de la distance de la particule la plus proche
+	// calcul de la distance de la particule la plus proche (pour dt)
 	double dist = distance(&univers[p], &univers[n]);
-	//printf("distance : %lf\n", dist);
 	if (univers[n].proche_d == 0.0 || 
 	    dist < univers[n].proche_d){
 	  univers[n].proche_d = dist; 
@@ -65,16 +62,16 @@ int main(int argc, char** argv){
       p=0;
       n++;
     }
-    //puts("############ DEBUT ###############");
     n = 0;
     dt = nouveau_dt(univers, m);
     t += dt;
+    /* log de dt */
     dprintf(output, "%lf\n", t);
-    // mise à jour des particules
+    /* mise à jour des particules */
     update_particules(univers, m, dt);
+    /* log des particules */
     log_particules(univers, m, output);
     i++; 
-    //puts("############ FIN ###############");
   }
   close(output);
   return 0;

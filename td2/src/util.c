@@ -7,9 +7,12 @@
 
 #define TAILLE_LIGNE 81
 
+/* Compare deux doubles pour palier au problème sur le flottants */
 int equal_double(double a, double b){
   return fabs(a-b) < EPS;
 }
+
+/* Calcul le nouveau pas de temps */
 double nouveau_dt(particule* univers, int m){
   int n = 0;
   double d_min = 0.0;
@@ -23,7 +26,7 @@ double nouveau_dt(particule* univers, int m){
   return d_min;
 }
 
-
+/* parse le fichier de particules et rempli la structure */
 void parse_particules(char *filename, particule *ps){
   FILE *f = NULL;
   char ligne[TAILLE_LIGNE];
@@ -53,6 +56,7 @@ void parse_particules(char *filename, particule *ps){
 }
 
 
+/* solution à l équation de dt pour garantir la condition de l'énoncé */
 double solution_equ(particule p){
   double a = norme(&p.a) / 2;
   double b = norme(&p.v);
@@ -62,13 +66,13 @@ double solution_equ(particule p){
   if(equal_double(a,0.0))
     return -c/b;
   x = (-b + sqrt(delta)) / (2 * a);
-  //printf("%lf %lf %lf DELTA %lf  SOL %lf \n", a,b,c, delta, x);
   return x;
 }
 
 //////////////////////////////////////////////////
 #ifdef MPIFLAG
 #include <mpi.h>
+/* comme parse_particules mais en parallele */
 void parse_particule_par(char* filename, int rank, particule* univers){
   
   int nb; char ligne[MAX];  
@@ -105,12 +109,4 @@ void parse_particule_par(char* filename, int rank, particule* univers){
 
 
 #endif 
-
-/* // Arthur dit que ça marche */
-/* void init_buffers(int alpha, particule* com, particule* univers){ */
-  
-/*   for (int i=0; i<alpha; i++){ */
-/*     com[i] = univers[i]; */
-/*   } */
-/* } */
 

@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "particule.h"
 #define MAX 486 //taile decimale du nombre de particule
-#define EPS 1E-6
+#define EPS 1E-10 //Precision pour les opérations sur les doubles
 
 int equal_double(double a, double b);
 double solution_equ(particule p);

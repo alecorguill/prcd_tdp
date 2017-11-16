@@ -1,10 +1,11 @@
 #ifndef PARTICULE_H
 #define PARTICULE_H
 
-#define G 5
+#define G 6.67408E-11
 
 #include <stdio.h>
 
+/* Position en 2d */
 struct position{
   double x;
   double y;
@@ -12,6 +13,7 @@ struct position{
 
 typedef struct position vecteur;
   
+/* Represente une particule */
 struct particule{
   int m; //masse
   vecteur p; //position

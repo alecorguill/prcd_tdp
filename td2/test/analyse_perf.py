@@ -17,7 +17,7 @@ def save_csv(filename,x,y,columnx,columny):
     with open(filename, "wb") as csv_file:
         writer = csv.writer(csv_file, delimiter=',')
         writer.writerow([columnx,columny])
-        for i in range(x):
+        for i in range(len(x)):
             writer.writerow([str(x),str(y)])
 
 def perf_seq(input, output, save_to_csv=False):

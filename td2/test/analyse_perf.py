@@ -14,7 +14,7 @@ nb_proc_step = 2
 size = 100
 
 def save_csv(filename,x,y,columnx,columny):
-    print len(x), y
+
     with open(filename, "wb") as csv_file:
         writer = csv.writer(csv_file, delimiter=',')
         writer.writerow([columnx,columny])

@@ -3,8 +3,7 @@
 #include "perf.h"
 #include "util.h"
 #include "assert.h"
-#include "cblas.h"
-#include "blas.h"
+#include "mkl.h"
 
 
 int main(){
@@ -24,29 +23,13 @@ int main(){
     flop = 2 * m*m*m;
     //
     perf(&start);
-    cblas_dgemm_scalaire(m,b,m,b,m,c,m);
+    cblas_dgemm(0,0,0,m,m,m,1,b,m,b,m,1,c,m);
     perf(&stop);
     perf_diff(&start, &stop);
     performance_ijk = perf_mflops(&stop, flop); 
-    
-    //
-    perf(&start);
-    cblas_dgemm_scalaire_kij(m,b,m,b,m,c,m);
-    perf(&stop);
-    perf_diff(&start, &stop);
-    performance_kij = perf_mflops(&stop, flop); 
- 
-    //
-    perf(&start);
-    cblas_dgemm_scalaire_jik(m,b,m,b,m,c,m);
-    perf(&stop);
-    perf_diff(&start, &stop);
-    performance_jik = perf_mflops(&stop, flop); 
-    
-    printf("Mflop/s %d: \n ijk : %lf - kij : %lf - jik : %lf\n", m,performance_ijk,
-    	   performance_kij, performance_jik);
-    fprintf(fp, "%d, %.4f, %.4f, %.4f\n", m,performance_ijk,performance_kij,
-	    performance_jik);
+
+    printf("Mflop/s %d: \n ijk : %lf\n", m, performance_ijk);
+    fprintf(fp, "%d, %.4f\n", m,performance_ijk);
     
     m += 10;
  }

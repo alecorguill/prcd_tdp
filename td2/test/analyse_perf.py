@@ -98,7 +98,7 @@ def perf(input, output):
     time_seq = perf_seq(input, output,True)
     time_par = perf_par(input, output,True)
     speed_par = speed_par_f(input, output,True)
-    speed_up = speed_up_f(speed_par,input, ouput, True)
+    speed_up = speed_up_f(speed_par,input, output, True)
     return time_seq,time_par,speed_par,speed_up
 
 

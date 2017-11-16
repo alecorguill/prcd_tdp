@@ -99,7 +99,8 @@ void parse_particule_par(char* filename, int rank, particule* univers){
       (univers+j)->a.x = 0.0;
       (univers+j)->a.y = 0.0;
       (univers+j)->proche_d = 0.0;
-    
+      (univers+j)->f_ext.x = 0.0;
+      (univers+j)->f_ext.y = 0.0;
       j++;
     }
     i++;

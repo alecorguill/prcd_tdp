@@ -10,7 +10,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define NB_ITERATIONS 300
+#define NB_ITERATIONS 20
 
 int main(int argc, char** argv){
   

@@ -62,7 +62,7 @@ def speed_par_f(input, output, save_to_csv=False):
 
 
     ##Speed up
-    P = filter(lambda x: nb_part_default%x==0, range(nb_part_default))
+    P = filter(lambda x: nb_part_default%x==0, range(1,nb_part_default))
     os.system("python generate_particules.py {} {}".format(input,nb_part_default))
     for p in P:
         ##

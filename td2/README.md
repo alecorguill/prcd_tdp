@@ -16,3 +16,7 @@ En parallel :
 
 Pour les tests unitaires :
      make test
+
+Pour lancer les courbes :     
+     cd test
+     

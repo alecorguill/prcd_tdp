@@ -78,7 +78,7 @@ def speed_par_f(input, output, save_to_csv=False):
 
 def speed_up_f(speed_par, input, output, save_to_csv=False):
     os.system("make -C ../ clean")
-    os.system("make -C ../ parallel")
+    os.system("make -C ../ sequentiel")
     os.system("python generate_particules.py {} {}".format('particules_tmp.txt',nb_part_default))
 
     # Tps sequentiel

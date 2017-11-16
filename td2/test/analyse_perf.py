@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import csv
 
 np_default = 5
-nb_part_default = 200
+nb_part_default = 2*50
 nb_proc_step = 2
 size = 100
 
@@ -38,27 +38,6 @@ def perf_seq(input, output, save_to_csv=False):
         save_csv('perf_seq',N,time_seq,'size','perf_seq')
     return time_seq
 
-def speed_seq(input, output, save_to_csv=False):
-    speed_seq = [] 
-
-    os.system("make -C ../ clean")
-    os.system("make -C ../ sequentiel")
-   
-    os.system("python generate_particules.py {} {}".format(input,nb_part_default))
-
-    P = range(nb_proc_speedup)
-    ## Speed up parallel
-    for p in P:
-    ##
-        start = time.time()
-        os.system("../sequentiel {} {}".format(input,output))
-        end = time.time()
-        speed_seq.append(end-start)
-        time_seq.append(end-start)
-    if save_to_csv:    
-        save_csv('speed_seq',P,speed_seq,'size','speed_seq')
-    return speed_seq
-
 def perf_par(input, output, save_to_csv=False):
     time_par = []
     os.system("make -C ../ clean")
@@ -80,7 +59,8 @@ def perf_par(input, output, save_to_csv=False):
 def speed_par():
     speed_par = []
     os.system("make -C ../ clean")
-    os.system("make -C ../ parallel")
+    os.system("make -C ../ sequentiel")
+
 
     ##Speed up    
     P = range(nb_proc_speedup)
@@ -96,14 +76,31 @@ def speed_par():
   
     return speed_par
 
+def speed_up(speed_par, save_to_csv=False):
+    os.system("make -C ../ clean")
+    os.system("make -C ../ parallel")
+    os.system("python generate_particules.py {} {}".format('particules_tmp.txt',nb_part_default))
+
+    # Tps sequentiel
+    start = time.time()
+    os.system("../sequentiel {} {}".format(input,output))
+    end = time.time()
+    t = end-start
+    
+    speed_up = [t/s for s in speed_par]
+    P = range(2,nb_part_default,2)
+    if save_to_csv:
+        save_csv('speed_up',P,speed_up,'size','speed_up')
+    return speed_up
+
 
 def perf(input, output):
-   
-    time_seq = perf_seq(input, output)
-    time_par = perf_par(input, output)
-    speed_seq = speed_seq(input, output)
-    speed_par = speed_par(input, output)
-    return time_seq,time_par,speed_seq,speed_par
+    time_seq, time_par, speed_seq, speed_par, speed_up = [],[],[],[],[] 
+    time_seq = perf_seq(input, output,True)
+    time_par = perf_par(input, output,True)
+    speed_par = speed_par(input, output,True)
+    speed_up = speed_up(speed_par,True)
+    return time_seq,time_par,speed_seq,speed_par,speed_up
 
 
 def plot(x,y,name,xlabel=None,ylabel=None,label=None):
@@ -113,7 +110,7 @@ def plot(x,y,name,xlabel=None,ylabel=None,label=None):
     ax.plot(x,y,label)
     
 # the csv files need to contain only 2 columns
-def plot_csv(filename, xlabel=None, label=None, ylabel=None, save=False):
+def plot_csv(filename,name,xlabel=None, ylabel=None, save=False):
     # Extracting
     with open(filename) as csvfile:
         rows = list(csv.reader(csvfile))
@@ -125,7 +122,7 @@ def plot_csv(filename, xlabel=None, label=None, ylabel=None, save=False):
     # Plotting
     name = filename.split('.')[0]
     fig, ax = plt.subplots()
-    ax.plot(sizes, flops,label=label)
+    ax.plot(sizes, flops)
     ax.set(xlabel=xlabel,ylabel=ylabel,title=name) 
     if save:
         fig.savefig(name);
@@ -136,5 +133,5 @@ if __name__ == "__main__":
         print("Usage: python analyse_perf.py input output")
         exit(-1)
     
-    # time_seq,time_par,speed_seq,speed_par = perf(sys.argv[1],sys.argv[2])
+    #time_seq,time_par,speed_seq,speed_par,speed_up = perf(sys.argv[1],sys.argv[2])
     

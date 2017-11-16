@@ -18,7 +18,7 @@ def save_csv(filename,x,y,columnx,columny):
         writer = csv.writer(csv_file, delimiter=',')
         writer.writerow([columnx,columny])
         for i in range(len(x)):
-            writer.writerow([str(x),str(y)])
+            writer.writerow([str(x[i]),str(y[i])])
 
 def perf_seq(input, output, save_to_csv=False):
     time_seq = []
@@ -55,7 +55,7 @@ def perf_par(input, output, save_to_csv=False):
         save_csv('perf_par',N,time_par,'size','perf_par')
     return time_par
 
-def speed_par():
+def speed_par(input, output, save_to_csv=False):
     speed_par = []
     os.system("make -C ../ clean")
     os.system("make -C ../ sequentiel")

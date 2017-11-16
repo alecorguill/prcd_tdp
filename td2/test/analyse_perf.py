@@ -34,7 +34,7 @@ def perf_seq(input, output, save_to_csv=False):
         end = time.time()
         time_seq.append(end-start)
     if save_to_csv:
-        save_csv('perf_seq',N,time_seq,'size','perf_seq')
+        save_csv('perf_seq.csv',N,time_seq,'size','perf_seq')
     return time_seq
 
 def perf_par(input, output, save_to_csv=False):
@@ -52,7 +52,7 @@ def perf_par(input, output, save_to_csv=False):
         end = time.time()
         time_par.append(end-start)
     if save_to_csv:
-        save_csv('perf_par',N,time_par,'size','perf_par')
+        save_csv('perf_par.csv',N,time_par,'size','perf_par')
     return time_par
 
 def speed_par_f(input, output, save_to_csv=False):
@@ -62,7 +62,7 @@ def speed_par_f(input, output, save_to_csv=False):
 
 
     ##Speed up
-    P = range(2,nb_part_default,2)
+    P = filter(lambda x: nb_part_default%x==0, range(nb_part_default))
     os.system("python generate_particules.py {} {}".format(input,nb_part_default))
     for p in P:
         ##
@@ -71,7 +71,7 @@ def speed_par_f(input, output, save_to_csv=False):
         end = time.time()
         speed_par.append(end-start)
     if save_to_csv:
-        save_csv('speed_par',P,speed_par,'size','speed_par')
+        save_csv('speed_par.csv',P,speed_par,'size','speed_par')
   
     return speed_par
 
@@ -89,7 +89,7 @@ def speed_up_f(speed_par, save_to_csv=False):
     speed_up = [t/s for s in speed_par]
     P = range(2,nb_part_default,2)
     if save_to_csv:
-        save_csv('speed_up',P,speed_up,'size','speed_up')
+        save_csv('speed_up.csv',P,speed_up,'size','speed_up')
     return speed_up
 
 
@@ -121,7 +121,7 @@ def plot_csv(filename,name,xlabel=None, ylabel=None, save=False):
     # Plotting
     name = filename.split('.')[0]
     fig, ax = plt.subplots()
-    ax.plot(sizes, flops)
+    ax.plot(sizes, rows)
     ax.set(xlabel=xlabel,ylabel=ylabel,title=name) 
     if save:
         fig.savefig(name);

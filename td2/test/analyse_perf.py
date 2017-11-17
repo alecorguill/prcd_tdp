@@ -8,7 +8,7 @@ import subprocess, time
 #import pandas as pd
 import csv
 
-np_default = 5
+np_default = 2
 nb_part_default = 2*50
 nb_proc_step = 2
 
@@ -29,7 +29,7 @@ def perf_seq(input, output, save_to_csv=False):
     for n in N:
         ##
         os.system("python generate_particules.py {} {}".format(input,n))
-        print("../sequentiel {} {}".format(input,output)) 
+        #print("../sequentiel {} {}".format(input,output)) 
         start = time.time()
         os.system("../sequentiel {} {}".format(input,output))
         end = time.time()
@@ -48,7 +48,7 @@ def perf_par(input, output, save_to_csv=False):
     for n in N:
         ##
         os.system("python generate_particules.py {} {}".format(input,n))
-        print("mpirun -np {} ./parallel {} {}".format(np_default,input,output))
+        #print("mpirun -np {} ./parallel {} {}".format(np_default,input,output))
         start = time.time()
         os.system("mpirun -np {} ./parallel {} {}".format(np_default,input,output))
         end = time.time()
@@ -68,7 +68,7 @@ def speed_par_f(input, output, save_to_csv=False):
     os.system("python generate_particules.py {} {}".format(input,nb_part_default))
     for p in P:
         ##
-        print("mpirun {} parallel {} {}".format(p,input,output))
+        #print("mpirun {} parallel {} {}".format(p,input,output))
         start = time.time()
         os.system("mpirun -np {} parallel {} {}".format(p,input,output))
         end = time.time()
@@ -82,7 +82,7 @@ def speed_up_f(speed_par, input, output, save_to_csv=False):
     os.system("make -C ../ clean")
     os.system("make -C ../ sequentiel")
     os.system("python generate_particules.py {} {}".format('particules_tmp.txt',nb_part_default))
-    print("../sequentiel {} {}".format(input,output))
+    #print("../sequentiel {} {}".format(input,output))
   
     # Tps sequentiel
     start = time.time()

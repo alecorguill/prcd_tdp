@@ -11,10 +11,9 @@ import csv
 np_default = 5
 nb_part_default = 2*50
 nb_proc_step = 2
-size = 100
 
 def save_csv(filename,x,y,columnx,columny):
-    print len(x), y
+
     with open(filename, "wb") as csv_file:
         writer = csv.writer(csv_file, delimiter=',')
         writer.writerow([columnx,columny])
@@ -78,7 +77,7 @@ def speed_par_f(input, output, save_to_csv=False):
 
 def speed_up_f(speed_par, input, output, save_to_csv=False):
     os.system("make -C ../ clean")
-    os.system("make -C ../ parallel")
+    os.system("make -C ../ sequentiel")
     os.system("python generate_particules.py {} {}".format('particules_tmp.txt',nb_part_default))
 
     # Tps sequentiel
@@ -88,7 +87,7 @@ def speed_up_f(speed_par, input, output, save_to_csv=False):
     t = end-start
     
     speed_up = [t/s for s in speed_par]
-    P = filter(lambda x: nb_part_default%x==0, range(nb_part_default))
+    P = filter(lambda x: nb_part_default%x==0, range(1,nb_part_default))
 
     if save_to_csv:
         save_csv('speed_up.csv',P,speed_up,'size','speed_up')

@@ -49,7 +49,7 @@ def perf_par(input, output, save_to_csv=False):
         ##
         os.system("python generate_particules.py {} {}".format(input,n))
         start = time.time()
-        os.system("mpirun -mca pml ob1 -np {} ./parallel {} {}".format(np_default,input,output))
+        os.system("mpirun -np {} ./parallel {} {}".format(np_default,input,output))
         end = time.time()
         time_par.append(end-start)
     if save_to_csv:
@@ -68,7 +68,7 @@ def speed_par_f(input, output, save_to_csv=False):
     for p in P:
         ##
         start = time.time()
-        os.system("mpirun -mca pml ob1 -np {} parallel {} {}".format(p,input,output))
+        os.system("mpirun {} parallel {} {}".format(p,input,output))
         end = time.time()
         speed_par.append(end-start)
     if save_to_csv:

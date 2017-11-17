@@ -70,7 +70,7 @@ def speed_par_f(input, output, save_to_csv=False):
         ##
         print("mpirun {} parallel {} {}".format(p,input,output))
         start = time.time()
-        os.system("mpirun {} parallel {} {}".format(p,input,output))
+        os.system("mpirun -np {} parallel {} {}".format(p,input,output))
         end = time.time()
         speed_par.append(end-start)
     if save_to_csv:

@@ -1,0 +1,11 @@
+Pas de longue page de garde
+Reference aux courbes en latex
+Legende courbe en francais
+Préférer les échelles logarithmiques
+Préciser les conditions expérimentales
+Bien décrire la courbe.
+Utiliser fichier BATCH
+
+/* TEST */
+Faire un make check
+Moyen rapide de tester si ca marche

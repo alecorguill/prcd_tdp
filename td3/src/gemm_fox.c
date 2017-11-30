@@ -69,6 +69,9 @@ int main(int argc, char** argv){
     MPI_Type_commit(&Particule_d);
   }
  
- 
   
+  
+  // Cartography
+  MPI_Finalize();
+  return 0;
 }

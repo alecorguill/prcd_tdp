@@ -9,7 +9,7 @@ import subprocess, time
 import csv
 
 np_default = 2
-nb_part_default = 2*50
+nb_part_default = 4000
 nb_proc_step = 2
 
 def save_csv(filename,x,y,columnx,columny):
@@ -22,11 +22,12 @@ def save_csv(filename,x,y,columnx,columny):
 
 def perf_seq(input, output, save_to_csv=False):
     time_seq = []
+    N = []
     os.system("make -C ../ clean")
     os.system("make -C ../ sequentiel")
-    N = range(1,nb_part_default)
+    n = 1
     # # Perf sequentiel
-    for n in N:
+    while n < nb_part_default:
         ##
         os.system("python generate_particules.py {} {}".format(input,n))
         #print("../sequentiel {} {}".format(input,output)) 
@@ -34,6 +35,9 @@ def perf_seq(input, output, save_to_csv=False):
         os.system("../sequentiel {} {}".format(input,output))
         end = time.time()
         time_seq.append(end-start)
+        N.append(n)
+        n = int(n*1.5+1)
+        print n
     if save_to_csv:
         save_csv('perf_seq.csv',N,time_seq,'size','perf_seq')
     return time_seq
@@ -42,10 +46,10 @@ def perf_par(input, output, save_to_csv=False):
     time_par = []
     os.system("make -C ../ clean")
     os.system("make -C ../ parallel")
-    N = range(np_default,nb_part_default,np_default) 
-    
+    N = []
+    n = 2
     # Perf parallel
-    for n in N:
+    while n < nb_part_default:
         ##
         os.system("python generate_particules.py {} {}".format(input,n))
         #print("mpirun -np {} ./parallel {} {}".format(np_default,input,output))
@@ -53,6 +57,11 @@ def perf_par(input, output, save_to_csv=False):
         os.system("mpirun -np {} ./parallel {} {}".format(np_default,input,output))
         end = time.time()
         time_par.append(end-start)
+        N.append(n)
+        n = int(n*1.5+1)
+        n = n+1 if n%2 == 1 else n
+        print n
+        
     if save_to_csv:
         save_csv('perf_par.csv',N,time_par,'size','perf_par')
     return time_par
@@ -101,13 +110,12 @@ def speed_up_f(speed_par, input, output, save_to_csv=False):
 
 def perf(input, output):
     time_seq, time_par, speed_seq, speed_par, speed_up = [],[],[],[],[] 
-    time_seq = perf_seq(input, output,True)
+    #time_seq = perf_seq(input, output,True)
     time_par = perf_par(input, output,True)
-    speed_par = speed_par_f(input, output,True)
-    speed_up = speed_up_f(speed_par,input, output, True)
+    # speed_par = speed_par_f(input, output,True)
+    # speed_up = speed_up_f(speed_par,input, output, True)
     return time_seq,time_par,speed_par,speed_up
-
-
+    
 def plot(x,y,name,xlabel=None,ylabel=None,label=None):
     # # Plotting
     fig, ax = plt.subplots()
@@ -137,6 +145,5 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python analyse_perf.py input output")
         exit(-1)
-        
     time_seq,time_par,speed_par,speed_up = perf(sys.argv[1],sys.argv[2])
     

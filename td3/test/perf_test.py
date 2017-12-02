@@ -18,7 +18,7 @@ def gemm_fox_N(Np, N_lim):
         N = n**2
         os.system("python generate_matrix.py" + filename_A + " " + str(N))
         os.system("python generate_matrix.py" + filename_B + " " + str(N))
-        time = float(os.popen("mpirun -n " + str(Np) + filename_A + filename_B + filename_C).read())
+        time = float(os.popen("mpirun -n " + str(Np) + " ../gemm_fox" + filename_A + filename_B + filename_C).read())
         measures.append([n,time])
     return measures
 
@@ -31,7 +31,7 @@ def gemm_fox_Np(N, Np_lim):
     for Np in range(1,Np_lim,2):
         os.system("python generate_matrix.py" + filename_A + " " + str(N))
         os.system("python generate_matrix.py" + filename_B + " " + str(N))
-        time = float(os.popen("mpirun -n " + str(Np) + filename_A + filename_B + filename_C).read())
+        time = float(os.popen("mpirun -n " + str(Np) + " ../gemm_fox" + filename_A + filename_B + filename_C).read())
         measures.append([Np,time])
     return measures
 

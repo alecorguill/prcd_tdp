@@ -33,7 +33,7 @@ def gemm_fox_random():
     filename_C_seq = " matrix_C_seq.txt"
     os.system("python generate_matrix.py" + filename_A + " " + str(N))
     os.system("python generate_matrix.py" + filename_B + " " + str(N))
-    os.system("mpirun -n " + str(Np) + filename_A + filename_B + filename_C)
+    os.system("mpirun -n " + str(Np) + "../gemm_fox" + filename_A + filename_B + filename_C)
     os.system("../gemm " + str(Np) + filename_A + filename_B + filename_C_seq)
     C_seq = parse_matrix(filename_C_seq)
     C = parse_matrix(filename_C)
@@ -51,7 +51,7 @@ def gemm_fox():
     matrix = np.matrix([[1]*N]*N)
     save_matrix(matrix," matrix_A.txt")
     save_matrix(matrix," matrix_B.txt")
-    os.system("mpirun -n " + str(Np) + filename_A + filename_B + filename_C)
+    os.system("mpirun -n " + str(Np) + "../gemm_fox" + filename_A + filename_B + filename_C)
     os.system("../gemm " + str(Np) + filename_A + filename_B + filename_C_seq)
     C_seq = parse_matrix(filename_C_seq)
     C = parse_matrix(filename_C)

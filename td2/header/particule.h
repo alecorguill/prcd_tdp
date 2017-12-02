@@ -4,7 +4,7 @@
 #define G 6.67408E-11
 
 #include <stdio.h>
-
+ 
 /* Position en 2d */
 struct position{
   double x;

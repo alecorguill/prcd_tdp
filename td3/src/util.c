@@ -8,13 +8,13 @@ double* parse_matrix(char* file, double *M){
   FILE* f = fopen(file,"r");
   if (f == NULL){
     perror("fopen: cannot open the file\n");
-    return EXIT_FAILURE;
+    exit(EXIT_FAILURE);
   }
   char line[MAX_LINE];
-  int N = atoi(fgets(line,MAX_LINE,fd));
+  int N = atoi(fgets(line,MAX_LINE,f));
   int i = 0;
   char *token; char delim[] = " ";
-  while(fgets(line,MAX_LINE,fd)){
+  while(fgets(line,MAX_LINE,f)){
     token = strtok(line,delim);
     for (int j = 0; j < N; j++){
        token = strtok(NULL,delim);
@@ -32,6 +32,8 @@ void print_matrix(double* A, int N, int fd){
     dprintf(fd, "\n");
  }
 }
+
+
 
 
 

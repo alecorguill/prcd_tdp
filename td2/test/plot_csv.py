@@ -7,7 +7,7 @@ import matplotlib.animation as animation
 import csv
 
 
-def plot_csv(filename, name, xlabel=None, ylabel=None, save=False):
+def plot_csv(filename, save=False):
     # Extracting
     with open(filename) as csvfile:
         rows = list(csv.reader(csvfile))
@@ -15,25 +15,30 @@ def plot_csv(filename, name, xlabel=None, ylabel=None, save=False):
     features = rows.pop(0)
     sizes = map(lambda x:int(x[0]), rows)
     rows = map(lambda x:x[1:], rows)
-
+    
     # Plotting
-    name = filename.split('.')[0]
-    fig, ax = plt.subplots()
-    ax.plot(sizes, rows)
-    ax.set(xlabel=xlabel,ylabel=ylabel,title=name) 
+    name = "Courbe de performance de l'algorithme sequentiel"
+
+    t = np.arange(0.0, 2.0, 0.01)
+    s1 = np.sin(2*np.pi*t)
+    s2 = np.sin(4*np.pi*t)
+    
+    plt.figure(1)
+    plt.subplot(111)
+    plt.plot(sizes, rows, 'b')
+    plt.xlabel('nombre de particules')
+    plt.ylabel('temps (en s)')
+    plt.title('Performance parallele')    
+    # plt.subplot(111)
+    # plt.plot(sizes, [x*x/500000.0 for x in sizes], 'b')
     if save:
         fig.savefig(name);
     plt.show()
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python plot_csv.py filename.csv name [xlabel,ylabel]")
+        print("Usage: python plot_csv.py filename.csv")
         exit(-1)
-    if len(sys.argv) == 3: 
-        plot_csv(sys.argv[1],sys.argv[2])
-    if len(sys.argv) == 4: 
-        plot_csv(sys.argv[1],sys.argv[2],sys.argv[3])
-    if len(sys.argv) == 5: 
-        plot_csv(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
-  
+    plot_csv(sys.argv[1])
+        
         

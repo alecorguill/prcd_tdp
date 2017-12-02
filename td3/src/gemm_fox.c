@@ -180,6 +180,7 @@ int main(int argc, char** argv){
   free(lblocB);
   free(lblocC);
   free(curA);
+
   MPI_Finalize();
   return 0;
 }

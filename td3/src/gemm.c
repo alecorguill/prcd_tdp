@@ -8,3 +8,4 @@ void gemm(const int m, const int n, const int K, const double *A,const int lda, 
     }
   } 
 }
+

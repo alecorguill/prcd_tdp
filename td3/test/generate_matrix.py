@@ -7,7 +7,7 @@ MAX_VAL = 10
 
 def generate_row(N):
     row = np.random.uniform(MIN_VAL,MAX_VAL,N)
-    row = map(lambda x:str(x), row)
+    row = map(lambda x:str(int(x)), row)
     return ' '.join(row)
 
 def generate_matrix(filename, N):
@@ -15,7 +15,7 @@ def generate_matrix(filename, N):
         fd.write(str(N)+'\n')
         for i in range(N): 
             row = generate_row(N)
-            fd.write(row+'\n')
+            fd.write(row+' \n')
      
             
 if __name__ == "__main__":

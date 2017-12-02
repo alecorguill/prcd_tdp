@@ -1,25 +1,25 @@
 #include <stdio.h>
-#include <util.h>
 #include <stdlib.h>
 #include <mpi.h>
 #include <string.h>
 #include <math.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
+#include "util.h"
 #include "gemm.h"
 
 #define STDOUT 1
+#define TEST {printf("TEST %d ME : %d \n",__LINE__,rank);fflush(stdout);}
+
 
 /* C = A*B algorithme de fox 
    dim(A)=dim(B)=N=n*k
    colonne major
 */
 int main(int argc, char** argv){
-  if (argc != 3) {
-    printf("Erreur : Argument manquant\n");
-    printf("Usage : ./exec file_A file_B file_C\n");
-    return EXIT_FAILURE;
-  } 
-
   MPI_Init(NULL,NULL);
   int rank, size, tag;
   int root = 0;
@@ -33,6 +33,12 @@ int main(int argc, char** argv){
   double * B;
 
   if(rank == root){
+    if (argc != 4) {
+      printf("Erreur : Argument manquant\n");
+      printf("Usage : ./exec file_A file_B file_C\n");
+      return EXIT_FAILURE;
+    } 
+    
     /* Matrix A file */
     FILE* fd_A =fopen(argv[1], "r");
     if (!fd_A){
@@ -57,7 +63,7 @@ int main(int argc, char** argv){
       fprintf(stderr, "A and B must have same dimensions");
       return EXIT_FAILURE;
     }    
-    else if(dim_A% (int) sqrt(size) == 0){
+    else if(dim_A% (int) sqrt(size) != 0){
       fprintf(stderr, "Wrong dimensions");
       return EXIT_FAILURE;
     }    
@@ -99,12 +105,12 @@ int main(int argc, char** argv){
   MPI_Type_vector(size_blocs,size_blocs,dim,MPI_DOUBLE, &bloc);
   MPI_Type_commit(&bloc);
   
-
+  
   if( rank == root){
     A = (double *) malloc(sizeof(double)*dim*dim);
     B = (double *) malloc(sizeof(double)*dim*dim);
     parse_matrix(argv[1],A);
-    parse_matrix(argv[1],B);
+    parse_matrix(argv[2],B);
     /* MATRIX ARE LOADED */
     /* cut a matrix into blocks and send it to cartesien grid process */   
     int world_rank;
@@ -118,13 +124,15 @@ int main(int argc, char** argv){
       }
     }
   }
+  //MPI_Barrier(MPI_COMM_WORLD);
+
+
   /* starting fox product, consider this section as local */
   /* receiving the local blocks A B */
   double * lblocA = (double *) malloc(sizeof(double)*size_blocs*size_blocs);
   double * lblocB = (double *) malloc(sizeof(double)*size_blocs*size_blocs);
   MPI_Recv(lblocA,size_blocs*size_blocs,MPI_DOUBLE,0,tag,MPI_COMM_WORLD, &status);
   MPI_Recv(lblocB,size_blocs*size_blocs,MPI_DOUBLE,0,tag,MPI_COMM_WORLD, &status);
-  
   /* result block Cij */
   double * lblocC = (double *) malloc(sizeof(double)*size_blocs*size_blocs);
   for(int i =0; i<size_blocs*size_blocs; ++i)
@@ -137,23 +145,22 @@ int main(int argc, char** argv){
   /* circular rotation for b blocks */
   int src = (myrow+nb_div-1) % nb_div;
   int dest = (myrow+1) % nb_div;
-    for(int k=0; k<nb_div; ++k){
-      /* process to broadcast A block */
-      to_broadcast = (myrow + k)%nb_div;
-      if(mycol == to_broadcast){
-	MPI_Bcast(&lblocA, 1, bloc, to_broadcast, row_comm);
-	gemm(size_blocs,size_blocs,size_blocs,lblocA,size_blocs,lblocB,size_blocs,
-	     lblocC, size_blocs);
-      }
-      else{
-	MPI_Bcast(curA, 1, bloc, to_broadcast, row_comm);
-	gemm(size_blocs,size_blocs,size_blocs,curA,size_blocs,lblocB,size_blocs,
-	     lblocC, size_blocs);
-      }
-      /* sending b blocks with rotation */
-      MPI_Sendrecv_replace(lblocB,1,bloc,dest,tag,src,tag,col_comm,&status);
+  for(int k=0; k<nb_div; ++k){
+    /* process to broadcast A block */
+    to_broadcast = (myrow + k)%nb_div;
+    if(mycol == to_broadcast){
+      MPI_Bcast(&lblocA, 1, bloc, to_broadcast, row_comm);
+      gemm(size_blocs,size_blocs,size_blocs,lblocA,size_blocs,lblocB,size_blocs,
+	   lblocC, size_blocs);
     }
-  
+    else{
+      MPI_Bcast(curA, 1, bloc, to_broadcast, row_comm);
+      gemm(size_blocs,size_blocs,size_blocs,curA,size_blocs,lblocB,size_blocs,
+	   lblocC, size_blocs);
+    }
+    /* sending b blocks with rotation */
+    MPI_Sendrecv_replace(lblocB,1,bloc,dest,tag,src,tag,col_comm,&status);
+  }
   int displs[size];
   for(int i=0; i<size; ++i){
     MPI_Cart_coords(grid_comm, rank, 2, coord);
@@ -171,7 +178,14 @@ int main(int argc, char** argv){
 
   if(rank == root){
     /* copy on a file */
-    print_matrix(C,dim,STDOUT);
+        /* Matrix B file */
+    int fdc = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC,0744);
+    if (fdc < 0){
+      perror("Erreur ouverture fichier\n");
+      return EXIT_FAILURE;
+    } 
+    close(fdc);
+    print_matrix(C,dim,fdc);
     free(C);
     free(A);
     free(B);    

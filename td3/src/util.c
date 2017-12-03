@@ -27,6 +27,7 @@ double* parse_matrix(char* file, double *M){
     }
     i++;
   }
+  fclose(f);   
   return M;
 }
 

@@ -1,14 +1,6 @@
 # coding: utf-8
 import csv,os,sys, math
 
-def write_csv(array, headers, csvfilename):
-    with open(csvfilename, 'w') as fp:
-        fp.write("{} \n".format(",".join(headers)))
-        for row in array:
-            row = map(lambda x:str(x),row)
-            fp.write("{} \n".format(",".join(row)))
-
-
 def gemm_fox_N(Np, N_lim):
     filename_A = " matrix_A.txt"
     filename_B = " matrix_B.txt"

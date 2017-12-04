@@ -17,7 +17,7 @@ def plot_csv(filename, save=False):
     rows = map(lambda x:x[1:], rows)
     
     # Plotting
-    name = "Courbe de performance de l'algorithme sequentiel"
+    name = "Erreur reltive seq (python) fox"
 
     t = np.arange(0.0, 2.0, 0.01)
     s1 = np.sin(2*np.pi*t)
@@ -27,8 +27,8 @@ def plot_csv(filename, save=False):
     plt.subplot(111)
     plt.plot(sizes, rows, 'b')
     plt.xlabel('taille')
-    plt.ylabel('temps (en s)')
-    plt.title('Performance parallele')    
+    plt.ylabel('erreur')
+    plt.title('Erreur relative')    
     # plt.subplot(111)
     # plt.plot(sizes, [x*x/500000.0 for x in sizes], 'b')
     if save:

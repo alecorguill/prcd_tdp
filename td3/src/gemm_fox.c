@@ -31,7 +31,7 @@ int main(int argc, char** argv){
   int dim, dim_A,dim_B, size_blocs, nb_div;
   double *A;
   double * B;
-
+  double t1,t2, start, end;
   if(rank == root){
     if (argc != 4) {
       printf("Erreur : Argument manquant\n");
@@ -110,8 +110,7 @@ int main(int argc, char** argv){
     B = (double *) malloc(sizeof(double)*dim*dim);
     parse_matrix(argv[1],A);
     parse_matrix(argv[2],B);
-    print_matrix(B,dim,1);
-  
+   
     /* MATRIX ARE LOADED */
     /* cut a matrix into blocks and send it to cartesien grid process */   
     int world_rank;
@@ -126,8 +125,7 @@ int main(int argc, char** argv){
     }
   }
   //MPI_Barrier(MPI_COMM_WORLD);
-
-
+  t1 = MPI_Wtime();
   /* starting fox product, consider this section as local */
   /* receiving the local blocks A B */
   double * lblocA = (double *) malloc(sizeof(double)*size_blocs*size_blocs);
@@ -167,7 +165,7 @@ int main(int argc, char** argv){
     MPI_Sendrecv_replace(lblocB,size_blocs*size_blocs, MPI_DOUBLE,dest,tag,src,tag,col_comm,&status);
         
  }
-  int displs[size];
+    int displs[size];
   
   for(int i=0; i<size; ++i){	 
     MPI_Cart_coords(grid_comm,i, 2, coord);
@@ -185,20 +183,29 @@ int main(int argc, char** argv){
   MPI_Type_create_resized(bloc,(MPI_Aint) 0, (MPI_Aint) size_blocs*sizeof(double),&bloc_resized);
   MPI_Type_commit(&bloc_resized);
   MPI_Gatherv(lblocC,size_blocs*size_blocs,MPI_DOUBLE,C,recvcounts,displs,bloc_resized,root,MPI_COMM_WORLD);
+  TEST
+  t2 = MPI_Wtime();
+  double time = t2-t1;
+  double timeg;
+  MPI_Reduce(&time,&timeg,1,MPI_DOUBLE,MPI_MAX,root,MPI_COMM_WORLD);
   if(rank == root){
     /* copy on a file */
         /* Matrix B file */
-    int fdc = open(argv[3], O_CREAT | O_WRONLY | O_TRUNC,0744);
+    int fdc = open(argv[3], O_CREAT | O_WRONLY | O_TRUNC,0700);
     if (fdc < 0){
       perror("Erreur ouverture fichier\n");
       return EXIT_FAILURE;
     } 
+    print_matrix(C,dim,fdc);
     close(fdc);
     for(int i =0; i<dim*dim; ++i)
       C[i] = 0.0;    
+    /* gemm(dim,dim,dim,A,dim,B,dim,C,dim); */
+    /* print_matrix(C,dim,1); */
     free(C);
     free(A);
     free(B);    
+    printf("%lf\n",timeg);
   }
   free(lblocA);
   free(lblocB);

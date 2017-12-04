@@ -1,12 +1,9 @@
-import random
-import sys
-import numpy as np
-
+import random,sys
 MIN_VAL = 2.5
 MAX_VAL = 10
 
 def generate_row(N):
-    row = np.random.uniform(MIN_VAL,MAX_VAL,N)
+    row = [random.uniform(MIN_VAL,MAX_VAL) for n in range(N)]
     row = map(lambda x:str(x), row)
     return ' '.join(row)
 

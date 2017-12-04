@@ -110,8 +110,7 @@ int main(int argc, char** argv){
     B = (double *) malloc(sizeof(double)*dim*dim);
     parse_matrix(argv[1],A);
     parse_matrix(argv[2],B);
-    print_matrix(B,dim,1);
-  
+   
     /* MATRIX ARE LOADED */
     /* cut a matrix into blocks and send it to cartesien grid process */   
     int world_rank;
@@ -193,9 +192,12 @@ int main(int argc, char** argv){
       perror("Erreur ouverture fichier\n");
       return EXIT_FAILURE;
     } 
+    print_matrix(C,dim,fdc);
     close(fdc);
     for(int i =0; i<dim*dim; ++i)
       C[i] = 0.0;    
+    gemm(dim,dim,dim,A,dim,B,dim,C,dim);
+    print_matrix(C,dim,1);
     free(C);
     free(A);
     free(B);    

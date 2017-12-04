@@ -17,7 +17,7 @@ def plot_csv(filename, save=False):
     rows = map(lambda x:x[1:], rows)
     
     # Plotting
-    name = "Courbe de performance de l'algorithme sequentiel"
+    name = "Erreur reltive seq (python) fox"
 
     t = np.arange(0.0, 2.0, 0.01)
     s1 = np.sin(2*np.pi*t)
@@ -27,6 +27,7 @@ def plot_csv(filename, save=False):
     plt.subplot(111)
     #plt.semilogx(sizes, rows, 'b')
     plt.plot(sizes, rows, 'b')
+
     plt.xlabel('nombre de processus (np)')
     plt.ylabel('speed up')
     plt.title('courbe de speed up avec N=1000')    

@@ -24,12 +24,8 @@ all : gemm_fox.o $(OBJS)
 %.o : %.c %.h
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) -c $<
 
-test : test_unitaire
+%.o : %.c
+	$(CC) -I$(HEADER_DIR) $(CFLAGS) -c $<
 
-test_unitaire : $(OBJS) test_unitaire.o 
-	$(CC) -o $@ $^ $(LDFLAGS)
-
-check : unit_test
-	echo 'unit_test'
 clean:
 	rm -f *.o $(EXEC) test_unitaire

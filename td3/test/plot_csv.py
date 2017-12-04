@@ -25,10 +25,12 @@ def plot_csv(filename, save=False):
     
     plt.figure(1)
     plt.subplot(111)
+    #plt.semilogx(sizes, rows, 'b')
     plt.plot(sizes, rows, 'b')
-    plt.xlabel('taille')
-    plt.ylabel('erreur')
-    plt.title('Erreur relative')    
+
+    plt.xlabel('nombre de processus (np)')
+    plt.ylabel('speed up')
+    plt.title('courbe de speed up avec N=1000')    
     # plt.subplot(111)
     # plt.plot(sizes, [x*x/500000.0 for x in sizes], 'b')
     if save:

@@ -125,7 +125,6 @@ int main(int argc, char** argv){
     }
   }
   //MPI_Barrier(MPI_COMM_WORLD);
-
   t1 = MPI_Wtime();
   /* starting fox product, consider this section as local */
   /* receiving the local blocks A B */
@@ -166,7 +165,7 @@ int main(int argc, char** argv){
     MPI_Sendrecv_replace(lblocB,size_blocs*size_blocs, MPI_DOUBLE,dest,tag,src,tag,col_comm,&status);
         
  }
-  int displs[size];
+    int displs[size];
   
   for(int i=0; i<size; ++i){	 
     MPI_Cart_coords(grid_comm,i, 2, coord);
@@ -184,11 +183,11 @@ int main(int argc, char** argv){
   MPI_Type_create_resized(bloc,(MPI_Aint) 0, (MPI_Aint) size_blocs*sizeof(double),&bloc_resized);
   MPI_Type_commit(&bloc_resized);
   MPI_Gatherv(lblocC,size_blocs*size_blocs,MPI_DOUBLE,C,recvcounts,displs,bloc_resized,root,MPI_COMM_WORLD);
-  
+  TEST
   t2 = MPI_Wtime();
-
-  MPI_Reduce(&t1,&start,1,MPI_DOUBLE,MPI_MIN,root,MPI_COMM_WORLD);
-  MPI_Reduce(&t2,&end,1,MPI_DOUBLE,MPI_MAX,root,MPI_COMM_WORLD);
+  double time = t2-t1;
+  double timeg;
+  MPI_Reduce(&time,&timeg,1,MPI_DOUBLE,MPI_MAX,root,MPI_COMM_WORLD);
   if(rank == root){
     /* copy on a file */
         /* Matrix B file */
@@ -206,7 +205,7 @@ int main(int argc, char** argv){
     free(C);
     free(A);
     free(B);    
-    printf("%lf\n",end-start);
+    printf("%lf\n",timeg);
   }
   free(lblocA);
   free(lblocB);

@@ -1,3 +1,4 @@
+
 import csv,os,sys
 
 def write_csv(array, headers, csvfilename):
@@ -19,7 +20,7 @@ def gemm_fox_N(Np, N_lim):
         print("python generate_matrix.py" + filename_B + " " + str(N))
         os.system("python generate_matrix.py" + filename_A + " " + str(N))
         os.system("python generate_matrix.py" + filename_B + " " + str(N))
-        print("mpirun --mca pml ob1 -n " + str(Np) + " ../gemm_fox" + filename_A + filename_B + filename_C)
+        print("mpirun -n " + str(Np) + " ../gemm_fox" + filename_A + filename_B + filename_C)
          
         time = float(os.popen("mpirun --mca pml ob1 -n " + str(Np) + " ../gemm_fox" + filename_A + filename_B + filename_C).read())
         measures.append([n,time])
@@ -41,7 +42,7 @@ def gemm_fox_Np(N, Np_lim):
         os.system("python generate_matrix.py" + filename_A + " " + str(N))
         os.system("python generate_matrix.py" + filename_B + " " + str(N))
 
-        print("mpirun --mca pml ob1  -n " + str(Np) + " ../gemm_fox" + filename_A + filename_B + filename_C)
+        print("mpirun  -n " + str(Np) + " ../gemm_fox" + filename_A + filename_B + filename_C)
         ##
         time = float(os.popen("mpirun --mca pml ob1  -n " + str(Np) + " ../gemm_fox" + filename_A + filename_B + filename_C).read())
         measures.append([Np,time])

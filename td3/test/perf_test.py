@@ -18,8 +18,7 @@ def gemm_fox_N(Np, N_lim):
     l = []
     val = 8
     while val < N_lim:
-        val = int(val*1.3)
-        print val,val - (val%4)
+        val = int(val*1.2)
         l.append(val - val%4)
         
     for N in l:

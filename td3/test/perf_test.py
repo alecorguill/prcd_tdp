@@ -1,5 +1,6 @@
 # coding: utf-8
 import csv,os,sys, math
+from util import *
 
 def gemm_fox_N(Np, N_lim):
     filename_A = " matrix_A.txt"
@@ -57,9 +58,8 @@ if __name__ == '__main__':
     N = int(sys.argv[2])
     N_lim = int(sys.argv[3])
     measures = gemm_fox_Np(N,N_lim)
-    #tmp = measures[0][1]
-    
-    #mesures = [tmp/x for x in measures]
+    tmp = measures[0][1]
+    measures = [[x[0],tmp/x[1]] for x in measures]
     print measures
     write_csv(measures,["N", "time"],filename)
         

@@ -45,5 +45,6 @@ class TestTDP3(unittest.TestCase):
     
 
 if __name__ == "__main__":
-    unittest.main(verbosity=2)
+    os.system("touch matrix_C.txt")
+    unittest.main()
 

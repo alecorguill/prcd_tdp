@@ -27,12 +27,5 @@ all : gemm_fox.o $(OBJS)
 %.o : %.c
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) -c $<
 
-test : test_unitaire
-
-test_unitaire : $(OBJS) test_unitaire.o 
-	$(CC) -o $@ $^ $(LDFLAGS)
-
-check : 
-	python test/unit_test.py
 clean:
 	rm -f *.o $(EXEC) test_unitaire

@@ -173,11 +173,7 @@ int main(int argc, char** argv){
   int displs[size];  
   for(int i=0; i<size; ++i){	 
     MPI_Cart_coords(grid_comm,i, 2, coord);
-    displs[i] = coord[0]+coord[1]*nb_div*size_blocs;
-    if(rank == root){
-      printf("displs i : %d   i : %d   j : %d \n", displs[i], coord[0], coord[1]);
-    }
-    
+    displs[i] = coord[0]+coord[1]*nb_div*size_blocs;    
   }
   
   int recvcounts[size];
@@ -187,7 +183,6 @@ int main(int argc, char** argv){
   MPI_Type_create_resized(bloc,(MPI_Aint) 0, (MPI_Aint) size_blocs*sizeof(double),&bloc_resized);
   MPI_Type_commit(&bloc_resized);
   MPI_Gatherv(lblocC,size_blocs*size_blocs,MPI_DOUBLE,C,recvcounts,displs,bloc_resized,root,MPI_COMM_WORLD);
-  TEST
   t2 = MPI_Wtime();
   double time = t2-t1;
   double timeg;

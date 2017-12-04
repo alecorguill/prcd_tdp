@@ -31,7 +31,7 @@ int main(int argc, char** argv){
   int dim, dim_A,dim_B, size_blocs, nb_div;
   double *A;
   double * B;
-
+  double t1,t2, start, end;
   if(rank == root){
     if (argc != 4) {
       printf("Erreur : Argument manquant\n");
@@ -126,7 +126,7 @@ int main(int argc, char** argv){
   }
   //MPI_Barrier(MPI_COMM_WORLD);
 
-
+  t1 = MPI_Wtime();
   /* starting fox product, consider this section as local */
   /* receiving the local blocks A B */
   double * lblocA = (double *) malloc(sizeof(double)*size_blocs*size_blocs);
@@ -184,6 +184,11 @@ int main(int argc, char** argv){
   MPI_Type_create_resized(bloc,(MPI_Aint) 0, (MPI_Aint) size_blocs*sizeof(double),&bloc_resized);
   MPI_Type_commit(&bloc_resized);
   MPI_Gatherv(lblocC,size_blocs*size_blocs,MPI_DOUBLE,C,recvcounts,displs,bloc_resized,root,MPI_COMM_WORLD);
+  
+  t2 = MPI_Wtime();
+
+  MPI_Reduce(&t1,&start,1,MPI_DOUBLE,MPI_MIN,root,MPI_COMM_WORLD);
+  MPI_Reduce(&t2,&end,1,MPI_DOUBLE,MPI_MAX,root,MPI_COMM_WORLD);
   if(rank == root){
     /* copy on a file */
         /* Matrix B file */
@@ -196,11 +201,12 @@ int main(int argc, char** argv){
     close(fdc);
     for(int i =0; i<dim*dim; ++i)
       C[i] = 0.0;    
-    gemm(dim,dim,dim,A,dim,B,dim,C,dim);
-    print_matrix(C,dim,1);
+    /* gemm(dim,dim,dim,A,dim,B,dim,C,dim); */
+    /* print_matrix(C,dim,1); */
     free(C);
     free(A);
     free(B);    
+    printf("%lf\n",t2-t1);
   }
   free(lblocA);
   free(lblocB);

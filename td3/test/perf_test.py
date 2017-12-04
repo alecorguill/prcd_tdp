@@ -36,4 +36,6 @@ def gemm_fox_Np(N, Np_lim):
     return measures
 
 if __name__ == '__main__':
-    pass
+    if len(sys.argv) != 2:
+        
+    

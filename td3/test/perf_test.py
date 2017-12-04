@@ -47,7 +47,7 @@ def gemm_fox_Np(N, Np_lim):
     print("python generate_matrix.py" + filename_B + " " + str(N))
     
     os.system("python generate_matrix.py" + filename_A + " " + str(N))
-    os.system("python generate_matrix.py" + filename_B + " " + str(N))
+    os.system("python generate_matrix.py" + filename_B + " " + str(N))    
     for Np in l:
         print("mpirun  -n " + str(Np) + " ../gemm_fox" + filename_A + filename_B + filename_C)
         ##	
@@ -64,7 +64,10 @@ if __name__ == '__main__':
     filename = sys.argv[1]
     N = int(sys.argv[2])
     N_lim = int(sys.argv[3])
-    measures = gemm_fox_N(N,N_lim)
+    measures = gemm_fox_Np(N,N_lim)
+    #tmp = measures[0][1]
+    
+    #mesures = [tmp/x for x in measures]
     print measures
     write_csv(measures,["N", "time"],filename)
         

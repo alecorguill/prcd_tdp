@@ -1,5 +1,4 @@
-import csv
-import os
+import csv,os,sys
 
 def write_csv(array, headers, csvfilename):
     with open(csvfilename, 'w') as fp:
@@ -16,9 +15,14 @@ def gemm_fox_N(Np, N_lim):
     measures = []
     for n in range(N_lim):
         N = n**2
+        print("python generate_matrix.py" + filename_A + " " + str(N))
+        print("python generate_matrix.py" + filename_B + " " + str(N))
+        ##
         os.system("python generate_matrix.py" + filename_A + " " + str(N))
         os.system("python generate_matrix.py" + filename_B + " " + str(N))
-        time = float(os.popen("mpirun -n " + str(Np) + " ../gemm_fox" + filename_A + filename_B + filename_C).read())
+        print("mpirun --mca pml ob1 -n " + str(Np) + " ../gemm_fox" + filename_A + filename_B + filename_C)
+         
+        time = float(os.popen("mpirun --mca pml ob1 -n " + str(Np) + " ../gemm_fox" + filename_A + filename_B + filename_C).read())
         measures.append([n,time])
     return measures
 
@@ -29,13 +33,25 @@ def gemm_fox_Np(N, Np_lim):
     filename_C = " matrix_C.txt"
     measures = []
     for Np in range(1,Np_lim,2):
+        print("python generate_matrix.py" + filename_A + " " + str(N))
+        print("python generate_matrix.py" + filename_B + " " + str(N))
+        ##
         os.system("python generate_matrix.py" + filename_A + " " + str(N))
         os.system("python generate_matrix.py" + filename_B + " " + str(N))
-        time = float(os.popen("mpirun -n " + str(Np) + " ../gemm_fox" + filename_A + filename_B + filename_C).read())
+
+        print("mpirun --mca pml ob1  -n " + str(Np) + " ../gemm_fox" + filename_A + filename_B + filename_C)
+        ##
+        time = float(os.popen("mpirun --mca pml ob1  -n " + str(Np) + " ../gemm_fox" + filename_A + filename_B + filename_C).read())
         measures.append([Np,time])
     return measures
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
+    if len(sys.argv) < 3:
+        print("Usage: python perf_test.py filename N N_lim")
+        exit(-1)
+    filename = sys.argv[1]
+    N = int(sys.argv[2])
+    N_lim = int(sys.argv[2])
+    measures = gemm_fox_Np(N,N_lim)
+    write_csv(measures,["N", "time"],filename)
         
-    

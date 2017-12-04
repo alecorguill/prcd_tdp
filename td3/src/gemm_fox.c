@@ -165,17 +165,21 @@ int main(int argc, char** argv){
     MPI_Sendrecv_replace(lblocB,size_blocs*size_blocs, MPI_DOUBLE,dest,tag,src,tag,col_comm,&status);
         
  }
-    int displs[size];
-  
-  for(int i=0; i<size; ++i){	 
-    MPI_Cart_coords(grid_comm,i, 2, coord);
-    displs[i] = coord[0]+coord[1]*size_blocs*size_blocs;
-  }
   double * C;
   if( rank == root){
     C = (double *) malloc(sizeof(double)*dim*dim);
   }
   /* gather results */
+  int displs[size];  
+  for(int i=0; i<size; ++i){	 
+    MPI_Cart_coords(grid_comm,i, 2, coord);
+    displs[i] = coord[0]+coord[1]*nb_div*size_blocs;
+    if(rank == root){
+      printf("displs i : %d   i : %d   j : %d \n", displs[i], coord[0], coord[1]);
+    }
+    
+  }
+  
   int recvcounts[size];
   for(int i=0; i<size; ++i)
     recvcounts[i] = 1;

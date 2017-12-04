@@ -1,5 +1,5 @@
 # coding: utf-8
-import csv,os,sys
+import csv,os,sys, math
 
 def write_csv(array, headers, csvfilename):
     with open(csvfilename, 'w') as fp:
@@ -14,9 +14,15 @@ def gemm_fox_N(Np, N_lim):
     filename_B = " matrix_B.txt"
     filename_C = " matrix_C.txt"
     measures = []
-    N = int(Np**0.5)
-    print N, N_lim
-    while N < N_lim:
+    size = math.sqrt(Np)
+    l = []
+    val = 8
+    while val < N_lim:
+        val = int(val*1.3)
+        print val,val - (val%4)
+        l.append(val - val%4)
+        
+    for N in l:
         print("python generate_matrix.py" + filename_A + " " + str(N))
         print("python generate_matrix.py" + filename_B + " " + str(N))
         os.system("python generate_matrix.py" + filename_A + " " + str(N))
@@ -27,7 +33,7 @@ def gemm_fox_N(Np, N_lim):
 	result = result.split('\n')[-2]
 	time = float(result)
         measures.append([N,time])
-        N = N*2
+
     return measures
 
 

@@ -1,5 +1,4 @@
 import random,sys
-import numpy as np
 MIN_VAL = 2.5
 MAX_VAL = 10
 

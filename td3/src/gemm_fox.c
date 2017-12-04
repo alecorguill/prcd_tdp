@@ -192,7 +192,7 @@ int main(int argc, char** argv){
   if(rank == root){
     /* copy on a file */
         /* Matrix B file */
-    int fdc = open(argv[3], O_CREAT | O_WRONLY | O_TRUNC,0744);
+    int fdc = open(argv[3], O_CREAT | O_WRONLY | O_TRUNC,0700);
     if (fdc < 0){
       perror("Erreur ouverture fichier\n");
       return EXIT_FAILURE;
@@ -206,7 +206,7 @@ int main(int argc, char** argv){
     free(C);
     free(A);
     free(B);    
-    printf("%lf\n",t2-t1);
+    printf("%lf\n",end-start);
   }
   free(lblocA);
   free(lblocB);

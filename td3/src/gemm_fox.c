@@ -28,7 +28,7 @@ int main(int argc, char** argv){
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
   /* variables used in every process */
-  int dim, size_blocs, nb_div;
+  int dim, dim_A,dim_B, size_blocs, nb_div;
   double *A;
   double * B;
 
@@ -52,7 +52,6 @@ int main(int argc, char** argv){
       perror("Erreur ouverture fichier\n");
       return EXIT_FAILURE;
     } 
-    int dim_A,dim_B, dim, size_blocs, nb_div;
     char ligne[MAX_LINE];
     double *A,B;
     fgets(ligne, MAX_LINE, fd_A);
@@ -71,6 +70,7 @@ int main(int argc, char** argv){
     dim = dim_A;
   }
   /* broadcasting size, probably better than every nodes accessing the file */
+  
   MPI_Bcast(&dim, 1, MPI_INT, root, MPI_COMM_WORLD);
   nb_div = (int) sqrt(size);
   size_blocs = dim/nb_div;
@@ -78,7 +78,7 @@ int main(int argc, char** argv){
   /* creating cartesien communicators */
   MPI_Status status;
   int dims[2];dims[0]=nb_div;dims[1]=nb_div;
-  int periods[2];periods[0]=1;periods[1]=1;
+  int periods[2];periods[0]=1;periods[1]=0;
   int reorder=1;
   MPI_Comm grid_comm;
   MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, reorder, &grid_comm);
@@ -86,7 +86,6 @@ int main(int argc, char** argv){
   int coord[2];
   MPI_Cart_coords(grid_comm, rank, 2, coord);
   int myrow=coord[0], mycol=coord[1];
-
   /* row communicator */
   MPI_Comm row_comm;
   int remain[2];
@@ -111,6 +110,8 @@ int main(int argc, char** argv){
     B = (double *) malloc(sizeof(double)*dim*dim);
     parse_matrix(argv[1],A);
     parse_matrix(argv[2],B);
+    print_matrix(B,dim,1);
+  
     /* MATRIX ARE LOADED */
     /* cut a matrix into blocks and send it to cartesien grid process */   
     int world_rank;
@@ -133,38 +134,44 @@ int main(int argc, char** argv){
   double * lblocB = (double *) malloc(sizeof(double)*size_blocs*size_blocs);
   MPI_Recv(lblocA,size_blocs*size_blocs,MPI_DOUBLE,0,tag,MPI_COMM_WORLD, &status);
   MPI_Recv(lblocB,size_blocs*size_blocs,MPI_DOUBLE,0,tag,MPI_COMM_WORLD, &status);
+ 
   /* result block Cij */
   double * lblocC = (double *) malloc(sizeof(double)*size_blocs*size_blocs);
   for(int i =0; i<size_blocs*size_blocs; ++i)
     lblocC[i] = 0.0;
   /* blocks for broacast */
   double * curA = (double *) malloc(sizeof(double)*size_blocs*size_blocs);
-
+  
   /* local product */
   int to_broadcast;
   /* circular rotation for b blocks */
-  int src = (myrow+nb_div-1) % nb_div;
-  int dest = (myrow+1) % nb_div;
+  int src,dest;
+  MPI_Cart_shift(col_comm,0,1,&dest,&src);
   for(int k=0; k<nb_div; ++k){
     /* process to broadcast A block */
     to_broadcast = (myrow + k)%nb_div;
+   
     if(mycol == to_broadcast){
-      MPI_Bcast(&lblocA, 1, bloc, to_broadcast, row_comm);
+      MPI_Bcast(lblocA, size_blocs*size_blocs, MPI_DOUBLE, to_broadcast, row_comm);
       gemm(size_blocs,size_blocs,size_blocs,lblocA,size_blocs,lblocB,size_blocs,
 	   lblocC, size_blocs);
     }
     else{
-      MPI_Bcast(curA, 1, bloc, to_broadcast, row_comm);
+
+      MPI_Bcast(curA, size_blocs*size_blocs, MPI_DOUBLE, to_broadcast, row_comm);
       gemm(size_blocs,size_blocs,size_blocs,curA,size_blocs,lblocB,size_blocs,
 	   lblocC, size_blocs);
     }
+    MPI_Barrier(MPI_COMM_WORLD);
     /* sending b blocks with rotation */
-    MPI_Sendrecv_replace(lblocB,1,bloc,dest,tag,src,tag,col_comm,&status);
-  }
+    MPI_Sendrecv_replace(lblocB,size_blocs*size_blocs, MPI_DOUBLE,dest,tag,src,tag,col_comm,&status);
+        
+ }
   int displs[size];
-  for(int i=0; i<size; ++i){
-    MPI_Cart_coords(grid_comm, rank, 2, coord);
-    displs[i] = coord[0]*size_blocs+coord[1]*dim*size_blocs;
+  
+  for(int i=0; i<size; ++i){	 
+    MPI_Cart_coords(grid_comm,i, 2, coord);
+    displs[i] = coord[0]+coord[1]*size_blocs*size_blocs;
   }
   double * C;
   if( rank == root){
@@ -174,18 +181,21 @@ int main(int argc, char** argv){
   int recvcounts[size];
   for(int i=0; i<size; ++i)
     recvcounts[i] = 1;
-  MPI_Gatherv(lblocC,1,bloc,C,recvcounts,displs,bloc,root,MPI_COMM_WORLD);
-
+  MPI_Datatype bloc_resized;
+  MPI_Type_create_resized(bloc,(MPI_Aint) 0, (MPI_Aint) size_blocs*sizeof(double),&bloc_resized);
+  MPI_Type_commit(&bloc_resized);
+  MPI_Gatherv(lblocC,size_blocs*size_blocs,MPI_DOUBLE,C,recvcounts,displs,bloc_resized,root,MPI_COMM_WORLD);
   if(rank == root){
     /* copy on a file */
         /* Matrix B file */
-    int fdc = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC,0744);
+    int fdc = open(argv[3], O_CREAT | O_WRONLY | O_TRUNC,0744);
     if (fdc < 0){
       perror("Erreur ouverture fichier\n");
       return EXIT_FAILURE;
     } 
     close(fdc);
-    print_matrix(C,dim,fdc);
+    for(int i =0; i<dim*dim; ++i)
+      C[i] = 0.0;    
     free(C);
     free(A);
     free(B);    

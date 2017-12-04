@@ -27,7 +27,7 @@ def gemm_fox_N(Np, N_lim):
     return measures
 
 
-# N has to be disivisble by all squared numbers (2²,3²,4²...,Np_lim²)
+# N has to be divisile by all squared numbers (2²,3²,4²...,Np_lim²)
 def gemm_fox_Np(N, Np_lim):
     filename_A = " matrix_A.txt"
     filename_B = " matrix_B.txt"

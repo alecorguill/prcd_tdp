@@ -7,8 +7,6 @@ def parse_matrix(filename):
         for line in fp:
             coeffs = line.split('\n')[0].split(' ')
             del coeffs[-1]
-           
-            print coeffs     
             if len(coeffs) < 2:
                 continue
             matrix.append(map(lambda x:float(x),coeffs))
@@ -27,15 +25,15 @@ def equal(A, B, n, epsilon):
     return (np.linalg.norm(A-B)/(n*epsilon) < 10)
         
 def gemm_fox_random():
-    N = 5
-    Np = 25
+    N = 8
+    Np = 4
     epsilon = 1e-6
     filename_A = "matrix_A.txt"
     filename_B = "matrix_B.txt"
     filename_C = "matrix_C.txt"
     filename_C_seq = " matrix_C_seq.txt"
-    os.system("python generate_matrix.py" + filename_A + " " + str(N))
-    os.system("python generate_matrix.py" + filename_B + " " + str(N))
+    os.system("python generate_matrix.py" + " " + filename_A + " " + str(N))
+    os.system("python generate_matrix.py" + " " + filename_B + " " + str(N))
     os.system("mpirun --mca pml ob1 -n " + str(Np) + " ../gemm_fox" + " " + filename_A + " " + filename_B + " " + filename_C)
     A = parse_matrix(filename_A)
     B = parse_matrix(filename_B)
@@ -45,12 +43,12 @@ def gemm_fox_random():
 
 
 def gemm_fox():
-    N = 5
-    Np = 25
+    N = 8
+    Np = 4
     epsilon = 1e-6
-    filename_A = " matrix_A.txt"
-    filename_B = " matrix_B.txt"
-    filename_C = " matrix_C.txt"
+    filename_A = "matrix_A.txt"
+    filename_B = "matrix_B.txt"
+    filename_C = "matrix_C.txt"
     filename_C_seq = " matrix_C_seq.txt"
     matrix = np.matrix([[1]*N]*N)
     save_matrix(matrix,"matrix_A.txt")
@@ -62,8 +60,8 @@ def gemm_fox():
 
 #####
 class TestTDP3(unittest.TestCase):
-    # def test_gemm_fox_random(self):
-    #     self.assertEqual(gemm_fox_random(),True)
+    def test_gemm_fox_random(self):
+        self.assertEqual(gemm_fox_random(),True)
    
     def test_gemm_fox(self):
         self.assertEqual(gemm_fox(),True)

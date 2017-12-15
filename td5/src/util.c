@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#define THETA 1e-6
 
 #define TAILLE_LIGNE 81
 #define s 0.1

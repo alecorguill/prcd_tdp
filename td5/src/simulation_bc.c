@@ -10,7 +10,6 @@
 #include <unistd.h>
 
 #define NB_ITERATIONS 20
-#define THETA 1e-6
 
 int main(int argc, char** argv){
   int size; char ligne[MAX];

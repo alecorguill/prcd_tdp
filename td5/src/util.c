@@ -6,6 +6,7 @@
 #include <string.h>
 
 #define TAILLE_LIGNE 81
+#define s 0.1
 
 /* Compare deux doubles pour palier au problème sur le flottants */
 int equal_double(double a, double b){
@@ -73,6 +74,27 @@ void parse_particules_bloc(char *filename, bloc * blocs){
   fclose(f);
 }
 
+void process_interaction_bloc(bloc *a, bloc *b){  
+  vecteur force_tmp;
+  for (int n = 0; n < a->dim; n++){
+    if (s/distance(&(a->ps[n]),&(b->center)) < THETA){
+      force_grav(&(b->center), &(a->ps[n]), &force_tmp);
+      somme(&(a->ps[n].f_ext),&(force_tmp),&(a->ps[n].f_ext));
+    }
+ 
+    else {
+      for (int p = 0; p < b->dim; p++){   	  
+	double dist = distance(&(a->ps[n]),&(b->ps[p]));
+		if (a->ps[n].proche_d == 0.0 ||
+		    dist < a->ps[n].proche_d){
+		  a->ps[n].proche_d = dist;
+		}
+		force_grav(&(b->ps[p]), &(a->ps[n]), &force_tmp);
+
+      }
+    }
+  }
+}
 
 void masse_center(bloc *b){
   if(b->dim == 0){

@@ -8,6 +8,7 @@ def generate_boxes(filename, n1, n2):
     fd = open(filename, "w")
     n = n1+n2
     small_size = 0.1*P_RANGE
+    fd.write(str(n1+n2)+'\n')
     fd.write(str(n1)+'\n')
     for i in range(n1):        
         masse = random.randrange(1,5000)

@@ -27,6 +27,63 @@ double nouveau_dt(particule* univers, int m){
 }
 
 /* parse le fichier de particules et rempli la structure */
+void parse_particules_bloc(char *filename, particule *ps, int *dims){
+  FILE *f = NULL;
+  char ligne[TAILLE_LIGNE];
+  f=fopen(filename, "r");
+  if(f == NULL)
+    perror("FOPEN");
+  fgets(ligne, TAILLE_LIGNE, f);
+  fgets(ligne, TAILLE_LIGNE, f);
+  dims[0] = atoi(ligne);
+  int ind = 0, nb_par=0;
+  int ni = dims[ind];
+  while ( fgets(ligne, TAILLE_LIGNE, f) != NULL ){
+    printf("nb_par %d\n",nb_par);
+    if (nb_par == ni){
+      ind++;
+      dims[ind] = atoi(ligne);
+      ni = dims[ind];
+      nb_par = 0;
+      continue;
+    }
+    char *token;
+    char delim[] = " ";
+    token = strtok(ligne, delim);
+    ps->m = atoi(token);
+    token = strtok(NULL, delim);
+    ps->p.x = atof(token);
+    token = strtok(NULL, delim);
+    ps->p.y = atof(token);
+    token = strtok(NULL, delim);
+    ps->v.x = atof(token);
+    token = strtok(NULL, delim);
+    ps->v.y = atof(token);
+    ps->a.x = 0.0;
+    ps->a.y = 0.0;
+    ps->proche_d = 0.0;
+    ++ps;
+    nb_par++;
+  }
+  fclose(f);
+}
+
+
+void masse_center(particule *univers, int beg, int end, particule *p){
+  int m = 0; 
+  particule ps;
+  for (int i = beg; i < end; i++){
+    ps = unviers[i];
+    p->p.x += (ps->p.m) * ps->p.x;
+    p->p.y += (ps->p.m) * ps->p.y;
+    m += ps->p.m;
+  }
+  p->p.m = m;
+  p->p.x /= m;
+  p->p.y /= m;
+}
+
+/* parse le fichier de particules et rempli la structure */
 void parse_particules(char *filename, particule *ps){
   FILE *f = NULL;
   char ligne[TAILLE_LIGNE];

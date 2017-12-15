@@ -28,6 +28,10 @@ parallel : simulation.o $(OBJS)
 sequentiel : simulation_seq.o $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
+sequentiel_bc : simulation_bc.o $(OBJS)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+
 %.o : %.c %.h
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) -c $<
 

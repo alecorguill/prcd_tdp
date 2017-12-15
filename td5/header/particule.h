@@ -21,10 +21,16 @@ struct particule{
   vecteur a; //acceleration
   vecteur f_ext; //force exercées sur la particul à l'instant t
   double proche_d; //la distance correspondant à la particule la plus proche
+  int id_bloc;
 };
 
 typedef struct particule particule;
 
+typedef struct {
+  particule center;
+  particule * ps;
+  int dim;
+} bloc;
 
 double norme(vecteur *v);
 void somme(vecteur *v1, vecteur *v2, vecteur *res);

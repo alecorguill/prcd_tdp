@@ -10,7 +10,7 @@
 int equal_double(double a, double b);
 double solution_equ(particule p);
 void parse_particules(char *filename, particule *ps);
-void parse_particules_bloc(char *filename, particule *ps, int *dims);
+void parse_particules_bloc(char *filename, bloc *ps);
 double nouveau_dt(particule* univers, int m);
 void parse_particule_par(char * filename, int rank, particule* univers);
 void init_buffers(int, particule*, particule*);

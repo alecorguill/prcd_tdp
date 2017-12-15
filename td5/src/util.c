@@ -27,7 +27,7 @@ double nouveau_dt(particule* univers, int m){
 }
 
 /* parse le fichier de particules et rempli la structure */
-void parse_particules_bloc(char *filename, particule *ps, int *dims){
+void parse_particules_bloc(char *filename, bloc * blocs){
   FILE *f = NULL;
   char ligne[TAILLE_LIGNE];
   f=fopen(filename, "r");
@@ -35,52 +35,60 @@ void parse_particules_bloc(char *filename, particule *ps, int *dims){
     perror("FOPEN");
   fgets(ligne, TAILLE_LIGNE, f);
   fgets(ligne, TAILLE_LIGNE, f);
-  dims[0] = atoi(ligne);
+  blocs[0].dim = atoi(ligne);
   int ind = 0, nb_par=0;
-  int ni = dims[ind];
+  int ni = blocs[0].dim;
+  particule *tmp;
+  blocs[ind].ps = malloc(sizeof(particule)*blocs[ind].dim);
+  tmp = blocs[ind].ps;
   while ( fgets(ligne, TAILLE_LIGNE, f) != NULL ){
-    printf("nb_par %d\n",nb_par);
     if (nb_par == ni){
       ind++;
-      dims[ind] = atoi(ligne);
-      ni = dims[ind];
+      blocs[ind].dim = atoi(ligne);
+      blocs[ind].ps = malloc(sizeof(particule)*blocs[ind].dim);
+      tmp = blocs[ind].ps;
+      ni = blocs[ind].dim;
       nb_par = 0;
       continue;
     }
     char *token;
     char delim[] = " ";
     token = strtok(ligne, delim);
-    ps->m = atoi(token);
+    tmp->m = atoi(token);
     token = strtok(NULL, delim);
-    ps->p.x = atof(token);
+    tmp->p.x = atof(token);
     token = strtok(NULL, delim);
-    ps->p.y = atof(token);
+    tmp->p.y = atof(token);
     token = strtok(NULL, delim);
-    ps->v.x = atof(token);
+    tmp->v.x = atof(token);
     token = strtok(NULL, delim);
-    ps->v.y = atof(token);
-    ps->a.x = 0.0;
-    ps->a.y = 0.0;
-    ps->proche_d = 0.0;
-    ++ps;
+    tmp->v.y = atof(token);
+    tmp->a.x = 0.0;
+    tmp->a.y = 0.0;
+    tmp->proche_d = 0.0;
+    tmp->id_bloc = ind;
+    ++tmp;
     nb_par++;
   }
   fclose(f);
 }
 
 
-void masse_center(particule *univers, int beg, int end, particule *p){
-  int m = 0; 
-  particule ps;
-  for (int i = beg; i < end; i++){
-    ps = unviers[i];
-    p->p.x += (ps->p.m) * ps->p.x;
-    p->p.y += (ps->p.m) * ps->p.y;
-    m += ps->p.m;
+void masse_center(bloc *b){
+  if(b->dim == 0){
+    puts("Problem dim");
+    exit(EXIT_FAILURE);
   }
-  p->p.m = m;
-  p->p.x /= m;
-  p->p.y /= m;
+  (b->center).p.x = 0;
+  (b->center).p.y = 0;
+  (b->center).m = 0;
+  for (int i = 0; i < b->dim; i++){
+    (b->center).p.x += (b->ps[i]).m * (b->ps[i]).p.x;
+    (b->center).p.y += (b->ps[i]).m * (b->ps[i]).p.y;
+    (b->center).m += (b->ps[i]).m;
+  }
+  (b->center).p.x /= (b->center).m;
+  (b->center).p.y /= (b->center).m;  
 }
 
 /* parse le fichier de particules et rempli la structure */

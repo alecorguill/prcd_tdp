@@ -10,7 +10,6 @@
 #include <unistd.h>
 
 #define NB_ITERATIONS 20
-#define THETA 1e-6
 
 int main(int argc, char** argv){
   int size; char ligne[MAX];
@@ -46,49 +45,41 @@ int main(int argc, char** argv){
   int dims[nb_blocs];	
   bloc univers[nb_blocs];
   parse_particules_bloc(argv[1], univers);
+  
   /* Calcul des centres de masses */
   for (int ii = 0; ii < nb_blocs; ii++){
     masse_center(&univers[ii]);
     print_particule(&(univers[ii].center));
   }
   
-  /* vecteur force_tmp; */
-  /* while (i < NB_ITERATIONS){ */
-  /*   // calcul des forces exterieures */
-  /*   while (n < m){ */
-  /*     while (p < m){ */
-  /* 	if (n == p){ */
-  /* 	  p++; */
-  /* 	  continue; */
-  /* 	} */
-  /* 	// calcul de la distance de la particule la plus proche (pour dt)	 */
-  /* 	if(univers[n].id_bloc != univers[p].id_bloc) */
-  /* 	double dist = distance(&univers[p], &univers[n]); */
-  /* 	if (univers[n].proche_d == 0.0 || */
-  /* 	    dist < univers[n].proche_d){ */
-  /* 	  univers[n].proche_d = dist; */
-  /* 	} */
-  /* 	force_grav(&univers[p], &univers[n], &force_tmp); */
-  /* 	somme(&(univers[n].f_ext),&(force_tmp),&(univers[n].f_ext)); */
-  /* 	p++; */
-  /*     } */
-  /*     p=0; */
-  /*     n++; */
-  /*   } */
-  /*   n = 0; */
-  /*   dt = nouveau_dt(univers, m); */
-  /*   t += dt; */
-  /*   /\* log de dt *\/ */
-  /*   dprintf(output, "%lf\n", t); */
-  /*   /\* mise à jour des particules *\/ */
-  /*   update_particules(univers, m, dt); */
-  /*   /\* log des particules *\/ */
-  /*   log_particules(univers, m, output); */
-  /*   i++; */
-  /* } */
-  /* for(int ii=0; ii<nb_blocs; ++ii){ */
-  /*   free(univers[ii].ps); */
-  /* } */
+  while (i < NB_ITERATIONS){
+    // calcul des forces exterieures
+    while (n < nb_blocs){
+      while (p < nb_blocs){
+
+  	// calcul de la distance de la particule la plus proche (pour dt)
+	process_interaction_bloc(&univers[n],&univers[p]);    
+	p=0;
+	n++;
+      }
+
+      n = 0;
+      // TODO
+      /* dt = nouveau_dt(univers, m); */
+      /* t += dt; */
+      /* /\* log de dt *\/ */
+      /* dprintf(output, "%lf\n", t); */
+      /* /\* mise à jour des particules *\/ */
+      /* // TODO */
+      /* update_particules(univers, m, dt); */
+      /* /\* log des particules *\/ */
+      /* // TODO */
+      /* log_particules(univers, m, output); */
+      i++;
+    }
+    /* for(int ii=0; ii<nb_blocs; ++ii){ */
+    /*   free(univers[ii].ps); */
+  }
   close(output);
   return 0;
 }

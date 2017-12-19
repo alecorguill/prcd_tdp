@@ -104,7 +104,6 @@ void init_matrice(double* a, int m, int n, int lda, double value){
 
 
 void cblas_dgemm_lu(const int m, const int n, const double *A,const int lda, double *C, const int ldc){
-  printf("Salut\n");
   if(m >= n){
     double * U = calloc(n*n, sizeof(double));
     for (int i = 0; i < n; i++){
@@ -145,8 +144,8 @@ void cblas_dgemm_lu(const int m, const int n, const double *A,const int lda, dou
     }     
     
     dgemm(m,n,m,L,m,U,m,C,ldc);
-    print(m,n,C,m,1);
-    printf("\n");
+    /* print(m,n,C,m,1); */
+    /* printf("\n"); */
   
     free(U);free(L);         
   }
@@ -159,8 +158,8 @@ void random_matrix(int M, int N, int min, int max, double* A, int lda){
   double div = RAND_MAX / range;      
   for (int i = 0; i < M; i++){
     for (int j = 0; j < N; j++){      
-      //*(A+lda*j+i) = min + (rand() / div);
-      *(A+lda*j+i) = rand()%range + min;
+      *(A+lda*j+i) = min + (rand() / div);
+      //*(A+lda*j+i) = rand()%range + min;
     }
   }  
 }
@@ -174,6 +173,27 @@ double norme2(int M, int N, double* A, int lda){
   }
   return sqrt(norm);
 }
+
+double absolute_error(const int m, const int n,double *A,const int lda, 
+		   double *B, const int ldb)
+{  
+  double *tmp = calloc(n*m, sizeof(double));
+  diff_matrix(m,n,A,lda,B,ldb,tmp,m);
+  double res = norme2(m,n,tmp,m);
+  free(tmp);
+  return res;
+}
+
+double relative_error(const int m, const int n,double *A,const int lda, 
+		      double *B, const int ldb)
+{
+  double *tmp = calloc(n*m, sizeof(double));
+  diff_matrix(m,n,A,lda,B,ldb,tmp,m);
+  double res = norme2(m,n,tmp,m);
+  free(tmp);
+  return res/norme2(m,n,A,m);
+}
+
 
 /////////////////////////
 void print(int M, int N, double* A, int lda, int fd){

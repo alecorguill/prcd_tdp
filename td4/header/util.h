@@ -32,4 +32,11 @@ void diff_matrix(const int m, const int n,double *A,const int lda,
 void random_matrix(int M, int N, int min, int max,  double* A, int lda);
 
 void init_matrice(double* a, int m, int n, int lda, double value);
+
+double relative_error(const int m, const int n,double *A,const int lda, 
+		      double *B, const int ldb);
+
+double absolute_error(const int m, const int n,double *A,const int lda, 
+		      double *B, const int ldb);
+
 #endif // UTIL_H

@@ -79,11 +79,11 @@ void scal_matrix(const int m, const int n,double scal, double *A,
   } 
 }
 
-void dgemm(const int m, const int n, const int K, const double *A,const int lda, const double *B, const int ldb, double *C, const int ldc){
+void dgemm(const int m, const int n, const int K, double alpha, const double *A,const int lda, const double *B, const int ldb, double *C, const int ldc){
   for (int i = 0; i < m; i++){
     for (int j = 0; j < n; j++){
       for (int k =0; k < K; k++)
-	C[j*ldc +i] += *(A+i+k*lda) * *(B+k+j*ldb);
+	C[j*ldc +i] += alpha**(A+i+k*lda) * *(B+k+j*ldb);
     }
   } 
 }
@@ -122,7 +122,7 @@ void cblas_dgemm_lu(const int m, const int n, const double *A,const int lda, dou
 	*(L+j*m+i)  = *(A+j*lda+i);
       }
     }
-    dgemm(m,n,n,L,m,U,n,C,ldc);    
+    dgemm(m,n,n,1,L,m,U,n,C,ldc);    
     free(U);free(L);     
   }
 
@@ -143,7 +143,7 @@ void cblas_dgemm_lu(const int m, const int n, const double *A,const int lda, dou
 	*(U+j*m+i)  = *(A+j*lda+i);
       }
     }     
-    dgemm(m,n,m,L,m,U,m,C,ldc);
+    dgemm(m,n,m,1,L,m,U,m,C,ldc);
     free(U);free(L);         
   }
 } 

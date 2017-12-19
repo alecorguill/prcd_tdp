@@ -3,7 +3,7 @@ CFLAGS = -std=c99 -O0 -Wno-unused-parameter
 LDFLAGS = -fopenmp -lm
 DEBUG_FLAGS = -W -Wall -g
 TEST = perf.c
-SRC = dgetf2_nopiv.c util.c
+SRC = dgetf2_nopiv.c dgetrf_nopiv.c util.c
 OBJS = $(SRC:.c=.o)
 
 HEADER_DIR = header

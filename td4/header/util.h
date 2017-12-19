@@ -18,6 +18,8 @@ void dtrsm(char side, char uplo, char transa, char diag, int M, int N, double al
 
 void cblas_dgemm_lu(const int m, const int n, const double *A,const int lda, double *C, const int ldc);
 
+void dgemm(const int m, const int n,const int K, double alpha, const double *A,const int lda, const double *B, const int ldb, double *C, const int ldc);
+
 double norme2(int M, int N, double* A, int lda);
 
 void sum_matrix(const int m, const int n,double *A,const int lda, 

@@ -143,7 +143,11 @@ void cblas_dgemm_lu(const int m, const int n, const double *A,const int lda, dou
 	*(U+j*m+i)  = *(A+j*lda+i);
       }
     }     
+    
     dgemm(m,n,m,L,m,U,m,C,ldc);
+    print(m,n,C,m,1);
+    printf("\n");
+  
     free(U);free(L);         
   }
 } 

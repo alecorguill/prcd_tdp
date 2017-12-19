@@ -1,7 +1,6 @@
 #include <cblas.h>
 #include "util.h"
 
-#define COEF(M,i,j,ldm) (M+j*ldm+i)
 
 // Works only on squared matrix
 void dgetf2_nopiv(const enum CBLAS_ORDER order, const int M, const int N, double *A,

@@ -7,12 +7,16 @@
 #include "dgetf2_nopiv.h"
 
 void test_norme2(){
-  int m = 4;
+  int m = 3;
   int n = 4;
-  double A[12] = {1,2,3.1,4,5,6,7,8,9,10,11,12};
-  double C[12];
+  double A[m*n];
+  for(int i=0; i<n*m; ++i)
+    A[i] = i+1.2;
+  double C[m*n];
+  
   print(m,n,A,m,1);
   printf("\n");
+  
   
   dgetf2_nopiv(CblasColMajor,m,n,A,m);
   print(m,n,A,m,1);
@@ -21,8 +25,8 @@ void test_norme2(){
     C[i] = 0.0;
     
   cblas_dgemm_lu(m,n,A,m,C,m);
-  print(m,n,C,m,1);
-  printf("\n");
+  /* print(m,n,C,m,1); */
+  /* printf("\n"); */
   
   /* random_matrix(m,n,0,10,A,m); */
   /* diff_matrix(m,n,A,m,A,m,A,m); */

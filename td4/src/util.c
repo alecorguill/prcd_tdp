@@ -4,9 +4,7 @@
 #include <math.h>
 #include <time.h>
 #include <stdlib.h>
-
-#define COEF(M,i,j,ldm) (M+j*ldm+i)
-#define MIN(X,Y) (((X) < (Y)) ? (X) : (Y))
+#include <string.h>
 
 void dscal(const int N, const double alpha, double *X, const int incX){
   int i;
@@ -28,7 +26,7 @@ void daxpy(const int N, const double alpha, const double *X,
 void dger(const enum CBLAS_ORDER order, const int M, const int N, const double alpha, const double *X, const int incX,const double *Y, const int incY, double *A, const int lda){
   for (int i = 0; i < M; i++){
     for (int j = 0; j < N; j++){
-      *(A+lda*j+i) = (double) *(A+lda*j+i) + alpha * *(X+incX*i) * *(Y+incY*j);
+      *(A+lda*j+i) = *(A+lda*j+i) + alpha * *(X+incX*i) * *(Y+incY*j);
     }
   }
 
@@ -91,15 +89,30 @@ void dgemm(const int m, const int n, const int K, const double *A,const int lda,
 }
 
 
+void init_matrice(double* a, int m, int n, int lda, double value){
+  int i = 0;
+  int j = 0;
+  while(i < m){
+    while(j < n){
+      a[j*lda+i] = value;
+      ++j;
+    }
+    j=0;
+    ++i;
+  }
+}
+
+
 void cblas_dgemm_lu(const int m, const int n, const double *A,const int lda, double *C, const int ldc){
+  printf("Salut\n");
   if(m >= n){
-    double * U = malloc(n*n*sizeof(double));
+    double * U = calloc(n*n, sizeof(double));
     for (int i = 0; i < n; i++){
       for (int j = i; j < n; j++){
 	*(U+j*n+i)  = *(A+j*lda+i);
       }
     }
-    double * L = malloc(m*n*sizeof(double));
+    double * L = calloc(n*m, sizeof(double));
     for (int i = 0; i < m; ++i){
       for (int j = 0; j < i+1; ++j){
 	if(i == j){
@@ -109,12 +122,12 @@ void cblas_dgemm_lu(const int m, const int n, const double *A,const int lda, dou
 	*(L+j*m+i)  = *(A+j*lda+i);
       }
     }
-    dgemm(m,n,n,L,m,U,n,C,ldc);
+    dgemm(m,n,n,L,m,U,n,C,ldc);    
     free(U);free(L);     
   }
 
   else{
-    double * L = malloc(m*m*sizeof(double));
+    double * L = calloc(n*m, sizeof(double));
     for (int i = 0; i < m; ++i){
       for (int j = 0; j < i+1; ++j){
 	if(i == j){
@@ -124,7 +137,7 @@ void cblas_dgemm_lu(const int m, const int n, const double *A,const int lda, dou
 	*(L+j*m+i)  = *(A+j*lda+i);
       }
     }
-    double * U = malloc(m*n*sizeof(double));
+    double * U = calloc(n*n, sizeof(double));
     for (int i = 0; i < m; i++){
       for (int j = i; j < n; j++){
 	*(U+j*m+i)  = *(A+j*lda+i);

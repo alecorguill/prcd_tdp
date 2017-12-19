@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -std=c99 -O2 -Wno-unused-parameter
-LDFLAGS = -fopenmp 
+CFLAGS = -std=c99 -O0 -Wno-unused-parameter
+LDFLAGS = -fopenmp -lm
 DEBUG_FLAGS = -W -Wall -g
 TEST = perf.c
 SRC = dgetf2_nopiv.c util.c
@@ -11,9 +11,9 @@ HEADER_DIR = header
 vpath %.c src test
 vpath %.h $(HEADER_DIR)
 
-debug : CFLAGS += $(DEBUG_FLAGS)
-debug : clean
-debug : $(OBJS)
+ifeq ($(DEBUG),1)
+	CFLAGS +=  $(DEBUG_FLAGS)
+endif
 
 
 all : $(OBJS)
@@ -21,7 +21,7 @@ all : $(OBJS)
 test :  test_unitaire
 
 test_unitaire : $(OBJS) perf.c 
-	$(CC) -I$(HEADER_DIR) -o $@ $^  $(LDFLAGS)
+	$(CC) -I$(HEADER_DIR) $(CFLAGS) $(LDFLAGS) -o $@ $^ 
 
 %.o : %.c %.h
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) -c $<

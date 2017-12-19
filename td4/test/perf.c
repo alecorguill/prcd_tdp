@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -10,12 +11,12 @@
 #include "util.h"
 #include "assert.h"
 #include "dgetf2_nopiv.h"
-
+#include "dgetrf_nopiv.h"
 
 void test_dgetf2_nopiv(double eps){
   printf("Test dgetf2_nopiv..");
-  int m = 6;
-  int n = 5;
+  int m = 100;
+  int n = 500;
   double A[m*n],C[m*n],tmp[m*n];
   for(int i=0; i<n*m; ++i){
     C[i] = 0.0;
@@ -29,7 +30,29 @@ void test_dgetf2_nopiv(double eps){
   double abs_err = absolute_error(m,n,tmp,m,C,m);
   double rel_err = relative_error(m,n,tmp,m,C,m);
   assert(abs_err < eps);
+  assert(rel_err < eps);
+  printf("ok\n");
+}
+
+
+void test_dgetrf_nopiv(double eps){
+  printf("Test dgetrf_nopiv..");
+  int m = 6;
+  int n = 5;
+  double A[m*n],C[m*n],tmp[m*n];
+  for(int i=0; i<n*m; ++i){
+    C[i] = 0.0;
+  }
+  random_matrix(m,n,0,10,A,m);   
+  memcpy(tmp,A,n*m*sizeof(double));
+  dgetrf_nopiv(CblasColMajor,m,n,A,m);
+  for(int i=0;i<m*n;++i)
+    C[i] = 0.0;    
+  cblas_dgemm_lu(m,n,A,m,C,m);
+  double abs_err = absolute_error(m,n,tmp,m,C,m);
+  double rel_err = relative_error(m,n,tmp,m,C,m);
   assert(abs_err < eps);
+  assert(rel_err < eps);
   printf("ok\n");
 }
 
@@ -82,5 +105,6 @@ int main(int argc, char** argv){
   }
   printf("Tests lancés avec un erreur max de : %.14f\n", eps);
   test_dgetf2_nopiv(eps);
+  test_dgetrf_nopiv(eps);
   return 0;
 }

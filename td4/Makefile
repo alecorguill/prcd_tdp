@@ -26,4 +26,4 @@ test_unitaire : $(OBJS) perf.c
 %.o : %.c %.h
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) -c $<
 clean:
-	@rm -f *.o 
+	@rm -f *.o test_unitaire

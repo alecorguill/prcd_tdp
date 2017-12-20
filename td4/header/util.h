@@ -5,6 +5,10 @@
 #define MIN(X,Y) (((X) < (Y)) ? (X) : (Y))
 #define _POSIX_C_SOURCE 200809L
 
+typedef void (*lu_function) (const enum CBLAS_ORDER order, const int M, const int N, double *A,const int lda);
+
+
+
 void daxpy(const int N, const double alpha, const double *X,
 	   const int incX, double *Y, const int incY);
 

@@ -104,29 +104,38 @@ void init_matrice(double* a, int m, int n, int lda, double value){
 
 
 void cblas_dgemm_lu(const int m, const int n, const double *A,const int lda, double *C, const int ldc){
+  double *L,*U;
   if(m >= n){
-    double * U = calloc(n*n, sizeof(double));
+    U = malloc(n*n * sizeof(double));
+    for(int i=0; i<n*n;++i)
+      U[i] = 0.0;
+
     for (int i = 0; i < n; i++){
       for (int j = i; j < n; j++){
 	*(U+j*n+i)  = *(A+j*lda+i);
       }
     }
-    double * L = calloc(n*m, sizeof(double));
+    L = malloc(n*m * sizeof(double));
+    for(int i=0; i<n*m;++i)
+      L[i] = 0.0;
     for (int i = 0; i < m; ++i){
-      for (int j = 0; j < i+1; ++j){
-	if(i == j){
+      for (int j = 0; (j < i+1) && (j<n); ++j){
+	//printf("(i<n) %d  -  i %d   j %d \n",(i<n),i,j);
+	if((i == j)){
 	  *(L+j*m+i) = 1;
 	  continue;
 	}
 	*(L+j*m+i)  = *(A+j*lda+i);
       }
     }
+    //print(m,n,L,m,1);
     dgemm(m,n,n,1,L,m,U,n,C,ldc);    
-    free(U);free(L);     
   }
 
   else{
-    double * L = calloc(n*m, sizeof(double));
+    L = malloc(m*m * sizeof(double));
+    for(int i=0; i<m*m;++i)
+      L[i] = 0.0;
     for (int i = 0; i < m; ++i){
       for (int j = 0; j < i+1; ++j){
 	if(i == j){
@@ -136,15 +145,17 @@ void cblas_dgemm_lu(const int m, const int n, const double *A,const int lda, dou
 	*(L+j*m+i)  = *(A+j*lda+i);
       }
     }
-    double * U = calloc(n*n, sizeof(double));
+    U = malloc(m*n * sizeof(double));
+    for(int i=0; i<m*n;++i)
+      U[i] = 0.0;
     for (int i = 0; i < m; i++){
       for (int j = i; j < n; j++){
 	*(U+j*m+i)  = *(A+j*lda+i);
       }
     }     
     dgemm(m,n,m,1,L,m,U,m,C,ldc);
-    free(U);free(L);         
   }
+  free(U);free(L);         
 } 
 
 
@@ -173,7 +184,9 @@ double norme2(int M, int N, double* A, int lda){
 double absolute_error(const int m, const int n,double *A,const int lda, 
 		   double *B, const int ldb)
 {  
-  double *tmp = calloc(n*m, sizeof(double));
+  double *tmp = malloc(n*m * sizeof(double));
+  for(int i=0; i<n*m;++i)
+    tmp[i] = 0.0;
   diff_matrix(m,n,A,lda,B,ldb,tmp,m);
   double res = norme2(m,n,tmp,m);
   free(tmp);
@@ -183,7 +196,9 @@ double absolute_error(const int m, const int n,double *A,const int lda,
 double relative_error(const int m, const int n,double *A,const int lda, 
 		      double *B, const int ldb)
 {
-  double *tmp = calloc(n*m, sizeof(double));
+  double *tmp = malloc(n*m * sizeof(double));
+  for(int i=0; i<n*m;++i)
+    tmp[i] = 0.0;
   diff_matrix(m,n,A,lda,B,ldb,tmp,m);
   double res = norme2(m,n,tmp,m);
   free(tmp);

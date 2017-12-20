@@ -6,12 +6,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/time.h>
 
 #include "cblas.h"
 #include "util.h"
 #include "assert.h"
 #include "dgetf2_nopiv.h"
 #include "dgetrf_nopiv.h"
+
+#define MAX_LENGTH 20
 
 void test_dgetf2_nopiv(double eps){
   printf("Test dgetf2_nopiv..");
@@ -38,7 +41,7 @@ void test_dgetf2_nopiv(double eps){
 void test_dgetrf_nopiv(double eps){
   printf("Test dgetrf_nopiv..");
   int m = 6;
-  int n = 5;
+  int n = 6;
   double A[m*n],C[m*n],tmp[m*n];
   for(int i=0; i<n*m; ++i){
     C[i] = 0.0;
@@ -51,41 +54,80 @@ void test_dgetrf_nopiv(double eps){
   cblas_dgemm_lu(m,n,A,m,C,m);
   double abs_err = absolute_error(m,n,tmp,m,C,m);
   double rel_err = relative_error(m,n,tmp,m,C,m);
+  print(m,n,C,m,1);
+  printf("\n");
+  print(m,n,tmp,m,1);
+  
   assert(abs_err < eps);
   assert(rel_err < eps);
   printf("ok\n");
 }
 
-void create_csv_dgetf2(int nmax){
-  printf("Test dgetf2_nopiv..");
+void create_csv_dgetf2(int nmax, lu_function lu, char* function_name){
+  printf("Creating csv..");
   int n=2,min=0,max=10;    
   double abs_err,rel_err;
-  double *tmp  = malloc(n*n*sizeof(double));
-  double * A   = malloc(n*n*sizeof(double));
-  double * res = malloc(n*n*sizeof(double));
-  char * abs_csv = "abs_err.csv";
-  char * rel_csv = "rel_err.csv";
+  double * tmp,*A,*res,duration;
+  struct timeval t1, t2;
+  if(strlen(function_name) > MAX_LENGTH){
+    puts("Function name too long");
+    exit(EXIT_FAILURE);
+  }
+
+  /* char abs[]  = "_abs_err.csv"; */
+  /* char rel[]  = "_rel_err.csv"; */
+  /* char time[] = "_time.csv"; */
+  /* int char_size = MAX_LENGTH + strlen(rel);  */
+  /* char abs_csv[char_size]; */
+  /* char rel_csv[char_size]; */
+  /* char time_csv[char_size]; */
+  /* strcpy(abs_csv,function_name); */
+  /* strcpy(rel_csv,function_name); */
+  /* strcpy(time_csv,function_name); */
+  /* strcat(time_csv,time); */
+  /* strcat(rel_csv,rel); */
+  /* strcat(abs_csv,abs); */
+  char rel_csv[] = "rel_err.csv";
+  char abs_csv[] = "abs_err.csv";
+  char time_csv[] = "time_err.csv";
   int abs_file = open(abs_csv, O_CREAT | O_WRONLY | O_TRUNC,0744);
   int rel_file = open(rel_csv, O_CREAT | O_WRONLY | O_TRUNC,0744);
-  if ((abs_file < 0) || (rel_file < 0)){
+  int time_file = open(time_csv, O_CREAT | O_WRONLY | O_TRUNC,0744);
+  if ((abs_file < 0) || (rel_file < 0) || (time_file < 0)){
     perror("open : csv files\n");
     exit(EXIT_FAILURE);
   }
-  dprintf(abs_file,"n,absolute error");
-  dprintf(rel_file,"n,relative error");
+  dprintf(abs_file,"n,absolute_error\n");
+  dprintf(rel_file,"n,relative_error\n");
+  dprintf(time_file,"n,time\n");
+
+  tmp  = malloc(n*n*sizeof(double));
+  A    = malloc(n*n*sizeof(double));
+  res  = malloc(n*n*sizeof(double));
   while(n<nmax){
-    memset(tmp,0,n*n);memset(res,0,n*n);memset(A,0,n*n);
+    for(int i=0; i<n*n; ++i){
+      tmp[i] = 0.0;
+      A[i]   = 0.0;
+      res[i] = 0.0;
+    }
     random_matrix(n,n,min,max,A,n);   
     memcpy(tmp,A,n*n*sizeof(double));
-    dgetf2_nopiv(CblasColMajor,n,n,A,n);
+    gettimeofday(&t1, NULL);
+    lu(CblasColMajor,n,n,A,n);
+    gettimeofday(&t2, NULL);
     cblas_dgemm_lu(n,n,A,n,res,n);
     abs_err = absolute_error(n,n,tmp,n,res,n);
     rel_err = relative_error(n,n,tmp,n,res,n);
-    dprintf(abs_file,"%d,%f\n",n,abs_err);
-    dprintf(rel_file,"%d,%f\n",n,rel_err);
+    duration = (t2.tv_sec - t1.tv_sec) * 10E6 + (t2.tv_usec - t1.tv_usec);
+    dprintf(abs_file,"%d,%.14f\n",n,abs_err);
+    dprintf(rel_file,"%d,%.14f\n",n,rel_err);
+    dprintf(time_file,"%d,%f\n",n,duration);
     n = (int) n*1.5;
-  }  
-
+    free(tmp);free(A);free(res);
+    tmp  = malloc(n*n*sizeof(double));
+    A    = malloc(n*n*sizeof(double));
+    res  = malloc(n*n*sizeof(double)); 
+  }    
   free(tmp);free(A);free(res);
   printf("ok\n");
 
@@ -95,13 +137,15 @@ void create_csv_dgetf2(int nmax){
 int main(int argc, char** argv){
   if(argc < 4){
     printf("USAGE : %s bool_csv eps n_max\n",argv[0]);
+    printf("Exemple : %s 1 10E-8 100\n",argv[0]);
     exit(EXIT_FAILURE);
   }
   int create_csv = atoi(argv[1]);
   double eps = strtod(argv[2],NULL);
   int nmax = atoi(argv[3]);
   if(create_csv){
-    create_csv_dgetf2(nmax);
+    create_csv_dgetf2(nmax,dgetf2_nopiv,"normal");
+    //create_csv_dgetf2(nmax,dgetrf_nopiv,"bloc");
   }
   printf("Tests lancés avec un erreur max de : %.14f\n", eps);
   test_dgetf2_nopiv(eps);

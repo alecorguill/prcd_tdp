@@ -23,7 +23,12 @@ test :  test_unitaire
 test_unitaire : $(OBJS) perf.c 
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) $(LDFLAGS) -o $@ $^ 
 
+
 %.o : %.c %.h
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) -c $<
+
+%.o : %.c
+	$(CC) -I$(HEADER_DIR) $(CFLAGS) -c $<
+
 clean:
 	@rm -f *.o test_unitaire *.csv

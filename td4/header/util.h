@@ -1,7 +1,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#define COEF(M,i,j,ldm) (M+j*ldm+i)
+#define COEF(M,i,j,ldm) (M+(j)*ldm+(i))
 #define MIN(X,Y) (((X) < (Y)) ? (X) : (Y))
 #define _POSIX_C_SOURCE 200809L
 

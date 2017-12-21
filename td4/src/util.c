@@ -40,8 +40,9 @@ void dtrsm(char side, char uplo, char transa, char diag, int M, int N, double al
 	dscal(M,alpha,COEF(B,0,j,ldb),1);
       for (k=0; k < M; k++){
       	//
-      	if (*COEF(B,k,j,ldb) != 0.0)
-      	  *COEF(B,k,j,ldb) /= *COEF(A,k,k,lda);
+	// L has a one diagonal
+ 	/* if (*COEF(B,k,j,ldb) != 0.0) */
+      	/*   *COEF(B,k,j,ldb) /= *COEF(A,k,k,lda); */
       	//
       	for (i=k+1; i<M; i++){
       	  *COEF(B,i,j,ldb) -= (*COEF(B,k,j,ldb) * (*COEF(A,i,k,lda)));

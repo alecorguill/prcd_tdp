@@ -40,9 +40,9 @@ void test_dgetf2_nopiv(double eps){
 
 void test_dgetrf_nopiv(double eps){
   printf("Test dgetrf_nopiv..");
-  int m = 6;
-  int n = 6;
-  double A[m*n],C[m*n],tmp[m*n];
+  int m = 41;
+  int n = 57;
+  double A[m*n],C[m*n],tmp[m*n],tmp2[m*n];
   for(int i=0; i<n*m; ++i){
     C[i] = 0.0;
   }
@@ -52,18 +52,18 @@ void test_dgetrf_nopiv(double eps){
   for(int i=0;i<m*n;++i)
     C[i] = 0.0;    
   cblas_dgemm_lu(m,n,A,m,C,m);
+  /* printf("C\n"); */
+  /* print(m,n,C,m,1); */
+  /* printf("tmp\n"); */
+  /* print(m,n,tmp,m,1); */
   double abs_err = absolute_error(m,n,tmp,m,C,m);
   double rel_err = relative_error(m,n,tmp,m,C,m);
-  print(m,n,C,m,1);
-  printf("\n");
-  print(m,n,tmp,m,1);
-  
   assert(abs_err < eps);
   assert(rel_err < eps);
   printf("ok\n");
 }
 
-void create_csv_dgetf2(int nmax, lu_function lu, char* function_name){
+void create_csv_lu(int nmax, lu_function lu, char* function_name){
   printf("Creating csv..");
   int n=2,min=0,max=10;    
   double abs_err,rel_err;
@@ -74,22 +74,19 @@ void create_csv_dgetf2(int nmax, lu_function lu, char* function_name){
     exit(EXIT_FAILURE);
   }
 
-  /* char abs[]  = "_abs_err.csv"; */
-  /* char rel[]  = "_rel_err.csv"; */
-  /* char time[] = "_time.csv"; */
-  /* int char_size = MAX_LENGTH + strlen(rel);  */
-  /* char abs_csv[char_size]; */
-  /* char rel_csv[char_size]; */
-  /* char time_csv[char_size]; */
-  /* strcpy(abs_csv,function_name); */
-  /* strcpy(rel_csv,function_name); */
-  /* strcpy(time_csv,function_name); */
-  /* strcat(time_csv,time); */
-  /* strcat(rel_csv,rel); */
-  /* strcat(abs_csv,abs); */
-  char rel_csv[] = "rel_err.csv";
-  char abs_csv[] = "abs_err.csv";
-  char time_csv[] = "time_err.csv";
+  char abs[]  = "_abs_err.csv";
+  char rel[]  = "_rel_err.csv";
+  char time[] = "_time.csv";
+  int char_size = MAX_LENGTH + strlen(rel);
+  char abs_csv[char_size];
+  char rel_csv[char_size];
+  char time_csv[char_size];
+  strcpy(abs_csv,function_name);
+  strcpy(rel_csv,function_name);
+  strcpy(time_csv,function_name);
+  strcat(time_csv,time);
+  strcat(rel_csv,rel);
+  strcat(abs_csv,abs);
   int abs_file = open(abs_csv, O_CREAT | O_WRONLY | O_TRUNC,0744);
   int rel_file = open(rel_csv, O_CREAT | O_WRONLY | O_TRUNC,0744);
   int time_file = open(time_csv, O_CREAT | O_WRONLY | O_TRUNC,0744);
@@ -144,8 +141,8 @@ int main(int argc, char** argv){
   double eps = strtod(argv[2],NULL);
   int nmax = atoi(argv[3]);
   if(create_csv){
-    create_csv_dgetf2(nmax,dgetf2_nopiv,"normal");
-    //create_csv_dgetf2(nmax,dgetrf_nopiv,"bloc");
+    create_csv_lu(nmax,dgetf2_nopiv,"normal");
+    create_csv_lu(nmax,dgetrf_nopiv,"bloc");
   }
   printf("Tests lancés avec un erreur max de : %.14f\n", eps);
   test_dgetf2_nopiv(eps);

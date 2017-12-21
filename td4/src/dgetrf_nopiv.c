@@ -13,6 +13,8 @@ void dgetrf_nopiv(const enum CBLAS_ORDER order, const int M, const int N, double
   // Defined like this in LAPACK
   char* var = getenv("BLOCK_SIZE");
   if(var == NULL)
+    nb = 64;
+  else
     nb = atoi(var);
   if (nb < MIN(N,M))
     for (j=0; j<MIN(N,M); j+=nb){

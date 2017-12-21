@@ -171,14 +171,14 @@ void create_csv_lu_bloc(int n, int size_b_max, lu_function lu_block,
   A    = malloc(n*n*sizeof(double));
   res  = malloc(n*n*sizeof(double));
   int size_b=2;
-  char str[12];
+  char str[16];
   while(size_b<size_b_max){
     for(int i=0; i<n*n; ++i){
       tmp[i] = 0.0;
       A[i]   = 0.0;
       res[i] = 0.0;
     }
-    sprintf(str, "%d", str);
+    sprintf(str, "%d", size_b);
     setenv("BLOCK_SIZE",str,1);
     random_matrix(n,n,min,max,A,n);   
     memcpy(tmp,A,n*n*sizeof(double));
@@ -189,10 +189,10 @@ void create_csv_lu_bloc(int n, int size_b_max, lu_function lu_block,
     abs_err = absolute_error(n,n,tmp,n,res,n);
     rel_err = relative_error(n,n,tmp,n,res,n);
     duration = (t2.tv_sec - t1.tv_sec) * 10E6 + (t2.tv_usec - t1.tv_usec);
-    dprintf(abs_file,"%d,%.14f\n",n,abs_err);
-    dprintf(rel_file,"%d,%.14f\n",n,rel_err);
-    dprintf(time_file,"%d,%f\n",n,duration);
-    size_b = ((int) size_b*1.2) + 1;
+    dprintf(abs_file,"%d,%.14f\n",size_b,abs_err);
+    dprintf(rel_file,"%d,%.14f\n",size_b,rel_err);
+    dprintf(time_file,"%d,%f\n",size_b,duration);
+    size_b = ((int) size_b*1.3) + 1;
   }    
   free(tmp);free(A);free(res);
   printf("ok\n");
@@ -210,13 +210,13 @@ int main(int argc, char** argv){
   int create_csv = atoi(argv[1]);
   double eps = strtod(argv[2],NULL);
   int nmax = atoi(argv[3]);
+  printf("Tests lancés avec un erreur max de : %.14f\n", eps);
   if(create_csv){
     //create_csv_lu(nmax,dgetf2_nopiv,"normal");
-    create_csv_lu(nmax,dgetrf_nopiv,"bloc");
-    //create_csv_lu_bloc(nmax,100,dgetrf_nopiv,"bloc");
+    //create_csv_lu(nmax,dgetrf_nopiv,"bloc");
+    create_csv_lu_bloc(nmax,(int) nmax*0.5,dgetrf_nopiv,"bloc");
       
   }
-  printf("Tests lancés avec un erreur max de : %.14f\n", eps);
   //test_dgetf2_nopiv(eps);
   //test_dgetrf_nopiv(eps);
   return 0;

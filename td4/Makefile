@@ -3,7 +3,7 @@ CFLAGS = -std=c99 -O0 -Wno-unused-parameter
 LDFLAGS = -fopenmp -lm
 DEBUG_FLAGS = -W -Wall -g
 TEST = perf.c
-SRC = dgetf2_nopiv.c dgetrf_nopiv.c util.c dgetrf_mpi_nopiv.c
+SRC = dgetf2_nopiv.c dgetrf_nopiv.c util.c 
 OBJS = $(SRC:.c=.o)
 
 HEADER_DIR = header
@@ -24,7 +24,7 @@ slave_lu: $(OBJS)  dgetrf_mpi_slave.o
 
 test_parallel: CC=mpicc
 test_parallel: test_mpi_unitaire
-test_mpi_unitaire: $(OBJS) perf_mpi.c
+test_mpi_unitaire: $(OBJS) dgetrf_mpi_nopiv.o perf_mpi.c
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) $(LDFLAGS) -o $@ $^ 
 
 

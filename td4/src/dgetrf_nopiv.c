@@ -2,12 +2,17 @@
 #include "util.h"
 #include <dgetf2_nopiv.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 void dgetrf_nopiv(const enum CBLAS_ORDER order, const int M, const int N, double *A,
 		   const int lda){
   int j,jb; double scal;
   // Defined like this in LAPACK
-  int nb = atoi(getenv("BLOCK_SIZE"));
+  /* int nb = 64; */
+  char *var = getenv("BLOCK_SIZE");
+  int nb = atoi(var);
+  printf("Valeur de nb %d\n",nb);
   if (nb < MIN(N,M))
     for (j=0; j<MIN(N,M); j+=nb){
       jb = MIN(MIN(M,N)-j,nb);

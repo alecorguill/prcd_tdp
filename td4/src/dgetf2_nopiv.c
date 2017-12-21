@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 
-// Works only on squared matrix
+
 void dgetf2_nopiv(const enum CBLAS_ORDER order, const int M, const int N, double *A,
 		   const int lda){
   int j; double scal;

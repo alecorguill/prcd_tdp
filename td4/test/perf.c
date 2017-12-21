@@ -217,7 +217,7 @@ int main(int argc, char** argv){
     create_csv_lu_bloc(nmax,(int) nmax*0.5,dgetrf_nopiv,"bloc");
       
   }
-  //test_dgetf2_nopiv(eps);
-  //test_dgetrf_nopiv(eps);
+  test_dgetf2_nopiv(eps);
+  test_dgetrf_nopiv(eps);
   return 0;
 }

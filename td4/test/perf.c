@@ -131,6 +131,76 @@ void create_csv_lu(int nmax, lu_function lu, char* function_name){
 }
 
 
+void create_csv_lu_bloc(int n, int size_b_max, lu_function lu_block, 
+			char* function_name){
+  printf("Creating csv..");
+  int min=0,max=10;
+  double abs_err,rel_err;
+  double * tmp,*A,*res,duration;
+  struct timeval t1, t2;
+  if(strlen(function_name) > MAX_LENGTH){
+    puts("Function name too long");
+    exit(EXIT_FAILURE);
+  }
+
+  char abs[]  = "_abs_bloc_err.csv";
+  char rel[]  = "_rel_bloc_err.csv";
+  char time[] = "_time_bloc.csv";
+  int char_size = MAX_LENGTH + strlen(rel);
+  char abs_csv[char_size];
+  char rel_csv[char_size];
+  char time_csv[char_size];
+  strcpy(abs_csv,function_name);
+  strcpy(rel_csv,function_name);
+  strcpy(time_csv,function_name);
+  strcat(time_csv,time);
+  strcat(rel_csv,rel);
+  strcat(abs_csv,abs);
+  int abs_file = open(abs_csv, O_CREAT | O_WRONLY | O_TRUNC,0744);
+  int rel_file = open(rel_csv, O_CREAT | O_WRONLY | O_TRUNC,0744);
+  int time_file = open(time_csv, O_CREAT | O_WRONLY | O_TRUNC,0744);
+  if ((abs_file < 0) || (rel_file < 0) || (time_file < 0)){
+    perror("open : csv files\n");
+    exit(EXIT_FAILURE);
+  }
+  dprintf(abs_file,"size_block,absolute_error\n");
+  dprintf(rel_file,"size_block,relative_error\n");
+  dprintf(time_file,"size_block,time\n");
+
+  tmp  = malloc(n*n*sizeof(double));
+  A    = malloc(n*n*sizeof(double));
+  res  = malloc(n*n*sizeof(double));
+  int size_b=2;
+  char str[12];
+  while(size_b<size_b_max){
+    for(int i=0; i<n*n; ++i){
+      tmp[i] = 0.0;
+      A[i]   = 0.0;
+      res[i] = 0.0;
+    }
+    sprintf(str, "%d", str);
+    setenv("BLOCK_SIZE",str,1);
+    random_matrix(n,n,min,max,A,n);   
+    memcpy(tmp,A,n*n*sizeof(double));
+    gettimeofday(&t1, NULL);
+    lu_block(CblasColMajor,n,n,A,n);
+    gettimeofday(&t2, NULL);
+    cblas_dgemm_lu(n,n,A,n,res,n);
+    abs_err = absolute_error(n,n,tmp,n,res,n);
+    rel_err = relative_error(n,n,tmp,n,res,n);
+    duration = (t2.tv_sec - t1.tv_sec) * 10E6 + (t2.tv_usec - t1.tv_usec);
+    dprintf(abs_file,"%d,%.14f\n",n,abs_err);
+    dprintf(rel_file,"%d,%.14f\n",n,rel_err);
+    dprintf(time_file,"%d,%f\n",n,duration);
+    size_b = ((int) size_b*1.2) + 1;
+  }    
+  free(tmp);free(A);free(res);
+  printf("ok\n");
+
+}
+
+
+
 int main(int argc, char** argv){
   if(argc < 4){
     printf("USAGE : %s bool_csv eps n_max\n",argv[0]);
@@ -141,11 +211,13 @@ int main(int argc, char** argv){
   double eps = strtod(argv[2],NULL);
   int nmax = atoi(argv[3]);
   if(create_csv){
-    create_csv_lu(nmax,dgetf2_nopiv,"normal");
+    //create_csv_lu(nmax,dgetf2_nopiv,"normal");
     create_csv_lu(nmax,dgetrf_nopiv,"bloc");
+    //create_csv_lu_bloc(nmax,100,dgetrf_nopiv,"bloc");
+      
   }
   printf("Tests lancés avec un erreur max de : %.14f\n", eps);
-  test_dgetf2_nopiv(eps);
-  test_dgetrf_nopiv(eps);
+  //test_dgetf2_nopiv(eps);
+  //test_dgetrf_nopiv(eps);
   return 0;
 }

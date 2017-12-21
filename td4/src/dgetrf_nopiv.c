@@ -1,18 +1,19 @@
 #include <cblas.h>
-#include "util.h"
 #include <dgetf2_nopiv.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
+#include "util.h"
+
 void dgetrf_nopiv(const enum CBLAS_ORDER order, const int M, const int N, double *A,
 		   const int lda){
-  int j,jb; double scal;
+  int j,jb,nb; double scal;
   // Defined like this in LAPACK
-  /* int nb = 64; */
-  char *var = getenv("BLOCK_SIZE");
-  int nb = atoi(var);
-  printf("Valeur de nb %d\n",nb);
+  char* var = getenv("BLOCK_SIZE");
+  if(var == NULL)
+    nb = atoi(var);
   if (nb < MIN(N,M))
     for (j=0; j<MIN(N,M); j+=nb){
       jb = MIN(MIN(M,N)-j,nb);

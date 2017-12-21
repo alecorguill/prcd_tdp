@@ -23,6 +23,7 @@ slave_lu: $(OBJS)  dgetrf_mpi_slave.o
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) $(LDFLAGS) -o $@ $^  
 
 test_parallel: CC=mpicc
+test_parallel: OBJS+=dgetrf_mpi_nopiv.c
 test_parallel: test_mpi_unitaire
 test_mpi_unitaire: $(OBJS) dgetrf_mpi_nopiv.o perf_mpi.c
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) $(LDFLAGS) -o $@ $^ 

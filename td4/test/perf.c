@@ -212,12 +212,12 @@ int main(int argc, char** argv){
   int nmax = atoi(argv[3]);
   printf("Tests lancés avec un erreur max de : %.14f\n", eps);
   if(create_csv){
-    //create_csv_lu(nmax,dgetf2_nopiv,"normal");
-    //create_csv_lu(nmax,dgetrf_nopiv,"bloc");
+    create_csv_lu(nmax,dgetf2_nopiv,"normal");
+    create_csv_lu(nmax,dgetrf_nopiv,"bloc");
     create_csv_lu_bloc(nmax,(int) nmax*0.5,dgetrf_nopiv,"bloc");
       
   }
-  //test_dgetf2_nopiv(eps);
-  //test_dgetrf_nopiv(eps);
+  test_dgetf2_nopiv(eps);
+  test_dgetrf_nopiv(eps);
   return 0;
 }

@@ -7,7 +7,7 @@ void dgetrf_nopiv(const enum CBLAS_ORDER order, const int M, const int N, double
 		   const int lda){
   int j,jb; double scal;
   // Defined like this in LAPACK
-  int nb = 64;
+  int nb = atoi(getenv("BLOCK_SIZE"));
   if (nb < MIN(N,M))
     for (j=0; j<MIN(N,M); j+=nb){
       jb = MIN(MIN(M,N)-j,nb);

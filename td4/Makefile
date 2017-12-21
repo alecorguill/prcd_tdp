@@ -42,4 +42,4 @@ test_unitaire : $(OBJS) perf.c
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) -c $<
 
 clean:
-	@rm -f *.o test_unitaire *.csv slave_lu
+	@rm -f *.o test_unitaire *.csv slave_lu test_mpi_unitaire

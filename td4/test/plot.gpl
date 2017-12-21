@@ -1,0 +1,11 @@
+set datafile separator ","
+set xlabel "N"
+set logscale x
+set ylabel "time"
+set autoscale xy
+set title "Temps"
+set term png
+set output "output.png"
+set grid
+set tics out
+plot "bloc_time.csv" using 1:2 with lines title "bloc" axes x1y1, "normal_time.csv" using 1:2 with lines title "normal" axes x1y1,

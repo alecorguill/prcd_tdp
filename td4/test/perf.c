@@ -87,9 +87,9 @@ void create_csv_lu(int nmax, lu_function lu, char* function_name){
   strcat(time_csv,time);
   strcat(rel_csv,rel);
   strcat(abs_csv,abs);
-  int abs_file = open(abs_csv, O_CREAT | O_WRONLY | O_TRUNC,0744);
-  int rel_file = open(rel_csv, O_CREAT | O_WRONLY | O_TRUNC,0744);
-  int time_file = open(time_csv, O_CREAT | O_WRONLY | O_TRUNC,0744);
+  int abs_file = open(abs_csv, O_CREAT | O_WRONLY | O_TRUNC,0444);
+  int rel_file = open(rel_csv, O_CREAT | O_WRONLY | O_TRUNC,0444);
+  int time_file = open(time_csv, O_CREAT | O_WRONLY | O_TRUNC,0444);
   if ((abs_file < 0) || (rel_file < 0) || (time_file < 0)){
     perror("open : csv files\n");
     exit(EXIT_FAILURE);
@@ -156,9 +156,9 @@ void create_csv_lu_bloc(int n, int size_b_max, lu_function lu_block,
   strcat(time_csv,time);
   strcat(rel_csv,rel);
   strcat(abs_csv,abs);
-  int abs_file = open(abs_csv, O_CREAT | O_WRONLY | O_TRUNC,0744);
-  int rel_file = open(rel_csv, O_CREAT | O_WRONLY | O_TRUNC,0744);
-  int time_file = open(time_csv, O_CREAT | O_WRONLY | O_TRUNC,0744);
+  int abs_file = open(abs_csv, O_CREAT | O_WRONLY | O_TRUNC,0444);
+  int rel_file = open(rel_csv, O_CREAT | O_WRONLY | O_TRUNC,0444);
+  int time_file = open(time_csv, O_CREAT | O_WRONLY | O_TRUNC,0444);
   if ((abs_file < 0) || (rel_file < 0) || (time_file < 0)){
     perror("open : csv files\n");
     exit(EXIT_FAILURE);
@@ -212,8 +212,8 @@ int main(int argc, char** argv){
   int nmax = atoi(argv[3]);
   printf("Tests lancés avec un erreur max de : %.14f\n", eps);
   if(create_csv){
-    //create_csv_lu(nmax,dgetf2_nopiv,"normal");
-    //create_csv_lu(nmax,dgetrf_nopiv,"bloc");
+    create_csv_lu(nmax,dgetf2_nopiv,"normal");
+    create_csv_lu(nmax,dgetrf_nopiv,"bloc");
     create_csv_lu_bloc(nmax,(int) nmax*0.5,dgetrf_nopiv,"bloc");
       
   }

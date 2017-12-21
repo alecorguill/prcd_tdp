@@ -119,7 +119,7 @@ void create_csv_lu(int nmax, lu_function lu, char* function_name){
     dprintf(abs_file,"%d,%.14f\n",n,abs_err);
     dprintf(rel_file,"%d,%.14f\n",n,rel_err);
     dprintf(time_file,"%d,%f\n",n,duration);
-    n = (int) n*1.2;
+    n = (int) n*1.2 + 1;
     free(tmp);free(A);free(res);
     tmp  = malloc(n*n*sizeof(double));
     A    = malloc(n*n*sizeof(double));

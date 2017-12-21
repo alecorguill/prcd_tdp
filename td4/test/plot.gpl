@@ -1,11 +1,70 @@
 set datafile separator ","
+
 set xlabel "N"
-set logscale x
-set ylabel "time"
+set ylabel "time (us)"
 set autoscale xy
+set logscale x
 set title "Temps"
 set term png
-set output "output.png"
+set output "time_N.png"
 set grid
 set tics out
 plot "bloc_time.csv" using 1:2 with lines title "bloc" axes x1y1, "normal_time.csv" using 1:2 with lines title "normal" axes x1y1,
+
+set xlabel "N"
+set ylabel "Erreur"
+set autoscale xy
+set logscale x
+set title "Erreur absolue en fonction de la taille de la matrice"
+set term png
+set output "abs_N.png"
+set grid
+set tics out
+plot "bloc_abs_err.csv" using 1:2 with lines title "bloc" axes x1y1, "normal_abs_err.csv" using 1:2 with lines title "normal" axes x1y1,
+
+set xlabel "N"
+set ylabel "Erreur"
+set autoscale xy
+set logscale x
+set yrange [0:2.5E-12]
+set title "Erreur relative en fonction de la taille de la matrice"
+set term png
+set output "rel_N.png"
+set grid
+set tics out
+plot "bloc_rel_err.csv" using 1:2 with lines title "bloc" axes x1y1, "normal_rel_err.csv" using 1:2 with lines title "normal" axes x1y1,
+
+
+
+set xlabel "Nb"
+set ylabel "time (us)"
+set autoscale xy
+set logscale x
+set title "Temps en fonction de la taille des blocs"
+set term png
+set output "time_bloc_N.png"
+set grid
+set tics out
+plot "bloc_time_bloc.csv" using 1:2 with lines title "bloc" axes x1y1
+
+set xlabel "Nb"
+set ylabel "Erreur"
+set autoscale xy
+set logscale x
+set title "Erreur absolue en fonction de la taille des blocs
+set term png
+set output "abs_N_bloc.png"
+set grid
+set tics out
+plot "bloc_abs_bloc_err.csv" using 1:2 with lines title "bloc" axes x1y1
+
+set xlabel "Nb"
+set ylabel "Erreur"
+set autoscale xy
+set logscale x
+set title "Erreur relative en fonction de la taille des blocs"
+set term png
+set output "rel_bloc_N.png"
+set grid
+set tics out
+plot "bloc_rel_bloc_err.csv" using 1:2 with lines title "bloc" axes x1y1

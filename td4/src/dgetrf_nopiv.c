@@ -10,7 +10,7 @@
 void dgetrf_nopiv(const enum CBLAS_ORDER order, const int M, const int N, double *A,
 		   const int lda){
   int j,jb,nb; double scal;
-  // Defined like this in LAPACK
+  /* env var to set block size */
   char* var = getenv("BLOCK_SIZE");
   if(var == NULL)
     nb = 64;

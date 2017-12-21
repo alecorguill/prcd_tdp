@@ -13,7 +13,6 @@ void dgetrf_nopiv(const enum CBLAS_ORDER order, const int M, const int N, double
   if(nb == NULL)
     nb = "64";
   nb = atoi(nb);
-  printf("%d\n",nb);
   if (nb < MIN(N,M))
     for (j=0; j<MIN(N,M); j+=nb){
       jb = MIN(MIN(M,N)-j,nb);

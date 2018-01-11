@@ -13,7 +13,8 @@ def encoder(input,output):
 if __name__ == "__main__":
         args = sys.argv
         if len(args) != 3:
-            print "USAGE : python encoder.py input output"
-        input = args[1]
-        output = args[2]
-        encoder(input,output)
+            print "Usage : python encoder.py input output"
+        else:
+            input = args[1]
+            output = args[2]
+            encoder(input,output)

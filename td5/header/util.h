@@ -17,4 +17,6 @@ void parse_particule_par(char * filename, int rank, particule* univers);
 void init_buffers(int, particule*, particule*);
 void masse_center(bloc *b);
 void process_interaction_bloc(bloc *a, bloc *b, float bloc_size);
+void parse_par_bloc(char* filename, particule* univers);
+
 #endif

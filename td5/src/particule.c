@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
+#include "util.h"
 #define LINESIZE 80 /* Taille max de nos lignes */
 
 /* Calcul la norme d'un vecteur */
@@ -128,4 +129,25 @@ void log_particules_par(particule *univers,int alpha, int output,
   }
   log_particules(univers,alpha,output);
 }
+
+
+void log_forces_par(particule *univers,int alpha, int output){
+  int rank, size;
+  off_t offset;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  offset = MAX * alpha * rank;
+  printf("RANK %d OFFSET %d \n",rank,offset);
+  lseek(output,offset,SEEK_SET);
+  log_forces(univers,alpha,output);
+}
 #endif 
+
+
+void log_forces(particule *univers,int nb_particule, int output){
+  int k=0;
+  while (k < nb_particule){	
+    dprintf(output, "%lf,%lf\n", univers[k].f_ext.x, univers[k].f_ext.y);
+    k++;
+  }
+}

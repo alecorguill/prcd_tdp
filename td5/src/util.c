@@ -6,7 +6,7 @@
 #include <string.h>
 #define THETA 1
 
-#define TAILLE_LIGNE 81
+#define TAILLE_LIGNE 256
 
 /* Compare deux doubles pour palier au problème sur le flottants */
 int equal_double(double a, double b){
@@ -200,6 +200,41 @@ void parse_particule_par(char* filename, int rank, particule* univers){
   fclose(fd);
 }
 
+
+/* Faire une function qui transforme une ligne du fichier en particule */
+void parse_par_bloc(char* filename, particule* univers){  
+  int nb,local_nb; char ligne[MAX];  
+  FILE* fd = fopen(filename, "r");
+  if (!fd){
+    perror("Erreur ouverture fichier\n");
+    exit(EXIT_FAILURE);
+  }
+  /* number of particules */
+  fgets(ligne, MAX, fd);
+  nb = atoi(ligne);
+  int size,rank;
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  if(nb%size != 0){
+    dprintf(stderr,"Number of particule should be divisible by np");
+    exit(EXIT_FAILURE);
+  }
+  local_nb = nb/size;
+  /* placing read cursor */
+  for(int i=0;i<rank*(local_nb+1)+1;++i)
+    fgets(ligne, MAX, fd);
+  /*reading local particules */
+  for(int i=0;i<local_nb;++i){
+    fgets(ligne,MAX,fd);
+    sscanf(ligne, "%d %lf %lf %lf %lf", &((univers+i)->m),&((univers+i)->p.x),&((univers+i)->p.y), &((univers+i)->v.x),&((univers+i)->v.y));
+    (univers+i)->a.x = 0.0;
+    (univers+i)->a.y = 0.0;
+    (univers+i)->proche_d = 0.0;
+    (univers+i)->f_ext.x = 0.0;
+    (univers+i)->f_ext.y = 0.0;
+  }      
+  fclose(fd);
+}
 
 #endif 
 

@@ -45,5 +45,6 @@ void update_particules(particule *univers,int nb_particule, double dt);
 void log_particules(particule *univers,int nb_particule, int output);
 void print_particule(particule *p);
 void log_particules_par(particule*,int,int,double,int,int);
-
+void log_forces(particule *univers,int nb_particule, int output);
+void log_forces_par(particule *univers,int alpha, int output);
 #endif

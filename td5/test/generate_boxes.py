@@ -3,7 +3,7 @@ import sys
 
 V_RANGE = 2.5
 P_RANGE = 100
-M_RANGE = 10E15
+M_RANGE = 1E9
 def generate_boxes(filename, nb_boxes, nb_part):
     fd = open(filename, "w")
     n = nb_boxes*nb_boxes*nb_part

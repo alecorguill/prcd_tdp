@@ -12,10 +12,10 @@
 #define NB_ITERATIONS 20
 
 int main(int argc, char** argv){
-  int size; char ligne[MAX];
-  if (argc != 4) {
+  int size;char ligne[MAX];
+  if (argc != 5) {
     printf("Erreur : Argument manquant\n");
-    printf("Usage : ./exec particules_file nb_blocs output_file\n");
+    printf("Usage : ./exec particules_file nb_blocs bloc_size output_file\n");
     return EXIT_FAILURE;
   }
   /* Fichier de particules */
@@ -25,7 +25,7 @@ int main(int argc, char** argv){
     return EXIT_FAILURE;
   } 
   /* Fichier d'output des résultats */
-  int output = open(argv[3], O_CREAT | O_RDWR, 0755);
+  int output = open(argv[4], O_CREAT | O_RDWR, 0755);
   if (output == -1){
     perror("open : fichier output\n");
     return EXIT_FAILURE;
@@ -35,51 +35,35 @@ int main(int argc, char** argv){
   size = atoi(ligne);
   fclose(fd);
   fflush(stdout);
-	
-  int k;
-  int i = 0, n = 0, p = 0;
-  double dt = 0.0, t = 0.0; 
+       
+  /*double dt = 0.1;*/
 
   /* Recuperation des particules à partir du fichier */
   int nb_blocs = atoi(argv[2]);
-  int dims[nb_blocs];	
+  float bloc_size = atof(argv[3]);
   bloc univers[nb_blocs];
   parse_particules_bloc(argv[1], univers);
   
   /* Calcul des centres de masses */
   for (int ii = 0; ii < nb_blocs; ii++){
     masse_center(&univers[ii]);
-    print_particule(&(univers[ii].center));
+    /* for(int jj=0;jj<univers[ii].dim;++jj) */
+    /*   print_particule(&(univers[ii].ps[jj])); */
   }
   
-  while (i < NB_ITERATIONS){
-    // calcul des forces exterieures
-    while (n < nb_blocs){
-      while (p < nb_blocs){
-
-  	// calcul de la distance de la particule la plus proche (pour dt)
-	process_interaction_bloc(&univers[n],&univers[p]);    
-	p=0;
-	n++;
-      }
-
-      n = 0;
-      // TODO
-      /* dt = nouveau_dt(univers, m); */
-      /* t += dt; */
-      /* /\* log de dt *\/ */
-      /* dprintf(output, "%lf\n", t); */
-      /* /\* mise à jour des particules *\/ */
-      /* // TODO */
-      /* update_particules(univers, m, dt); */
-      /* /\* log des particules *\/ */
-      /* // TODO */
-      /* log_particules(univers, m, output); */
-      i++;
-    }
-    /* for(int ii=0; ii<nb_blocs; ++ii){ */
-    /*   free(univers[ii].ps); */
+  for(int n=0;n<nb_blocs;++n){
+    for(int p=0;p<nb_blocs;++p){
+      process_interaction_bloc(&univers[n],&univers[p],bloc_size);
+    }    
   }
+  
+  for(int ii=0;ii<nb_blocs;++ii){
+    for(int jj=0;jj<univers[ii].dim;++jj)
+      printf("%lf,%lf\n",univers[ii].ps[jj].f_ext.x,
+  	     univers[ii].ps[jj].f_ext.y);
+  }
+  for(int ii=0; ii<nb_blocs; ++ii)
+    free(univers[ii].ps);
   close(output);
   return 0;
 }

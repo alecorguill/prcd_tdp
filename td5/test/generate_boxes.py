@@ -3,7 +3,7 @@ import sys
 
 V_RANGE = 2.5
 P_RANGE = 10
-
+M_RANGE = 10E15
 def generate_boxes(filename, nb_boxes, nb_part):
     fd = open(filename, "w")
     n = nb_boxes*nb_boxes*nb_part
@@ -13,9 +13,9 @@ def generate_boxes(filename, nb_boxes, nb_part):
         for j in range(nb_boxes):
             fd.write(str(nb_part)+'\n')            
             for k in range(nb_part):        
-                masse = random.randrange(1,5000)
-                px = random.uniform(i*box_size,(i+1)*box_size)
-                py = random.uniform(i*box_size,(i+1)*box_size)
+                masse = random.randrange(1,M_RANGE)
+                px = random.uniform(i*box_size,j*box_size)
+                py = random.uniform(i*box_size,j*box_size)
                 vx = random.uniform(-V_RANGE,V_RANGE)
                 vy = random.uniform(-V_RANGE,V_RANGE)
                 fd.write(("%s %s %s %s %s\n")% (masse,px,py,vx,vy))

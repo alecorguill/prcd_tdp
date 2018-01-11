@@ -14,4 +14,5 @@ void parse_particules_bloc(char *filename, bloc *ps);
 double nouveau_dt(particule* univers, int m);
 void parse_particule_par(char * filename, int rank, particule* univers);
 void init_buffers(int, particule*, particule*);
+void masse_center(bloc *b);
 #endif

@@ -91,7 +91,6 @@ void process_interaction_bloc(bloc *a, bloc *b){
 		  a->ps[n].proche_d = dist;
 		}
 		force_grav(&(b->ps[p]), &(a->ps[n]), &force_tmp);
-
       }
     }
   }

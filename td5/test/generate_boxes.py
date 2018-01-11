@@ -4,32 +4,27 @@ import sys
 V_RANGE = 2.5
 P_RANGE = 10
 
-def generate_boxes(filename, n1, n2):
+def generate_boxes(filename, nb_boxes, nb_part):
     fd = open(filename, "w")
-    n = n1+n2
-    small_size = 0.1*P_RANGE
-    fd.write(str(n1+n2)+'\n')
-    fd.write(str(n1)+'\n')
-    for i in range(n1):        
-        masse = random.randrange(1,5000)
-        px = random.uniform(0,small_size)
-        py = random.uniform(0,P_RANGE)
-        vx = random.uniform(-V_RANGE,V_RANGE)
-        vy = random.uniform(-V_RANGE,V_RANGE)
-        fd.write(("%s %s %s %s %s\n")% (masse,px,py,vx,vy))
-    fd.write(str(n2)+'\n')
-    for i in range(n2):        
-        masse = random.randrange(1,5000)
-        px = random.uniform(P_RANGE-small_size,P_RANGE)
-        py = random.uniform(0,small_size)
-        vx = random.uniform(-V_RANGE,V_RANGE)
-        vy = random.uniform(-V_RANGE,V_RANGE)
-        fd.write(("%s %s %s %s %s\n")% (masse,px,py,vx,vy))
+    n = nb_boxes*nb_boxes*nb_part
+    box_size = P_RANGE/nb_boxes
+    fd.write(str(n)+'\n')
+    for i in range(nb_boxes):
+        for j in range(nb_boxes):
+            fd.write(str(nb_part)+'\n')            
+            for k in range(nb_part):        
+                masse = random.randrange(1,5000)
+                px = random.uniform(i*box_size,(i+1)*box_size)
+                py = random.uniform(i*box_size,(i+1)*box_size)
+                vx = random.uniform(-V_RANGE,V_RANGE)
+                vy = random.uniform(-V_RANGE,V_RANGE)
+                fd.write(("%s %s %s %s %s\n")% (masse,px,py,vx,vy))
 
     fd.close()
 
 if __name__ == "__main__":
     args = sys.argv
     if len(args) < 4:
-        print "USAGE : python generate_particules.py filename n1 n2"
+        print "USAGE : python generate_particules.py filename nb_boxes nb_part"
+        exit(0)
     generate_boxes(args[1],int(args[2]), int(args[3]))                      

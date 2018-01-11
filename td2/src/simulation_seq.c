@@ -71,6 +71,9 @@ int main(int argc, char** argv){
     update_particules(univers, m, dt);
     /* log des particules */
     log_particules(univers, m, output);
+    /* TEMPORAIRE */
+    for(int k=0;k<m;++k)
+      printf("%lf,%lf\n",univers[k].f_ext.x,univers[k].f_ext.y);
     i++; 
   }
   close(output);

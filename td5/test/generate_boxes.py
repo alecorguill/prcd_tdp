@@ -14,8 +14,8 @@ def generate_boxes(filename, nb_boxes, nb_part):
             fd.write(str(nb_part)+'\n')            
             for k in range(nb_part):        
                 masse = random.randrange(1,M_RANGE)
-                px = random.uniform(i*box_size,j*box_size)
-                py = random.uniform(i*box_size,j*box_size)
+                px = random.uniform(i*box_size,(i+1)*box_size)
+                py = random.uniform(j*box_size,(j+1)*box_size)
                 vx = random.uniform(-V_RANGE,V_RANGE)
                 vy = random.uniform(-V_RANGE,V_RANGE)
                 fd.write(("%s %s %s %s %s\n")% (masse,px,py,vx,vy))

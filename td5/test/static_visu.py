@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 
 def plot(u,v):
     fig = plt.figure()
-    ax = fig.add_subplot(111, autoscale_on=True, xlim=(-50, 50), ylim=(-50, 50))
+    ax = fig.add_subplot(111, autoscale_on=False, xlim=(0, 10), ylim=(0, 10))
     ax.grid()
-    plt.quiver(u,v)
+    plt.scatter(u,v)
     plt.show()
 
 def static_visu(filename):

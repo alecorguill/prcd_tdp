@@ -2,9 +2,11 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
+RANGE = 100
+
 def plot(u,v):
     fig = plt.figure()
-    ax = fig.add_subplot(111, autoscale_on=False, xlim=(0, 10), ylim=(0, 10))
+    ax = fig.add_subplot(111, autoscale_on=False, xlim=(0, RANGE), ylim=(0, RANGE))
     ax.grid()
     plt.scatter(u,v)
     plt.show()

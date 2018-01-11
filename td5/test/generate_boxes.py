@@ -2,7 +2,7 @@ import random
 import sys
 
 V_RANGE = 2.5
-P_RANGE = 10
+P_RANGE = 100
 M_RANGE = 10E15
 def generate_boxes(filename, nb_boxes, nb_part):
     fd = open(filename, "w")

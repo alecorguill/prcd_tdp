@@ -53,7 +53,7 @@ int main(int argc, char** argv){
   
   for(int n=0;n<nb_blocs;++n){
     for(int p=0;p<nb_blocs;++p){
-      process_interaction_bloc(&univers[n],&univers[p],bloc_size);
+      process_interaction_bloc(&univers[n],&univers[p],bloc_size,(&univers[n]==&univers[p]));
     }    
   }
   

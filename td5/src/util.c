@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
 #define TAILLE_LIGNE 256
 
 /* Compare deux doubles pour palier au problème sur le flottants */
@@ -73,18 +72,20 @@ void parse_particules_bloc(char *filename, bloc * blocs){
   fclose(f);
 }
 
-void process_interaction_bloc(bloc *a, bloc *b, float bloc_size){  
+void process_interaction_bloc(bloc *a, bloc *b, float bloc_size, int lock){  
   vecteur force_tmp;
   float s = sqrt(2)*bloc_size;
-  for (int n = 0; n < a->dim; n++){    
+  for (int n = 0; n < a->dim; n++){  
     if (s/distance(&(a->ps[n]),&(b->center)) < THETA){
+        
+      printf("ALOOOOOOOOOO\n");
       force_grav(&(b->center), &(a->ps[n]), &force_tmp);
       somme(&((a->ps[n]).f_ext),&(force_tmp),&((a->ps[n]).f_ext));
     }
  
     else {
       for (int p = 0; p < b->dim; p++){
-	if ( (n == p) && (b==a) ){
+	if ( (n == p) && lock){
 	  continue;
 	}	
 
@@ -95,10 +96,14 @@ void process_interaction_bloc(bloc *a, bloc *b, float bloc_size){
 	}
 	force_grav(&(b->ps[p]), &(a->ps[n]), &force_tmp);
 	somme(&((a->ps[n]).f_ext),&(force_tmp),&((a->ps[n]).f_ext));
-      }
+      
+ }
     }
   }
 }
+
+
+
 
 void masse_center(bloc *b){
   if(b->dim == 0){
@@ -182,9 +187,10 @@ void parse_particule_par(char* filename, int rank, particule* univers){
   // Récupere les valeurs liées à son rang
   int i = 0;
   int j = 0;
-  while (i < nb){
+  int alpha = nb/size;
+  while (i < nb && j < alpha){
     fgets(ligne,MAX,fd);
-    if (i % size == rank){
+    if (i < (rank+1)*alpha && (i >= rank*alpha)){
       sscanf(ligne, "%d %lf %lf %lf %lf", &((univers+j)->m),&((univers+j)->p.x),
       	     &((univers+j)->p.y), &((univers+j)->v.x),&((univers+j)->v.y));
       (univers+j)->a.x = 0.0;

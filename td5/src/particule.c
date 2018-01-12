@@ -7,6 +7,7 @@
 #include "util.h"
 #define LINESIZE 80 /* Taille max de nos lignes */
 
+
 /* Calcul la norme d'un vecteur */
 double norme(vecteur *v){
   return sqrt(v->x*v->x+v->y*v->y);
@@ -46,7 +47,9 @@ void force_grav(particule *p1, particule *p2, vecteur *force){
   double coef = G*(p1->m+p2->m)/(dst*dst);
   force->x = coef*(1/dst)*(p1->p.x-p2->p.x);
   force->y = coef*(1/dst)*(p1->p.y-p2->p.y);
-  return;
+  
+
+ return;
 }
 
 /*
@@ -136,7 +139,7 @@ void log_forces_par(particule *univers,int alpha, int output){
   off_t offset;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  offset = MAX * alpha * rank;
+  offset = LINESIZE * alpha * rank;
   lseek(output,offset,SEEK_SET);
   log_forces(univers,alpha,output);
 }

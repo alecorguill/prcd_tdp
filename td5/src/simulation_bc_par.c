@@ -13,9 +13,9 @@
 int main(int argc, char** argv){
 
    ////---------------------------------------------------------////
-    if (argc != 3) {
+    if (argc != 4) {
         printf("Erreur : Argument manquant\n");
-        printf("Usage : ./exec particules_file output_file\n");
+        printf("Usage : ./exec particules_file grid_size output_file\n");
         return EXIT_FAILURE;
     }
 
@@ -26,7 +26,7 @@ int main(int argc, char** argv){
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     /* fichier d'ouput des résultats */
 
-    int output = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC,0744);
+    int output = open(argv[3], O_CREAT | O_WRONLY | O_TRUNC,0744);
     if (!output){
         perror("open : fichier output\n");
         MPI_Finalize();
@@ -43,7 +43,7 @@ int main(int argc, char** argv){
     char ligne[MAX];
     fgets(ligne, MAX, fd);
     int m = atoi(ligne);
-    float bloc_size = atof(argv[2]);
+    float grid_size = atof(argv[2]);
     int alpha = m/size; /* nombre de particules par processeurs */
     bloc univers;
     univers.ps = malloc(sizeof(particule)*alpha);
@@ -103,31 +103,32 @@ int main(int argc, char** argv){
     
       /**/
       tmp_interaction.ps = send;
+      tmp_interaction.dim = alpha;
       tmp_interaction.center.p.x = center_send->p.x;
       tmp_interaction.center.p.y = center_send->p.y;
       tmp_interaction.center.m = center_send->m;
-      process_interaction_bloc(&univers,&tmp_interaction,bloc_size/sqrt(size));
-      /**/
+      process_interaction_bloc(&univers,&tmp_interaction,grid_size/sqrt(size),(j==0));
+       /**/
 
-      // Swap send et received buffers
-      MPI_Barrier(MPI_COMM_WORLD);
-      MPI_Wait(&request,&status);
-      MPI_Wait(&request2,&status);
-      MPI_Wait(&request3,&status);
-      MPI_Wait(&request4,&status);
-      tmp = send;
-      send = recv;
-      recv = tmp;
-      MPI_Barrier(MPI_COMM_WORLD);
-  
-    }
+       // Swap send et received buffers
+       MPI_Barrier(MPI_COMM_WORLD);
+       MPI_Wait(&request,&status);
+       MPI_Wait(&request2,&status);
+       MPI_Wait(&request3,&status);
+       MPI_Wait(&request4,&status);
+       tmp = send;
+       send = recv;
+       recv = tmp;
+       MPI_Barrier(MPI_COMM_WORLD);
 
-    log_forces_par(univers.ps,alpha,output);
+     }
+    
+     log_forces_par(univers.ps,alpha,output);
 
-    MPI_Finalize();
-    free(send); free(recv);
-    free(center_send); free(center_recv);
-    free(univers.ps);
-    close(output);
+     MPI_Finalize();
+     free(send); free(recv);
+     free(center_send); free(center_recv);
+     free(univers.ps);
+     close(output);
     return 0;
 }

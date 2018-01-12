@@ -10,7 +10,7 @@ def rel_mean_error(x,y):
 
 def to_float(x):
     try:
-        return float(x)
+        return float(x.translate(None,'\x00'))
     except:
         pass
 def test_mean_error(f1,f2):
@@ -19,15 +19,13 @@ def test_mean_error(f1,f2):
     with open(f1) as fp:
         for line in fp:
             meas = map(lambda x: to_float(x), line.split(','))
-            if None not in meas:
-                rows1 += [meas]
-                
+            rows1 += [meas]
+    
     with open(f2) as fp:
         for line in fp:
             meas = map(lambda x: to_float(x), line.split(','))
-            if None not in meas:
-                rows2 += [meas]
-   
+            rows2 += [meas]
+
     if(len(rows1) != len(rows2)):
         print "Different size"
         return

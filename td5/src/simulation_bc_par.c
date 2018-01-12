@@ -8,27 +8,25 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-
-#define NB_ITERATIONS 20
+#include <math.h>
 
 int main(int argc, char** argv){
 
    ////---------------------------------------------------------////
-    if (argc != 3) {
+    if (argc != 4) {
         printf("Erreur : Argument manquant\n");
-        printf("Usage : ./exec particules_file output_file\n");
+        printf("Usage : ./exec particules_file grid_size output_file\n");
         return EXIT_FAILURE;
     }
 
     MPI_Init(NULL,NULL);
     int rank, size, tag;
-    int root = 0;
     tag = 99;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     /* fichier d'ouput des résultats */
 
-    int output = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC,0744);
+    int output = open(argv[3], O_CREAT | O_WRONLY | O_TRUNC,0744);
     if (!output){
         perror("open : fichier output\n");
         MPI_Finalize();
@@ -45,19 +43,20 @@ int main(int argc, char** argv){
     char ligne[MAX];
     fgets(ligne, MAX, fd);
     int m = atoi(ligne);
+    float grid_size = atof(argv[2]);
     int alpha = m/size; /* nombre de particules par processeurs */
     bloc univers;
-
+    univers.ps = malloc(sizeof(particule)*alpha);
+    univers.dim = alpha;
     if ( m % size != 0){
         printf("Nombre de processeurs doit diviser le nombre de particules initial\n");
         MPI_Finalize();
         return EXIT_FAILURE;
     }
     /* Initialisation des particules à partir du fichier */
-    parse_particule_par(argv[1], rank, univers.ps);
+    parse_par_bloc(argv[1], univers.ps);
     ////---------------------------------------------------------////
-   
- 
+  
     
     ////---------------------------------------------------------////
     MPI_Datatype Particule_d, Vecteur_d, Transport_d;
@@ -91,14 +90,10 @@ int main(int argc, char** argv){
     particule *center_recv = malloc(sizeof(particule));
     particule *tmp;
     bloc tmp_interaction;
-    double dt = 0.0;
-    double t = 0.0;
-    int k;
-    vecteur force_tmp;
     
     masse_center(&univers);
     memcpy(send,univers.ps,sizeof(particule)*alpha);
-    memcpy(center_send,univers.center,sizeof(particule));
+    memcpy(center_send,&(univers.center),sizeof(particule));
     
     for (int j = 0; j < size; j++){
       MPI_Isend(send,alpha,Transport_d,(rank-1+size)%size,tag,MPI_COMM_WORLD,&request);
@@ -107,30 +102,33 @@ int main(int argc, char** argv){
       MPI_Irecv(center_recv,1,Transport_d,(rank+1)%size,tag,MPI_COMM_WORLD,&request4);
     
       /**/
-      tmp_interation.ps = send;
-      tmp_interaction.center.p.x = center_send.p.x;
-      tmp_interaction.center.p.y = center_send.p.y;
-      tmp_interaction.center.p.m = center_send.p.m;
-      process_interaction_bloc_par(univers,tmp_interaction,bloc_size);
-      /**/
+      tmp_interaction.ps = send;
+      tmp_interaction.dim = alpha;
+      tmp_interaction.center.p.x = center_send->p.x;
+      tmp_interaction.center.p.y = center_send->p.y;
+      tmp_interaction.center.m = center_send->m;
+      process_interaction_bloc(&univers,&tmp_interaction,grid_size/sqrt(size),(j==0));
+       /**/
 
-      // Swap send et received buffers
-      MPI_Barrier(MPI_COMM_WORLD);
-      MPI_Wait(&request,&status);
-      MPI_Wait(&request2,&status);
-      MPI_Wait(&request3,&status);
-      MPI_Wait(&request4,&status);
-      tmp = send;
-      send = recv;
-      recv = tmp;
-      MPI_Barrier(MPI_COMM_WORLD);
-  
-      //log_particules_par(univers,alpha,output,t,root,i);
-    }
+       // Swap send et received buffers
+       MPI_Barrier(MPI_COMM_WORLD);
+       MPI_Wait(&request,&status);
+       MPI_Wait(&request2,&status);
+       MPI_Wait(&request3,&status);
+       MPI_Wait(&request4,&status);
+       tmp = send;
+       send = recv;
+       recv = tmp;
+       MPI_Barrier(MPI_COMM_WORLD);
 
-    MPI_Finalize();
-    free(send); free(recv);
-    free(center_send); free(center_recv);
-    close(output);
+     }
+    
+     log_forces_par(univers.ps,alpha,output);
+
+     MPI_Finalize();
+     free(send); free(recv);
+     free(center_send); free(center_recv);
+     free(univers.ps);
+     close(output);
     return 0;
 }

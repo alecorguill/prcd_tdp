@@ -10,7 +10,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define NB_ITERATIONS 20
+#define NB_ITERATIONS 1
 
 int main(int argc, char** argv){
   
@@ -67,7 +67,7 @@ int main(int argc, char** argv){
   particule *tmp;
   double dt = 0.0;
   double t = 0.0;
-  int i, j, k,n,p;
+  int i, j,n,p;
   vecteur force_tmp;
   MPI_Datatype Particule_d, Vecteur_d, Transport_d;
   /* MPI_Datatype du vecteur */
@@ -90,7 +90,7 @@ int main(int argc, char** argv){
   MPI_Type_commit(&Particule_d);
   MPI_Type_create_resized(Particule_d,offsets_p[0],sizeof(particule),&Transport_d);
 
-  i = 0; j = 0; k = 0; n = 0; p = 0;
+  i = 0; j = 0; n = 0; p = 0;
   while(i < NB_ITERATIONS) {
     j = 0;
     /* deplace nos particules dans le buffer d'envoi */
@@ -142,10 +142,13 @@ int main(int argc, char** argv){
     
     //MPI_Barrier(MPI_COMM_WORLD);
     //MPI_Gather(univers,alpha,Particule_d,galaxy,alpha,Particule_d,root,MPI_COMM_WORLD);
-    log_particules_par(univers,alpha,output,t,root,i);
+    // TDP2
+    //log_particules_par(univers,alpha,output,t,root,i);
     i++;
   }
-  
+
+  // Marche que pour le TDP5
+  log_forces_par(univers,alpha,output);
   MPI_Finalize();
   free(send); free(recv);
   close(output);

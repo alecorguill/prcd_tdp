@@ -25,6 +25,12 @@ parallel : simulation.o $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)	
 	@cp $@ test/
 
+parallel_bc : CC = mpicc
+parallel_bc : CFLAGS += -DMPIFLAG
+parallel_bc : simulation_bc_par.o $(OBJS)
+	$(CC) -o $@ $^ $(LDFLAGS)	
+	@cp $@ test/
+
 sequentiel : simulation_seq.o $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
@@ -45,4 +51,4 @@ test_unitaire : particule.o util.o test_unitaire.o
 
 
 clean:
-	@rm -f *.o *.txt $(EXECS_TEST) parallel sequentiel sequentiel_bc
+	@rm -f *.o *.txt $(EXECS_TEST) parallel parallel_bc sequentiel sequentiel_bc 

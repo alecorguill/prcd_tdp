@@ -98,7 +98,7 @@ int main(int argc, char** argv){
     
     masse_center(&univers);
     memcpy(send,univers.ps,sizeof(particule)*alpha);
-    memcpy(center_send,univers.center,sizeof(particule));
+    memcpy(center_send,&(univers.center),sizeof(particule));
     
     for (int j = 0; j < size; j++){
       MPI_Isend(send,alpha,Transport_d,(rank-1+size)%size,tag,MPI_COMM_WORLD,&request);
@@ -107,11 +107,11 @@ int main(int argc, char** argv){
       MPI_Irecv(center_recv,1,Transport_d,(rank+1)%size,tag,MPI_COMM_WORLD,&request4);
     
       /**/
-      tmp_interation.ps = send;
-      tmp_interaction.center.p.x = center_send.p.x;
-      tmp_interaction.center.p.y = center_send.p.y;
-      tmp_interaction.center.p.m = center_send.p.m;
-      process_interaction_bloc_par(univers,tmp_interaction,bloc_size);
+      tmp_interaction.ps = send;
+      tmp_interaction.center.p.x = center_send->p.x;
+      tmp_interaction.center.p.y = center_send->p.y;
+      tmp_interaction.center.m = center_send->m;
+      process_interaction_bloc(&univers,&tmp_interaction,alpha);
       /**/
 
       // Swap send et received buffers

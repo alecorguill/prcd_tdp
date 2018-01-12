@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -std=c99 
+CFLAGS = -g -O0 -std=c99 
 LDFLAGS = -lm
 DEBUG_FLAGS = -W -Wall -g
 TEST = test_unitaire.c
@@ -25,8 +25,13 @@ parallel : simulation.o $(OBJS)
 sequentiel : life_seq.o $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
+openmp : CFLAGS += -fopenmp
 openmp : life_openmp.o $(OBJS)
 	$(CC) -fopenmp -o $@ $^ $(LDFLAGS)
+
+
+pthread : life_pthread.o $(OBJS)
+	$(CC) -lpthread -o $@ $^ $(LDFLAGS)
 
 %.o : %.c %.h
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) -c $<
@@ -41,4 +46,4 @@ test_unitaire : particule.o util.o test_unitaire.o
 
 
 clean:
-	@rm -f *.o $(EXECS_TEST) openmp sequentiel
+	@rm -f *.o *~ $(EXECS_TEST) openmp sequentiel

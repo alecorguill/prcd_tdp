@@ -3,10 +3,10 @@
 #include <sys/time.h>
 #include <string.h>
 
+#include <omp.h>
 int BS;
-
-#define cell( _i_, _j_ ) board[ ldboard * (_j_) + (_i_) ]
-#define ngb( _i_, _j_ )  nbngb[ ldnbngb * ((_j_) - 1) + ((_i_) - 1 ) ]
+int num_thread;
+pthread_mutex_t locks[num_threads];
 
 double mytimer(void)
 {
@@ -71,12 +71,22 @@ int main(int argc, char* argv[])
     BS = atoi(argv[2]);
     //printf("Running sequential version, grid of size %d, %d iterations\n", BS, maxloop);
   }
+  num_threads = atoi(getenv("MY_NUM_THREADS"));
+  pthread_t thread_id[NTHREADS];
+  for(int i=0;i<NTHREADS;i++)
+    {
+      pthread_create( &thread_id[i], NULL, init_board, NULL );
+    }
+  
+
+  
   num_alive = 0;
 
   /* Leading dimension of the board array */
   ldboard = BS + 2;
   /* Leading dimension of the neigbour counters array */
   ldnbngb = BS;
+
   board = malloc( ldboard * ldboard * sizeof(int) );
   nbngb = malloc( ldnbngb * ldnbngb * sizeof(int) );
 
@@ -84,46 +94,12 @@ int main(int argc, char* argv[])
 
   printf("Starting number of living cells = %d\n", num_alive);
   t1 = mytimer();
+
   for (loop = 1; loop <= maxloop; loop++) {
-    cell(   0, 0   ) = cell(BS, BS);
-    cell(   0, BS+1) = cell(BS,  1);
-    cell(BS+1, 0   ) = cell( 1, BS);
-    cell(BS+1, BS+1) = cell( 1,  1);
-
+    init_board(board);
+    count_ngbs(ngbs,nbngb);
+    update_cells(board,lock);
     
-    for (i = 1; i <= BS; i++) {
-      cell(   i,    0) = cell( i, BS);
-      cell(   i, BS+1) = cell( i,  1);
-      cell(   0,    i) = cell(BS,  i);
-      cell(BS+1,    i) = cell( 1,  i);
-    }
-
-
-    for (j = 1; j <= BS; j++) {
-      for (i = 1; i <= BS; i++) {
-	ngb( i, j ) =
-	  cell( i-1, j-1 ) + cell( i, j-1 ) + cell( i+1, j-1 ) +
-	  cell( i-1, j   ) +                  cell( i+1, j   ) +
-	  cell( i-1, j+1 ) + cell( i, j+1 ) + cell( i+1, j+1 );
-      }
-    }
-
-    num_alive = 0;
-    for (j = 1; j <= BS; j++) {
-      for (i = 1; i <= BS; i++) {
-	if ( (ngb( i, j ) < 2) ||
-	     (ngb( i, j ) > 3) ) {
-	  cell(i, j) = 0;
-	}
-	else {
-	  if ((ngb( i, j )) == 3)
-	    cell(i, j) = 1;
-	}
-	if (cell(i, j) == 1) {
-	  num_alive ++;
-	}
-      }
-    }
 
     /* Avec les celluls sur les bords (utile pour vérifier les comm MPI) */
     /* output_board( BS+2, &(cell(0, 0)), ldboard, loop ); */

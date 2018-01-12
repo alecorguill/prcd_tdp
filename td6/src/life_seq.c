@@ -92,6 +92,7 @@ int main(int argc, char* argv[])
     cell(BS+1, 0   ) = cell( 1, BS);
     cell(BS+1, BS+1) = cell( 1,  1);
 
+    
     for (i = 1; i <= BS; i++) {
       cell(   i,    0) = cell( i, BS);
       cell(   i, BS+1) = cell( i,  1);
@@ -130,7 +131,7 @@ int main(int argc, char* argv[])
     /* output_board( BS+2, &(cell(0, 0)), ldboard, loop ); */
 
     /* Avec juste les "vraies" cellules: on commence à l'élément (1,1) */
-    output_board( BS, &(cell(1, 1)), ldboard, loop);
+    /*output_board( BS, &(cell(1, 1)), ldboard, loop);*/
 
     printf("%d cells are alive\n", num_alive);
   }

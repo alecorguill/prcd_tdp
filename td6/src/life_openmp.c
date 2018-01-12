@@ -3,6 +3,7 @@
 #include <sys/time.h>
 #include <string.h>
 
+#include <omp.h>
 int BS;
 
 #define cell( _i_, _j_ ) board[ ldboard * (_j_) + (_i_) ]
@@ -99,7 +100,7 @@ int main(int argc, char* argv[])
       cell(BS+1,    i) = cell( 1,  i);
     }
 
-
+#pragma omp parallel for private(i)
     for (j = 1; j <= BS; j++) {
       for (i = 1; i <= BS; i++) {
 	ngb( i, j ) =
@@ -110,6 +111,8 @@ int main(int argc, char* argv[])
     }
 
     num_alive = 0;
+
+#pragma omp parallel for private(i) reduction(+:num_alive)
     for (j = 1; j <= BS; j++) {
       for (i = 1; i <= BS; i++) {
 	if ( (ngb( i, j ) < 2) ||
@@ -130,7 +133,7 @@ int main(int argc, char* argv[])
     /* output_board( BS+2, &(cell(0, 0)), ldboard, loop ); */
 
     /* Avec juste les "vraies" cellules: on commence à l'élément (1,1) */
-    output_board( BS, &(cell(1, 1)), ldboard, loop);
+    /*output_board( BS, &(cell(1, 1)), ldboard, loop);*/
 
     printf("%d cells are alive\n", num_alive);
   }

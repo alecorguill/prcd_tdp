@@ -59,7 +59,7 @@ int main(int argc, char** argv){
   
   for(int ii=0;ii<nb_blocs;++ii){
     for(int jj=0;jj<univers[ii].dim;++jj)
-      printf("%lf,%lf\n",univers[ii].ps[jj].f_ext.x,
+      dprintf(output,"%lf,%lf\n",univers[ii].ps[jj].f_ext.x,
   	     univers[ii].ps[jj].f_ext.y);
   }
   for(int ii=0; ii<nb_blocs; ++ii)

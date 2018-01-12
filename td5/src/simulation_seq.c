@@ -66,13 +66,12 @@ int main(int argc, char** argv){
     dt = nouveau_dt(univers, m);
     t += dt;
     /* log de dt */
-    dprintf(output, "%lf\n", t);
+    /*dprintf(output, "%lf\n", t);*/
     /* mise à jour des particules */
     update_particules(univers, m, dt);
     /* log des particules */
-    log_particules(univers, m, output);
-    for(int k=0;k<m;++k)
-      printf("%lf,%lf\n",univers[k].f_ext.x,univers[k].f_ext.y);		  
+    /* log_particules(univers, m, output); */
+    log_forces(univers,m,output);
     i++; 
   }
   close(output);

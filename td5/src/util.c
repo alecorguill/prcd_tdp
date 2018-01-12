@@ -78,7 +78,6 @@ void process_interaction_bloc(bloc *a, bloc *b, float bloc_size, int lock){
   for (int n = 0; n < a->dim; n++){  
     if (s/distance(&(a->ps[n]),&(b->center)) < THETA){
         
-      printf("ALOOOOOOOOOO\n");
       force_grav(&(b->center), &(a->ps[n]), &force_tmp);
       somme(&((a->ps[n]).f_ext),&(force_tmp),&((a->ps[n]).f_ext));
     }

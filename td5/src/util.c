@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#define THETA 1
 
 #define TAILLE_LIGNE 256
 
@@ -216,7 +215,7 @@ void parse_par_bloc(char* filename, particule* univers){
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   if(nb%size != 0){
-    dprintf(stderr,"Number of particule should be divisible by np");
+    dprintf(stderr,"Number of particule should be divisible by np\n");
     exit(EXIT_FAILURE);
   }
   local_nb = nb/size;

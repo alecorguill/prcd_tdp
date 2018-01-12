@@ -137,7 +137,6 @@ void log_forces_par(particule *univers,int alpha, int output){
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   offset = MAX * alpha * rank;
-  printf("RANK %d OFFSET %d \n",rank,offset);
   lseek(output,offset,SEEK_SET);
   log_forces(univers,alpha,output);
 }

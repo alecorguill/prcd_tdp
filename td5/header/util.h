@@ -1,6 +1,7 @@
 #ifndef UTIL_H
 #define UTIL_H
-
+#define _POSIX_C_SOURCE  200809L
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include "particule.h"

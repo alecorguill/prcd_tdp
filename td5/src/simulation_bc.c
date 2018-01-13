@@ -1,9 +1,9 @@
 #include <simulation_seq.h>
+#include <util.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <particule.h>
-#include <util.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>

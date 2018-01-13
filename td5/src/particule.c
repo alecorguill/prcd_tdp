@@ -1,10 +1,10 @@
+#include "util.h"
 #include <particule.h>
 #include <math.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
-#include "util.h"
 #define LINESIZE 80 /* Taille max de nos lignes */
 
 

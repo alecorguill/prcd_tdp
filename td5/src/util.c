@@ -64,6 +64,8 @@ void parse_particules_bloc(char *filename, bloc * blocs){
     tmp->v.y = atof(token);
     tmp->a.x = 0.0;
     tmp->a.y = 0.0;
+    tmp->f_ext.x = 0.0;
+    tmp->f_ext.y = 0.0;
     tmp->proche_d = 0.0;
     tmp->id_bloc = ind;
     ++tmp;
@@ -145,6 +147,8 @@ void parse_particules(char *filename, particule *ps){
     ps->a.x = 0.0;
     ps->a.y = 0.0;
     ps->proche_d = 0.0;
+    ps->f_ext.x = 0.0;
+    ps->f_ext.y = 0.0;
     ++ps;
   }
   fclose(f);

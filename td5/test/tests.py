@@ -6,6 +6,8 @@ import csv
 EPS = 1e-10
 
 def rel_mean_error(x,y):
+    if np.linalg.norm(x) < EPS:
+        return -1
     return np.linalg.norm(x-y)/np.linalg.norm(x)
 
 def to_float(x):
@@ -15,7 +17,7 @@ def to_float(x):
         pass
 def test_mean_error(f1,f2):
     print "Test mean error"
-    rows1,rows2 = [],[]
+    rows1,rows2,errs = [],[],[]
     with open(f1) as fp:
         for line in fp:
             meas = map(lambda x: to_float(x), line.split(','))
@@ -27,16 +29,16 @@ def test_mean_error(f1,f2):
             rows2 += [meas]
 
     if(len(rows1) != len(rows2)):
-        print "Different size"
+        print "Different size",len(rows1),len(rows2) 
         return
     sum = 0
     for i in range(len(rows1)):
         rows1[i] = [float(x) for x in rows1[i]]
         rows2[i] = [float(x) for x in rows2[i]]
-        sum += rel_mean_error(np.array(rows1[i]),np.array(rows2[i]))
-    print float(sum)/len(rows1)
+        errs += [rel_mean_error(np.array(rows1[i]),np.array(rows2[i]))]
         
-    print "OK"
+    error = np.average(filter(lambda x:x>=0, errs))
+    print error
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

@@ -26,7 +26,7 @@ int main(int argc, char** argv){
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     /* fichier d'ouput des résultats */
 
-    int output = open(argv[3], O_CREAT | O_WRONLY | O_TRUNC,0744);
+    int output = open(argv[3], O_CREAT | O_WRONLY | O_TRUNC,0400);
     if (!output){
         perror("open : fichier output\n");
         MPI_Finalize();

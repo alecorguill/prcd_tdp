@@ -25,7 +25,7 @@ int main(int argc, char** argv){
     return EXIT_FAILURE;
   } 
   /* Fichier d'output des résultats */
-  int output = open(argv[2], O_CREAT | O_RDWR, 0755);
+  int output = open(argv[2], O_CREAT | O_RDWR | O_TRUNC, 0400);
   if (output == -1){
     perror("open : fichier output\n");
     return EXIT_FAILURE;

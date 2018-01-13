@@ -1,0 +1,20 @@
+set datafile separator ","
+
+set xlabel "theta"
+set ylabel "erreur"
+set title "Erreur relative"
+set term png
+set output "erreur.png"
+set grid
+set tics out
+plot "time.csv" using 1:2 with lines 
+
+set xlabel "theta"
+set ylabel "time"
+set title "Time"
+set term png
+set output "time.png"
+set grid
+set tics out
+plot "erreur.csv" using 1:2 with lines title "bloc"
+

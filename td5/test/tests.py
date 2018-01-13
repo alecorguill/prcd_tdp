@@ -36,7 +36,6 @@ def test_mean_error(f1,f2):
         rows1[i] = [float(x) for x in rows1[i]]
         rows2[i] = [float(x) for x in rows2[i]]
         errs += [rel_mean_error(np.array(rows1[i]),np.array(rows2[i]))]
-        
     error = np.average(filter(lambda x:x>=0, errs))
     print error
 

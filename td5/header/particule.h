@@ -14,7 +14,7 @@ typedef struct position vecteur;
   
 /* Represente une particule */
 struct particule{
-  int m; //masse
+  long long m; //masse
   vecteur p; //position
   vecteur v; //vitesse
   vecteur a; //acceleration

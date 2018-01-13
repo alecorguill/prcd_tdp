@@ -1,5 +1,6 @@
-python test/generate_boxes.py test/particules_bc.txt 2 1000
-python test/encoder.py test/particules_bc.txt test/particules.txt
+# rm test/*.txt
+# python test/generate_boxes.py test/particules_bc.txt 2 500
+# python test/encoder.py test/particules_bc.txt test/particules.txt
 make clean
 make sequentiel
 make sequentiel_bc

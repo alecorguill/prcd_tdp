@@ -7,7 +7,7 @@
 #include "particule.h"
 #define MAX 486 //taile decimale du nombre de particule
 #define EPS 1E-10 //Precision pour les opérations sur les doubles
-#define THETA 10
+#define THETA 2
 
 int equal_double(double a, double b);
 double solution_equ(particule p);

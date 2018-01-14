@@ -7,7 +7,7 @@ set term png
 set output "erreur.png"
 set grid
 set tics out
-plot "erreur.csv"  
+plot "erreur.csv" using 1:2 with lines title "bc"
 
 set xlabel "theta"
 set ylabel "time"
@@ -17,4 +17,26 @@ set output "time.png"
 set grid
 set tics out
 plot "time.csv" using 1:2 with lines title "bc", "time.csv" using 1:3 with lines title "seq"
+
+
+set xlabel "# particules"
+set ylabel "time"
+set logscale x
+set title "Time"
+set term png
+set output "comp.png"
+set grid
+set tics out
+plot "com_time.csv" using 1:2 with lines title "seq", "com_time.csv" using 1:3 with lines title "bc"
+
+
+set xlabel "# particules"
+set ylabel "facteur"
+set logscale x
+set title "Speedup"
+set term png
+set output "sp_seq.png"
+set grid
+set tics out
+plot "com_time.csv" using 1:($2/$3) with lines title "speedup"
 

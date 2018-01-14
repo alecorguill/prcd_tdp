@@ -1,37 +1,43 @@
-######## COMPILATION ##########
-Pour compiler les code sequentiel :
-     make sequentiel
+## TDP5 NBody 
+### Compilation
+**Séquentielle** :
 
-Pour compiler le code parallel :
+    make sequentiel
+    make sequentiel_bc #pour la version bloc
+
+**Parallèle** :
+
      make parallel
+     make parallel_bc #pour la version bloc
 
-###### Pour executer ######
-En sequentiel :
-   ./sequentiel fichier_particule fichier_output
-
-En parallel :
-   mpirun -np nb_processus fichier_particule fichier_output
-
-###### Pour lancer les tests (et les courbes)########
-
-Pour les tests unitaires :
-     make test
-
-Pour lancer les courbes :     
-     cd test
-     python analyse_perf.py fichier_input fichier output
+**Il est important de realiser un 'make clean' entre le passage d'une version à un autre.**
+### Exécution
+Fichiers input:
+&nbsp;&nbsp; Pour avoir une génération de fichiers de particules, on peut voir les scripts *generate_boxes.py* et *generate_particules.py*
     
-Cela va produire 4 fichier csv qu'il est possible d'afficher avec le programme
-plot_csv.py.
-	python plot_csv.py fichier.csv titre [LABEL X] [LABEL Y]
+    python test/generate_boxes.py output.txt nb_boites_par_colonne nb_particules 
+    python test/generate_particules.py output.txt nb_particules
+Les fichiers inputs simple et bloc ont une architecture différents. Si l'on veut transformer le fichier de particule bloc en un fichier de particule simple, on utilisera le script *encoder.py*. Les fichiers de sorties sont des vecteurs représentant les forces de chaque particule.
+**Séquentielle** :
+    
+    ./sequentiel fichier_particule fichier_output
 
-Pour lancer une visualisation il faut d'abord produire un fichier de resultat avec
-l'execution en parallèle ou en séquentiel. Ensuite il faut se rendre dans le 
-répertoire test et lancer visu.py
+**Parallèle** :
 
-Exemple :
-	make sequentiel
-	./sequentiel fichier_particule fichier_output
-	cd test
-	python visu.py fichier_output
+     mpirun -np Np -- ./parallel_bc input taille_de_la_grille output
+
+## Visualisation et tests
+**Script test.sh** :
+&nbsp;&nbsp;Un script a été codé pour faciliter l'exécution des tests qui se trouve à la racine du projet.
+Test unitaires :
+    
+     make test
+Il n'y a un qu'un fichier test present dans le dossier test/ : *test.c*
+**Script test/tests.py** :
+&nbsp;&nbsp; Le script test/tests.py permet de calculer l'erreur relative sur un fichier de force préablement obtenu
+
+    python test/tests.py input
+**Courbes** :     
+    &nbsp;&nbsp; Pour les courbes, on pourra modifier le script gnuplot *plot.gpl*.
+
      

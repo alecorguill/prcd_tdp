@@ -39,4 +39,3 @@ set output "sp_seq.png"
 set grid
 set tics out
 plot "com_time.csv" using 1:($2/$3) with lines title "speedup"
-

@@ -80,22 +80,29 @@ int main(int argc, char* argv[])
   MPI_Comm_rank(MPI_COMM_WORLD,&size);
   root = 0;
   //
-  if (BS % size != 0){
-    printf("Usage: Need a multiple of size for the number of processes");
+  int nb_bloc = (int) sqrt(size);
+  if (BS % nb_bloc != 0){
+    printf("Usage: Wrong size and number of processes; sqrt(np) must divide size");
     MPI_Finalize();
     return EXIT_SUCCESS;
   }
-    
-  
-  
+      
   // Creating grid
   MPI_Comm grid;
   int ndims = 2; int reorder=1;
-  int nb_bloc = (int) sqrt(size);
   int dims[] = {nb_bloc,nb_bloc};
   int periods = {1,1};
   MPI_Cart_create(MPI_COMM_WORLD,2,dims,periods,reorder,&grid);
+  int bbs = BS/nb_bloc;
   
+  /* block datatype */
+  MPI_Datatype bloc,bloc_resized;
+  MPI_Type_vector(bbs,bbs,BS,MPI_INT,&bloc);
+  MPI_Type_commit(&bloc);
+  // bbs * sizeof(int) à verifier
+  MPI_Type_create_resized(bloc,(MPI_Aint) 0, (MPI_Aint) bbs*sizeof(int),&bloc_resized);
+  MPI_Type_commit(&bloc);
+
   num_alive = 0;
   /* Leading dimension of the board array */
   ldboard = BS + 2;
@@ -105,82 +112,85 @@ int main(int argc, char* argv[])
     board = malloc( ldboard * ldboard * sizeof(int) );
     nbngb = malloc( ldnbngb * ldnbngb * sizeof(int) );
     num_alive = generate_initial_board( BS, &(cell(1, 1)), ldboard );
- }
-  MPI_Broadcast(&num_alive,1,MPI_INT,root,MPI_COMM_WORLD);
-  ldboard_loc = BS/size + 2;
-  ldnbngb_loc = BS/size;
+  }
+ 
+  ldboard_loc = bbs + 2;
+  ldnbngb_loc = bbs;
   board_loc = malloc( ldboard_loc * ldboard_loc * sizeof(int) );
   nbngb_loc = malloc( ldnbngb_loc * ldnbngb_loc * sizeof(int) );
-
   
+  /* Transmitting blocs */
+  MPI_Broadcast(&num_alive,1,MPI_INT,root,MPI_COMM_WORLD);
+  //MPI_Scatterv(,MPI_INT,root,MPI_COMM_WORLD);
+ 
   if (rank == root)
     printf("Starting number of living cells = %d\n", num_alive);
   
-  // AllReduce
-  t1 = mytimer();
-  for (loop = 1; loop <= maxloop; loop++) {
+ /*  // AllReduce */
+ /*  t1 = mytimer(); */
+ /*  for (loop = 1; loop <= maxloop; loop++) { */
     
 
-    cell_loc(   0, 0   ) = cell_loc((BS/size), (BS/size));
-    cell_loc(   0, (BS/size)+1) = cell_loc((BS/size),  1);
-    cell_loc((BS/size)+1, 0   ) = cell_loc( 1, (BS/size));
-    cell_loc((BS/size)+1, (BS/size)+1) = cell_loc( 1,  1);
+ /*    cell_loc(   0, 0   ) = cell_loc((BS/size), (BS/size)); */
+ /*    cell_loc(   0, (BS/size)+1) = cell_loc((BS/size),  1); */
+ /*    cell_loc((BS/size)+1, 0   ) = cell_loc( 1, (BS/size)); */
+ /*    cell_loc((BS/size)+1, (BS/size)+1) = cell_loc( 1,  1); */
 
     
-    for (i = 1; i <= (BS/size); i++) {
-      cell_loc(   i,    0) = cell_loc( i, (BS/size));
-      cell_loc(   i, (BS/size)+1) = cell_loc( i,  1);
-      cell_loc(   0,    i) = cell_loc((BS/size),  i);
-      cell_loc((BS/size)+1,    i) = cell_loc( 1,  i);
-    }
+ /*    for (i = 1; i <= (BS/size); i++) { */
+ /*      cell_loc(   i,    0) = cell_loc( i, (BS/size)); */
+ /*      cell_loc(   i, (BS/size)+1) = cell_loc( i,  1); */
+ /*      cell_loc(   0,    i) = cell_loc((BS/size),  i); */
+ /*      cell_loc((BS/size)+1,    i) = cell_loc( 1,  i); */
+ /*    } */
 
 
-    for (j = 1; j <= BS/size; j++) {
-      for (i = 1; i <= BS/size; i++) {
-	ngb_loc( i, j ) =
-	  cell_loc( i-1, j-1 ) + cell_loc( i, j-1 ) + cell_loc( i+1, j-1 ) +
-	  cell_loc( i-1, j   ) +                  cell_loc( i+1, j   ) +
-	  cell_loc( i-1, j+1 ) + cell_loc( i, j+1 ) + cell_loc( i+1, j+1 );
-      }
-    }
+ /*    for (j = 1; j <= BS/size; j++) { */
+ /*      for (i = 1; i <= BS/size; i++) { */
+ /* 	ngb_loc( i, j ) = */
+ /* 	  cell_loc( i-1, j-1 ) + cell_loc( i, j-1 ) + cell_loc( i+1, j-1 ) + */
+ /* 	  cell_loc( i-1, j   ) +                  cell_loc( i+1, j   ) + */
+ /* 	  cell_loc( i-1, j+1 ) + cell_loc( i, j+1 ) + cell_loc( i+1, j+1 ); */
+ /*      } */
+ /*    } */
 
-    num_alive = 0;
-    for (j = 1; j <= BS/size; j++) {
-      for (i = 1; i <= BS/size; i++) {
-	if ( (ngb_loc( i, j ) < 2) ||
-	     (ngb_loc( i, j ) > 3) ) {
-	  cell_loc(i, j) = 0;
-	}
-	else {
-	  if ((ngb_loc( i, j )) == 3)
-	    cell_loc(i, j) = 1;
-	}
-	if (cell_loc(i, j) == 1) {
-	  num_alive ++;
-	}
-      }
-    }
+ /*    num_alive = 0; */
+ /*    for (j = 1; j <= BS/size; j++) { */
+ /*      for (i = 1; i <= BS/size; i++) { */
+ /* 	if ( (ngb_loc( i, j ) < 2) || */
+ /* 	     (ngb_loc( i, j ) > 3) ) { */
+ /* 	  cell_loc(i, j) = 0; */
+ /* 	} */
+ /* 	else { */
+ /* 	  if ((ngb_loc( i, j )) == 3) */
+ /* 	    cell_loc(i, j) = 1; */
+ /* 	} */
+ /* 	if (cell_loc(i, j) == 1) { */
+ /* 	  num_alive ++; */
+ /* 	} */
+ /*      } */
+ /*    } */
 
-    /* Avec les celluls sur les bords (utile pour vérifier les comm MPI) */
-    /* output_board( BS+2, &(cell(0, 0)), ldboard, loop ); */
+ /*    /\* Avec les celluls sur les bords (utile pour vérifier les comm MPI) *\/ */
+ /*    /\* output_board( BS+2, &(cell(0, 0)), ldboard, loop ); *\/ */
 
-    /* Avec juste les "vraies" cellules: on commence à l'élément (1,1) */
-    /*output_board( BS, &(cell(1, 1)), ldboard, loop);*/
+ /*    /\* Avec juste les "vraies" cellules: on commence à l'élément (1,1) *\/ */
+ /*    /\*output_board( BS, &(cell(1, 1)), ldboard, loop);*\/ */
 
-    printf("%d cells are alive\n", num_alive);
-  }
+ /*    printf("%d cells are alive\n", num_alive); */
+ /*  } */
 
-  t2 = mytimer();
-  temps_loc = t2 - t1;
-  if (rank == root){
-    printf("Final number of living cells = %d\n", num_alive);
-    printf("%.2lf\n",(double)temps * 1.e3);
-  }
+ /*  t2 = mytimer(); */
+ /*  temps_loc = t2 - t1; */
+ /*  if (rank == root){ */
+ /*    printf("Final number of living cells = %d\n", num_alive); */
+ /*    printf("%.2lf\n",(double)temps * 1.e3); */
+ /*  } */
   
-  free(board);
-  free(nbngb);
-  free(board_loc);
-  free(nbngb_loc);
+ /*  free(board); */
+ /*  free(nbngb); */
+ /*  free(board_loc); */
+ /*  free(nbngb_loc); */
   return EXIT_SUCCESS;
 }
 

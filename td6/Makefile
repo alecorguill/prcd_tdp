@@ -3,7 +3,7 @@ CFLAGS = -g -O0 -std=c99
 LDFLAGS = -lm
 DEBUG_FLAGS = -W -Wall -g
 TEST = test_unitaire.c
-SRC = 
+SRC = life_mpi.c
 OBJS = $(SRC:.c=.o)
 DEBUG = 
 TEST_DIRECTORY = test
@@ -18,9 +18,10 @@ ifeq ($(DEBUG),1)
 	CFLAGS +=  $(DEBUG_FLAGS)
 endif
 
-parallel : CC = mpicc
-parallel : CFLAGS += -DMPIFLAG
-parallel : simulation.o $(OBJS)
+mpi : CC = mpicc
+mpi : CFLAGS += -DMPIFLAG
+mpi : $(OBJS)
+	$(CC) -o $@ $^ $(LDFLAGS)	
 
 sequentiel : life_seq.o $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
@@ -46,4 +47,4 @@ test_unitaire : particule.o util.o test_unitaire.o
 
 
 clean:
-	@rm -f *.o *~ $(EXECS_TEST) openmp sequentiel
+	@rm -f *.o *~ $(EXECS_TEST) openmp sequentiel mpi

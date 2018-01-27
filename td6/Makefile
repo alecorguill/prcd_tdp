@@ -48,4 +48,4 @@ test_unitaire : particule.o util.o test_unitaire.o
 
 
 clean:
-	@rm -f *.o *~ $(EXECS_TEST) openmp sequentiel mpi pthread
+	@rm -f *.o *~ $(EXECS_TEST) openmp sequentiel mpi pthread	

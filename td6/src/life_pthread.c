@@ -34,7 +34,13 @@ int main(int argc, char* argv[])
     g.board[i] = 0;
   }
   /* preparing game struct */
-  g.num_threads = atoi(getenv("MY_NUM_THREADS"));
+  char* var = getenv("MY_NUM_THREADS");
+  if(var == NULL){
+    fprintf(stderr,"env variable MY_NUM_THREADS not set\n");
+    fprintf(stderr,"export MY_NUM_THREADS=n\n");
+    exit(EXIT_FAILURE);
+  }
+  g.num_threads = atoi(var);
   if( (g.BS % g.num_threads) != 0 ){
     fprintf(stderr,"SIZE should be divisible by MY_NUM_THREADS\n");
     exit(EXIT_FAILURE);

@@ -18,9 +18,10 @@ ifeq ($(DEBUG),1)
 	CFLAGS +=  $(DEBUG_FLAGS)
 endif
 
-parallel : CC = mpicc
-parallel : CFLAGS += -DMPIFLAG
-parallel : simulation.o $(OBJS)
+mpi : CC = mpicc
+mpi : CFLAGS += -DMPIFLAG
+mpi : life_mpi.o $(OBJS)
+	$(CC) -o $@ $^ $(LDFLAGS)	
 
 sequentiel : life_seq.o 
 	$(CC) -o $@ $^ $(LDFLAGS)
@@ -47,4 +48,4 @@ test_unitaire : particule.o util.o test_unitaire.o
 
 
 clean:
-	@rm -f *.o *~ $(EXECS_TEST) openmp sequentiel
+	@rm -f *.o *~ $(EXECS_TEST) openmp sequentiel mpi

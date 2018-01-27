@@ -162,7 +162,7 @@ void *start_game(void * ga){
 	  cell(i+1,j+1,g->board,g->ldboard);
       }
     }
-    g->num_alive=0;
+    /* g->num_alive=0; */
     /* update center cells */
     for(int j=jbegin+1;j<jend;++j){
       for(int i=1;i<=g->BS;++i){
@@ -174,9 +174,9 @@ void *start_game(void * ga){
   	  if ((ngb(i,j,g->nbngb,g->ldnbngb)) == 3)
   	    cell(i,j,g->board,g->ldboard) = 1;
   	}
-  	if (cell(i,j,g->board,g->ldboard) == 1) {
-  	  g->num_alive ++;
-  	}
+  	/* if (cell(i,j,g->board,g->ldboard) == 1) { */
+  	/*   g->num_alive ++; */
+  	/* } */
       }
     }
     
@@ -184,12 +184,9 @@ void *start_game(void * ga){
     int count,value,bool=0;
     count = (index==0 || index==(g->num_threads-1)) ? 1 : 2;
     sem_getvalue(&(g->sems[index].sem),&value);
-    /* printf("id %d - value %d - count %d - bool - %d\n",index,value,count,bool);	     */
-    /* printf("id %d - count %d\n",index,count); */
     while(value != count){
       pthread_cond_wait(&(g->sems[index].cond),
 			&(g->sems[index].m));
-      /* printf("id %d - value %d - count %d - bool - %d\n",index,value,count,bool);	     */
       sem_getvalue(&(g->sems[index].sem),&value);
     }
     /* reset semaphores */
@@ -206,9 +203,9 @@ void *start_game(void * ga){
 	if ((ngb(i,jbegin,g->nbngb,g->ldnbngb)) == 3)
 	  cell(i,jbegin,g->board,g->ldboard) = 1;
       }
-      if (cell(i,jbegin,g->board,g->ldboard) == 1) {
-	g->num_alive ++;
-      }
+      /* if (cell(i,jbegin,g->board,g->ldboard) == 1) { */
+      /* 	g->num_alive ++; */
+      /* } */
     }
 
     /* right side */
@@ -221,9 +218,9 @@ void *start_game(void * ga){
 	if ((ngb(i,jend,g->nbngb,g->ldnbngb)) == 3)
 	  cell(i,jend,g->board,g->ldboard) = 1;
       }
-      if (cell(i,jend,g->board,g->ldboard) == 1) {
-	g->num_alive ++;
-      }
+      /* if (cell(i,jend,g->board,g->ldboard) == 1) { */
+      /* 	g->num_alive ++; */
+      /* } */
     }
     pthread_barrier_wait(g->barrier);
     /* if(index==0) */
@@ -238,7 +235,7 @@ void *start_game(void * ga){
 	}
       }
     }
-    printf("Final number of living cells = %d\n", num_alive);    
+    /* printf("Final number of living cells = %d\n", num_alive);     */
   }
 }
 
@@ -246,14 +243,8 @@ void *start_game(void * ga){
 
 
 void pthread_init_board(game *g){
-  //printf("%d\n",cell(1, 1, g->board, g->ldboard));
-  //printf("%d\n",g->board[ g->ldboard * (2) + (3) ]);
-  //printf("%d\n",g->board[11]);
   g->num_alive = generate_initial_board( g->BS, &(cell(1, 1, g->board, g->ldboard)), g->ldboard );
-  printf("Starting number of living cells = %d\n", g->num_alive);
-  /* for(int i=0;i<36;++i) */
-  /*   printf("%d ",g->board[i]); */
-  /* printf("\n"); */
-  /* output_board( g->BS, &(cell(1, 1, g->board, g->ldboard)), g->ldboard, 0); */
+  /* printf("Starting number of living cells = %d\n", g->num_alive); */
+  /*  output_board( g->BS, &(cell(1, 1, g->board, g->ldboard)), g->ldboard, 0); */
 }
 			

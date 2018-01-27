@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <string.h>
-
 #include <omp.h>
+
+#include "util.h"
 int BS;
 
 #define cell( _i_, _j_ ) board[ ldboard * (_j_) + (_i_) ]
@@ -40,7 +41,7 @@ int main(int argc, char* argv[])
 
   num_alive = generate_initial_board( BS, &(cell(1, 1)), ldboard );
 
-  printf("Starting number of living cells = %d\n", num_alive);
+  //printf("Starting number of living cells = %d\n", num_alive);
   t1 = mytimer();
 
   for (loop = 1; loop <= maxloop; loop++) {
@@ -96,7 +97,7 @@ int main(int argc, char* argv[])
 
   t2 = mytimer();
   temps = t2 - t1;
-  printf("Final number of living cells = %d\n", num_alive);
+  //printf("Final number of living cells = %d\n", num_alive);
   printf("%.2lf\n",(double)temps * 1.e3);
 
   free(board);

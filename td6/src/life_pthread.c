@@ -1,122 +1,72 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
 #include <string.h>
 
-#include <omp.h>
-int BS;
-int num_thread;
-pthread_mutex_t locks[num_threads];
+#include <util.h>
+#include <life.h>
+#include <pthread.h>
+#include <semaphore.h>
 
-double mytimer(void)
-{
-  struct timeval tp;
-  gettimeofday( &tp, NULL );
-  return tp.tv_sec + 1e-6 * tp.tv_usec;
-}
-
-void output_board(int N, int *board, int ldboard, int loop)
-{
-  int i,j;
-  printf("loop %d\n", loop);
-  for (i=0; i<N; i++) {
-    for (j=0; j<N; j++) {
-      if ( cell( i, j ) == 1)
-	printf("X");
-      else
-	printf(".");
-    }
-    printf("\n");
-  }
-}
-
-/**
- * This function generates the iniatl board with one row and one
- * column of living cells in the middle of the board
- */
-int generate_initial_board(int N, int *board, int ldboard)
-{
-  int i, j, num_alive = 0;
-
-  for (i = 0; i < N; i++) {
-    for (j = 0; j < N; j++) {
-      if (i == N/2 || j == N/2) {
-	cell(i, j) = 1;
-	num_alive ++;
-      }
-      else {
-	cell(i, j) = 0;
-      }
-    }
-  }
-
-  return num_alive;
-}
+game g;
 
 int main(int argc, char* argv[])
 {
-  int i, j, loop, num_alive, maxloop;
-  int ldboard, ldnbngb;
-  double t1, t2;
-  double temps;
-
-  int *board;
-  int *nbngb;
-
+  double t1, t2, temps;
+  
+  
   if (argc < 3) {
     printf("Usage: %s nb_iterations size\n", argv[0]);
     return EXIT_SUCCESS;
   } else {
-    maxloop = atoi(argv[1]);
-    BS = atoi(argv[2]);
+    g.maxloop = atoi(argv[1]);
+    g.BS = atoi(argv[2]);
     //printf("Running sequential version, grid of size %d, %d iterations\n", BS, maxloop);
   }
-  num_threads = atoi(getenv("MY_NUM_THREADS"));
-  pthread_t thread_id[NTHREADS];
-  for(int i=0;i<NTHREADS;i++)
-    {
-      pthread_create( &thread_id[i], NULL, init_board, NULL );
-    }
-  
-
-  
-  num_alive = 0;
+  g.num_alive = 0;
 
   /* Leading dimension of the board array */
-  ldboard = BS + 2;
+  g.ldboard = g.BS + 2;
   /* Leading dimension of the neigbour counters array */
-  ldnbngb = BS;
-
-  board = malloc( ldboard * ldboard * sizeof(int) );
-  nbngb = malloc( ldnbngb * ldnbngb * sizeof(int) );
-
-  num_alive = generate_initial_board( BS, &(cell(1, 1)), ldboard );
-
-  printf("Starting number of living cells = %d\n", num_alive);
-  t1 = mytimer();
-
-  for (loop = 1; loop <= maxloop; loop++) {
-    init_board(board);
-    count_ngbs(ngbs,nbngb);
-    update_cells(board,lock);
-    
-
-    /* Avec les celluls sur les bords (utile pour vérifier les comm MPI) */
-    /* output_board( BS+2, &(cell(0, 0)), ldboard, loop ); */
-
-    /* Avec juste les "vraies" cellules: on commence à l'élément (1,1) */
-    /*output_board( BS, &(cell(1, 1)), ldboard, loop);*/
-
-    printf("%d cells are alive\n", num_alive);
+  g.ldnbngb = g.BS;
+  g.board = malloc( g.ldboard * g.ldboard * sizeof(int) );
+  g.nbngb = malloc( g.ldnbngb * g.ldnbngb * sizeof(int) );
+  for(int i=0; i<g.ldboard * g.ldboard; ++i){
+    g.board[i] = 0;
   }
-
+  /* preparing game struct */
+  g.num_threads = atoi(getenv("MY_NUM_THREADS"));
+  if( (g.BS % g.num_threads) != 0 ){
+    fprintf(stderr,"SIZE should be divisible by MY_NUM_THREADS\n");
+    exit(EXIT_FAILURE);
+  }
+  pthread_t thread_ids[g.num_threads];
+  g.thread_ids = thread_ids;
+  g.sems = malloc(g.num_threads*sizeof(com_t));
+  for(int i=0;i<g.num_threads;++i){
+    pthread_cond_init(&(g.sems[i]).cond,NULL);
+    pthread_mutex_init(&(g.sems[i].m), NULL);
+    sem_init(&(g.sems[i].sem),1,0);
+  }
+  unsigned count=g.num_threads;
+  pthread_barrier_t *barrier = malloc(sizeof(pthread_barrier_t)); 
+  g.barrier = barrier;
+  pthread_barrierattr_t attr;
+  pthread_barrier_init(g.barrier,&attr,count);
+  /* launching threads */
+  t1 = mytimer();
+  for(int i=0;i<g.num_threads;i++)
+    {
+      pthread_create(&thread_ids[i],NULL,start_game,(void*)(&g));
+    }
+  /* joining threads */
+  for(int i=0; i < g.num_threads; i++)
+    {
+      pthread_join(thread_ids[i],NULL); 
+    }
   t2 = mytimer();
   temps = t2 - t1;
-  printf("Final number of living cells = %d\n", num_alive);
   printf("%.2lf\n",(double)temps * 1.e3);
-
-  free(board);
-  free(nbngb);
+  free(g.barrier);free(g.board);free(g.nbngb);free(g.sems);
   return EXIT_SUCCESS;
 }
 

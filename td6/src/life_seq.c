@@ -79,11 +79,11 @@ int main(int argc, char* argv[])
   ldnbngb = BS;
   board = malloc( ldboard * ldboard * sizeof(int) );
   nbngb = malloc( ldnbngb * ldnbngb * sizeof(int) );
-
+  t1 = mytimer();
   num_alive = generate_initial_board( BS, &(cell(1, 1)), ldboard );
+  //output_board( BS, &(cell(1, 1)), ldboard, loop);
 
   printf("Starting number of living cells = %d\n", num_alive);
-  t1 = mytimer();
   for (loop = 1; loop <= maxloop; loop++) {
     cell(   0, 0   ) = cell(BS, BS);
     cell(   0, BS+1) = cell(BS,  1);
@@ -129,9 +129,9 @@ int main(int argc, char* argv[])
     /* output_board( BS+2, &(cell(0, 0)), ldboard, loop ); */
 
     /* Avec juste les "vraies" cellules: on commence à l'élément (1,1) */
-    /*output_board( BS, &(cell(1, 1)), ldboard, loop);*/
+    //output_board( BS, &(cell(1, 1)), ldboard, loop);
 
-    printf("%d cells are alive\n", num_alive);
+    //printf("%d cells are alive\n", num_alive);
   }
 
   t2 = mytimer();

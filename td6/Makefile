@@ -1,11 +1,11 @@
 CC = gcc
-CFLAGS = -g -O0 -std=c99 
+CFLAGS = -std=gnu99 
 LDFLAGS = -lm
 DEBUG_FLAGS = -W -Wall -g
 TEST = test_unitaire.c
-SRC = 
+SRC = util.c
 OBJS = $(SRC:.c=.o)
-DEBUG = 
+DEBUG = -g -O0
 TEST_DIRECTORY = test
 HEADER_DIR = header
 EXECS_TEST = $(basename $(TEST))
@@ -22,7 +22,7 @@ parallel : CC = mpicc
 parallel : CFLAGS += -DMPIFLAG
 parallel : simulation.o $(OBJS)
 
-sequentiel : life_seq.o $(OBJS)
+sequentiel : life_seq.o 
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 openmp : CFLAGS += -fopenmp
@@ -30,8 +30,9 @@ openmp : life_openmp.o $(OBJS)
 	$(CC) -fopenmp -o $@ $^ $(LDFLAGS)
 
 
+pthread : CFLAGS += -pthread
 pthread : life_pthread.o $(OBJS)
-	$(CC) -lpthread -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 %.o : %.c %.h
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) -c $<

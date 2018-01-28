@@ -6,9 +6,6 @@
 #include "life.h"
 #include "util.h"
 
-#define cell( _i_, _j_, board, ldboard ) board[ ldboard * (_j_) + (_i_) ]
-#define ngb( _i_, _j_, nbngb, ldnbngb )  nbngb[ ldnbngb * ((_j_) - 1) + ((_i_) - 1 ) ]
-
 #define TEST {printf("TEST %d\n",__LINE__);}
 
 double mytimer(void)

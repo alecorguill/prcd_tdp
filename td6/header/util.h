@@ -33,4 +33,5 @@ void *start_game(void * ga);
 void pthread_init_board(game *g);
 double mytimer(void);
 int generate_initial_board(int N, int *board, int ldboard);
+void output_board(int N, int *board, int ldboard, int loop);
 #endif

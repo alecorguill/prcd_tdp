@@ -20,7 +20,7 @@ endif
 
 mpi : CC = mpicc
 mpi : CFLAGS += -DMPIFLAG
-mpi : life_mpi.o $(OBJS)
+mpi :  life_mpi.o  $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)	
 
 sequentiel : life_seq.o 

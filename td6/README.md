@@ -10,16 +10,15 @@
 * Version pthread                         <br> 
     Compilation : **make pthread**<br>
     Execution : *./pthread nb_iterations size*<br> 
-    Variable d'environnements : **MY_NUM_THREADS** <br>
+    Variable d'environnement : **MY_NUM_THREADS** <br>
 * Version MPI <br>
     La version MPI ne comporte que la sous-version 'Communications Synchrones'<br>
      Compilation : **make mpi**<br>
     Execution : *mpirun -np N nb_iterations size* / N nombre de processus<br>  
     N doit être un carré parfait et doit diviser size<br>
 ------------
-<br>
-#### Analyse<br>
-Pour analyser des courbes, il est possible d'utiliser *make courbe*. Il est nécessaire de n'avoir aucune sortie dans les programmes *excepté les temps*.
+#### Analyse
+Pour analyser des courbes, il est possible d'utiliser *make courbe*. Il est nécessaire de n'avoir aucune sortie dans les programmes *excepté les temps*.<br>
 * plot_csv.py:
     Trace une courbe à partir d'un fichier à deux colonnes données sur matplotlib<br>
 * script.sh<br>

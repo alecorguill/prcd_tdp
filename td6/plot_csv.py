@@ -11,18 +11,18 @@ def extract_csv(filename, save=False):
     # Extracting
     f = open(filename,'r')
     content = f.read().split("\n")
-    sizes = [int(x.split(",")[0]) for x in content[1:-1]]
-    sequentiel = [float(x.split(",")[1]) for x in content[1:-1]]
-    openmp = [float(x.split(",")[2]) for x in content[1:-1]]
-    pthread = [float(x.split(",")[3]) for x in content[1:-1]]
+    sizes = [int(x.split(",")[0]) for x in content[2:-1]]
+    sequentiel = float(content[1])
+    openmp = [float(x.split(",")[1]) for x in content[2:-1]]
+    pthread = [float(x.split(",")[2]) for x in content[2:-1]]
     return (sizes,sequentiel,openmp,pthread)
     
 if __name__ == "__main__":
     plt.figure(1)
     plt.subplot(111)
     size,sequentiel,openmp,pthread = extract_csv("time.csv");
-    save = sum(sequentiel)/len(sequentiel)
-    for i in range(len(sequentiel)):
+    save = sequentiel
+    for i in range(len(openmp)):
         openmp[i] = save / openmp[i]
         pthread[i] = save / pthread[i]
 

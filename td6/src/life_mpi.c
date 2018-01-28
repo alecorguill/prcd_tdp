@@ -35,8 +35,9 @@ int main(int argc, char* argv[])
   //
   int nb_bloc = (int) sqrt(size);
   
-  if (BS % nb_bloc != 0){
-    printf("Usage: Wrong size and number of processes; sqrt(np) must divide size");
+  if (BS % nb_bloc != 0 || (nb_bloc*nb_bloc != size) ){
+    if (rank == root)
+      printf("Usage: Wrong size and number of processes; sqrt(np) must divide size\n");
     MPI_Finalize();
     return EXIT_SUCCESS;
   }
@@ -47,7 +48,21 @@ int main(int argc, char* argv[])
   int dims[] = {nb_bloc,nb_bloc};
   int periods[] = {1,1};
   MPI_Cart_create(MPI_COMM_WORLD,2,dims,periods,reorder,&grid);
+  
+  MPI_Comm row_comm;
+  int remain[2];
+  remain[0] = 0;
+  remain[1] = 1;
+  MPI_Cart_sub(grid, remain, &row_comm);
+  
+  MPI_Comm col_comm;
+  remain[0] = 1;
+  remain[1] = 0;
+  MPI_Cart_sub(grid, remain, &col_comm);
+
+  
   int bbs = BS/nb_bloc;
+  
   
   num_alive = 0;
   num_alive_loc = 0;
@@ -91,43 +106,39 @@ int main(int argc, char* argv[])
 
   MPI_Scatterv(&(cell(1,1,board,ldboard)),sendcounts,displs,bloc_resized,&(cell(1, 1, board_loc, ldboard_loc)),1,bloc_loc,root,MPI_COMM_WORLD);
  
-  if (rank == root){
-    printf("Starting number of living cells = %d\n", num_alive);
-    output_board( BS, &(cell(1, 1,board,ldboard)), ldboard, rank);
- }
+ /*  if (rank == root){ */
+ /*    printf("Starting number of living cells = %d\n", num_alive); */
+ /*    output_board( BS, &(cell(1, 1,board,ldboard)), ldboard, rank); */
+ /* } */
     
-  MPI_Aint lb, extent;
-  MPI_Type_get_extent(row_loc,&lb,&extent);
-  if (rank == root)
-    printf("%d %d\n", lb,extent);
   MPI_Status status;
   t1 = mytimer();
+
+  int trank,brank,lrank,rrank;
+  MPI_Cart_shift(row_comm,0,1,&lrank,&rrank);
+  MPI_Cart_shift(col_comm,0,1,&trank,&brank);
   for (loop = 1; loop <= maxloop; loop++) {
         
-    // Transmission des bords
-    int trank,brank,lrank,rrank;
-    MPI_Cart_shift(grid,0,1,&lrank,&rrank);
-    MPI_Cart_shift(grid,1,1,&trank,&brank);
-    MPI_Sendrecv(&cell(1, bbs, board_loc, ldboard_loc),ldboard_loc,MPI_INT,rrank,99,&cell(1,0, board_loc, ldboard_loc),ldboard_loc,MPI_INT,rrank,99,MPI_COMM_WORLD,&status);
-    MPI_Sendrecv(&cell(1,1, board_loc, ldboard_loc),ldboard_loc,MPI_INT,lrank,99,&cell(1,bbs+1, board_loc, ldboard_loc),ldboard_loc,MPI_INT,lrank,99,MPI_COMM_WORLD,&status);
-    MPI_Sendrecv(&cell(1, 0, board_loc, ldboard_loc),ldboard_loc,row_loc,trank,99,&cell(bbs+1,0, board_loc, ldboard_loc),ldboard_loc,row_loc,trank,99,MPI_COMM_WORLD,&status);
-    MPI_Sendrecv(&cell(bbs, 0, board_loc, ldboard_loc),ldboard_loc,row_loc,brank,99,&cell(0,0, board_loc, ldboard_loc),ldboard_loc,row_loc,brank,99,MPI_COMM_WORLD,&status);
- 
+    //Transmission des bords
+    MPI_Sendrecv(&cell(1, bbs, board_loc, ldboard_loc),ldboard_loc,MPI_INT,rrank,99,&cell(1,0, board_loc, ldboard_loc),ldboard_loc,MPI_INT,rrank,99,row_comm,&status);
+    MPI_Sendrecv(&cell(1,1, board_loc, ldboard_loc),ldboard_loc,MPI_INT,lrank,99,&cell(1,bbs+1, board_loc, ldboard_loc),ldboard_loc,MPI_INT,lrank,99,row_comm,&status);
+    MPI_Sendrecv(&cell(1, 0, board_loc, ldboard_loc),1,row_loc,trank,99,&cell(bbs+1,0, board_loc, ldboard_loc),1,row_loc,trank,99,col_comm,&status);
+    MPI_Sendrecv(&cell(bbs, 0, board_loc, ldboard_loc),1,row_loc,brank,99,&cell(0,0, board_loc, ldboard_loc),1,row_loc,brank,99,col_comm,&status);
   
+    
     for (j = 1; j <= bbs; j++) {
       for (i = 1; i <= bbs; i++) {
-  	ngb( i, j,board,ldboard) =
-  	  cell(i-1, j-1,board_loc,ldboard_loc) + cell(i,j-1,board_loc,ldboard_loc) + cell(i+1,j-1,board_loc,ldboard_loc) +
-  	  cell( i-1, j, board_loc, ldboard_loc) + cell(i+1, j,board_loc,ldboard_loc) +
-  	  cell(i-1,j+1,board_loc,ldboard_loc) + cell(i,j+1,board_loc,ldboard_loc) + cell(i+1,j+1,board_loc,ldboard_loc);
+    	ngb( i, j,nbngb_loc,ldnbngb_loc) =
+    	  cell(i-1, j-1,board_loc,ldboard_loc) + cell(i,j-1,board_loc,ldboard_loc) + cell(i+1,j-1,board_loc,ldboard_loc) +
+    	  cell( i-1, j, board_loc, ldboard_loc) + cell(i+1, j,board_loc,ldboard_loc) +
+    	  cell(i-1,j+1,board_loc,ldboard_loc) + cell(i,j+1,board_loc,ldboard_loc) + cell(i+1,j+1,board_loc,ldboard_loc);
       }
     }
-
     num_alive_loc = 0;
     for (j = 1; j <= bbs; j++) {
       for (i = 1; i <= bbs; i++) {
-  	if ( (ngb( i, j,board_loc,ldboard_loc) < 2) ||
-  	     (ngb( i, j,board_loc,ldboard_loc) > 3) ) {
+  	if ( (ngb( i, j,nbngb_loc,ldnbngb_loc) < 2) ||
+  	     (ngb( i, j,nbngb_loc,ldnbngb_loc) > 3) ) {
   	  cell(i, j,board_loc,ldboard_loc) = 0;
   	}
   	else {
@@ -140,21 +151,33 @@ int main(int argc, char* argv[])
       }
     }
   
-  
-
-    /* Avec les celluls sur les bords (utile pour vérifier les comm MPI) */
+    
+    
+  /*   /\* Avec les celluls sur les bords (utile pour vérifier les comm MPI) *\/ */
     /* output_board( BS+2, &(cell(0, 0)), ldboard, loop ); */
 
-    /* Avec juste les "vraies" cellules: on commence à l'élément (1,1) */
-    /*output_board( BS, &(cell(1, 1)), ldboard, loop);*/
+  /*   /\* Avec juste les "vraies" cellules: on commence à l'élément (1,1) *\/ */
+  /*   /\*output_board( BS, &(cell(1, 1)), ldboard, loop);*\/ */
+    /* printf("Rank %d loop %d: %d cells are alive\n",rank,num_alive_loc,loop); */
+    
+    /* int recvcounts[size],recvdispls[size]; */
+    /* for (int i=0; i < size; i++){ */
+    /*   recvcounts[i] = 1; */
+    /*   MPI_Cart_coords(grid,i,2,coord); */
+    /*   recvdispls[i] = coord[0]+coord[1]*ldboard; */
+    /* } */
+    /* MPI_Gatherv(&(cell(1,1,board_loc,ldboard_loc)),1,bloc_loc,&(cell(1, 1,board,ldboard)),recvcounts,recvdispls,bloc_resized,root,MPI_COMM_WORLD); */
 
-    //printf("Rank %d : %d cells are alive\n",rank,num_alive_loc);
+    /* if (rank == root) */
+    /*   output_board( BS, &(cell(1,1 ,board,ldboard)), ldboard, loop ); */
+    
   }
 
   t2 = mytimer();
+  num_alive = 0;
   temps_loc = t2 - t1;
-  MPI_Reduce(&temps,&temps_loc,1,MPI_DOUBLE,MPI_MAX,root,MPI_COMM_WORLD);
-  MPI_Reduce(&num_alive,&num_alive_loc,1,MPI_DOUBLE,MPI_SUM,root,MPI_COMM_WORLD);
+  MPI_Reduce(&temps_loc,&temps,1,MPI_DOUBLE,MPI_MAX,root,MPI_COMM_WORLD);
+  MPI_Reduce(&num_alive_loc,&num_alive,1,MPI_INT,MPI_SUM,root,MPI_COMM_WORLD);
   
   int recvcounts[size],recvdispls[size];
   for (int i=0; i < size; i++){
@@ -162,15 +185,16 @@ int main(int argc, char* argv[])
     MPI_Cart_coords(grid,i,2,coord);
     recvdispls[i] = coord[0]+coord[1]*ldboard;
   }
+  
 
   MPI_Gatherv(&(cell(1,1,board_loc,ldboard_loc)),1,bloc_loc,&(cell(1, 1,board,ldboard)),recvcounts,recvdispls,bloc_resized,root,MPI_COMM_WORLD);
-
+  
   if (rank == root){
-    output_board(ldboard,&(cell(0, 0,board,ldboard)),ldboard,0);
+    //output_board(ldboard,&(cell(0, 0,board,ldboard)),ldboard,0);
     printf("Final number of living cells = %d\n", num_alive);
     printf("%.2lf\n",(double)temps * 1.e3);
   }
-
+  
   if (rank == 0){
     free(board);
     free(nbngb);

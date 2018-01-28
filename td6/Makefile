@@ -46,4 +46,4 @@ courbe :
 	python plot_csv.py
 
 clean:
-	@rm -f *.o *~ $(EXECS_TEST) openmp sequentiel mpi pthread	
+	@rm -f *.o *~ $(EXECS_TEST) openmp sequentiel mpi pthread *.csv	

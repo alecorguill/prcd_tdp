@@ -9,6 +9,7 @@
 
 game g;
 
+
 int main(int argc, char* argv[])
 {
   double t1, t2, temps;
@@ -53,11 +54,6 @@ int main(int argc, char* argv[])
     pthread_mutex_init(&(g.sems[i].m), NULL);
     sem_init(&(g.sems[i].sem),1,0);
   }
-  unsigned count=g.num_threads;
-  pthread_barrier_t *barrier = malloc(sizeof(pthread_barrier_t)); 
-  g.barrier = barrier;
-  pthread_barrierattr_t attr;
-  pthread_barrier_init(g.barrier,&attr,count);
   /* launching threads */
   t1 = mytimer();
   for(int i=0;i<g.num_threads;i++)
@@ -72,7 +68,7 @@ int main(int argc, char* argv[])
   t2 = mytimer();
   temps = t2 - t1;
   printf("%.2lf\n",(double)temps * 1.e3);
-  free(g.barrier);free(g.board);free(g.nbngb);free(g.sems);
+  free(g.board);free(g.nbngb);free(g.sems);
   return EXIT_SUCCESS;
 }
 

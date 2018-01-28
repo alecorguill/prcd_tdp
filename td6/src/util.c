@@ -8,6 +8,12 @@
 
 #define TEST {printf("TEST %d\n",__LINE__);}
 
+int barrier;
+int barrier_id;
+pthread_cond_t cond_barrier = PTHREAD_COND_INITIALIZER;
+pthread_mutex_t mut_barrier = PTHREAD_MUTEX_INITIALIZER;
+
+
 double mytimer(void)
 {
   struct timeval tp;
@@ -66,6 +72,21 @@ int get_thread_index(game *g){
   return -1;
 }
 
+void barrier_STOP(int nb_threads){
+    pthread_mutex_lock(&mut_barrier);
+    barrier++;
+
+    if (barrier == nb_threads) {
+	barrier = 0;
+	pthread_cond_broadcast(&cond_barrier);
+    }
+    else{
+	pthread_cond_wait(&cond_barrier, &mut_barrier);
+    }
+    pthread_mutex_unlock(&mut_barrier);
+}
+
+
 void *start_game(void * ga){
   int index;
   game *g;
@@ -78,7 +99,7 @@ void *start_game(void * ga){
   }
   if(index==0)
     pthread_init_board(g);
-  pthread_barrier_wait(g->barrier);
+  barrier_STOP(g->num_threads);
   for (int loop = 1; loop <= g->maxloop; loop++) {
     /* upate edges */
     if(index == 0){
@@ -102,11 +123,9 @@ void *start_game(void * ga){
 						   g->ldboard);
       }
     }
-    pthread_barrier_wait(g->barrier);
+    barrier_STOP(g->num_threads);
     /* ------ */
-    
     /* neighbour compute */
-    
     int jbegin,jend;
     jbegin = index*(g->BS/g->num_threads)+1;
     jend = (index+1)*(g->BS/g->num_threads);
@@ -219,7 +238,7 @@ void *start_game(void * ga){
       /* 	g->num_alive ++; */
       /* } */
     }
-    pthread_barrier_wait(g->barrier);
+    barrier_STOP(g->num_threads);
     /* if(index==0) */
     /*   output_board( g->BS, &(cell(1, 1, g->board, g->ldboard)), g->ldboard, loop); */
   }
@@ -232,7 +251,7 @@ void *start_game(void * ga){
 	}
       }
     }
-    /* printf("Final number of living cells = %d\n", num_alive);     */
+    /* printf("Final number of living cells = %d\n", num_alive); */
   }
 }
 

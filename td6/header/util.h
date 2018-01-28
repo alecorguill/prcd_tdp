@@ -25,6 +25,7 @@ typedef struct{
   int BS;
 }game;
 
+void barrier_STOP(int nb_threads);
 void *start_game(void * g);
 double mytimer(void);
 int generate_initial_board(int N, int *board, int ldboard);

@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
 
   t2 = mytimer();
   temps = t2 - t1;
-  //printf("Final number of living cells = %d\n", num_alive);
+  /* printf("Final number of living cells = %d\n", num_alive); */
   printf("%.2lf\n",(double)temps * 1.e3);
 
   free(board);

@@ -12,7 +12,7 @@ make pthread
 
 echo "nb_proc,openmp,pthread" >> $file
 ./sequentiel $nb_step $size >> $file
-for i in {2..6..2}
+for i in {2..20..2}
 do
     echo -n "$i," >> $file
     export MY_NUM_THREADS=$i

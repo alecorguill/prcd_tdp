@@ -41,11 +41,9 @@ pthread : life_pthread.o $(OBJS)
 %.o : %.c
 	$(CC) -I$(HEADER_DIR) $(CFLAGS) -c $<
 
-test : test_unitaire
-
-test_unitaire : particule.o util.o test_unitaire.o 
-	$(CC) -o $@ $^ $(LDFLAGS)
-
+courbe : 
+	./script.sh
+	python plot_csv.py
 
 clean:
 	@rm -f *.o *~ $(EXECS_TEST) openmp sequentiel mpi pthread	
